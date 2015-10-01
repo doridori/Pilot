@@ -193,7 +193,7 @@ See the simple example app for an idea how this stuff works in practise.
 
 Please see the projects Issues list for what still needs to be worked on. The main thing at present is the PilotFrame lifecycle callbacks and will do this ASAP. Interested to hear if any input on the thoughts I have had on it.
 
-#Limitations
+##Limitations
 
 There are some things that I never really end up using in the 5-6 years I have professionally building Android apps. These include:
 
@@ -201,3 +201,9 @@ There are some things that I never really end up using in the 5-6 years I have p
 - Tasks
 
 For this reason I have not spent much time thinking about how to work with them. That said they are represented on the Issues list and I do have ideas how these can work with Pilot. Personally I will wait till I need them or they are requested before spending many thought-cycles on them.
+
+##F.A.Q.
+
+No one has asked me any questions about this as yet but if they do I will create an F.A.Q. :)
+
+

@@ -32,7 +32,7 @@ I have tried to keep dependency use to a minimum when thinking about this soluti
 
 ##A Note on Morter and Flow
 
-Morter and Flow is definitely a big part of the inspiration for Pilot and is created by developers a lot cleverer than me by a mile. The reason I did not use those two complementry libs to address the issues that are listed at the top of the post is down to one thing - I felt they were too complicated. People may laugh and think that I am a simpleton, which may be so! However whenever I started to read though the docs, example projects and some excellent blog posts on it (like [Using Flow & Mortar](https://realm.io/news/using-flow-mortar/) and [An Investigation into Flow and Mortar](https://www.bignerdranch.com/blog/an-investigation-into-flow-and-mortar/)) I always ended up feeling like there was too much congitive load to hook it all together. Plus, I like trying to solve a problem myself :p
+Morter and Flow is definitely a big part of the inspiration for Pilot and is created by developers a lot cleverer than me by a mile. The reason I did not use those two complementry libs to address the issues that are listed at the top of the post is down to one thing - I felt they were too complicated. Whenever I started to read though the docs, example projects and some excellent blog posts on it (like [Using Flow & Mortar](https://realm.io/news/using-flow-mortar/) and [An Investigation into Flow and Mortar](https://www.bignerdranch.com/blog/an-investigation-into-flow-and-mortar/)) I always ended up feeling like there was too much congitive load to hook it all together. Plus, I like trying to solve a problem myself :p
 
 ##A Note on RxJava
 
