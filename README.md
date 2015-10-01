@@ -11,7 +11,7 @@ An abstract application stack which facilitates:
 
 **Note this is a WIP**
 
-If you have not already I **highly recommened** you read the `Motivations` post found [here]() as they lay a foundation for the solutions presented in this README.
+If you have not already I **highly recommened** you read the `Motivations` post found [here](http://doridori.github.io/Android-Architecture-Pilot/) as they lay a foundation for the solutions presented in this README.
 
 This README will have the following structure:
 
