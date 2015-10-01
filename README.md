@@ -9,7 +9,9 @@ An abstract application stack which facilitates:
 - Fine grained data scope management
 - Presenter lifecycle events
 
-**If you have not already I highly recommened you read the `Motivations` post found [here]() as they lay a foundation for the solutions presented in this README.**
+**Note this is a WIP**
+
+If you have not already I **highly recommened** you read the `Motivations` post found [here]() as they lay a foundation for the solutions presented in this README.
 
 This README will have the following structure:
 
@@ -18,7 +20,6 @@ This README will have the following structure:
 3. How to use!
 4. Highlight what still needs to be worked on
 5. Mention any current known limitations
-
 
 #Intro
 
