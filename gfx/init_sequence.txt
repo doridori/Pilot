@@ -1,0 +1,14 @@
+PilotActivitySubclass->PilotActivitySubclass: onCreate()
+PilotActivitySubclass->PilotActivity: init()
+PilotActivity->PilotActivity:ensurePilotStackPresent()
+opt if freshStart == true
+    PilotActivity->PilotActivitySubclass: getLaunchPresenterFrame()
+    PilotActivitySubclass->PilotActivity:
+PilotActivity->PilotStack:pushFrame(...)
+end
+PilotActivity->PilotStack: getTopVisibleFrame()
+PilotStack->PilotActivity:
+PilotActivity->PilotActivity: topVisibleFrameUpdated()
+PilotActivity->PilotActivitySubclass:interceptTopFrameUpdatedForCategory
+PilotActivity->PilotActivity:ensureCurrentViewIsOfType()
+PilotActivity->CurrentView:setPresenter()
