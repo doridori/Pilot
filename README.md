@@ -70,7 +70,7 @@ public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
 }
 ```
 
-Example of view action causing a presenter method to be called, which in turn manipulated the application stack directly. This could just as easily have originated from internal logic to the presenter i.e. as the result of some asyncronous operation. This examples pushes a data-frame on the stack also (more on that later)
+Example of view action causing a presenter method to be called, which in turn manipulates the application stack directly. This could just as easily have originated from internal logic to the presenter i.e. as the result of some asyncronous operation. This examples pushes a data-frame on the stack also (more on that later)
 
 ```java
 /**
@@ -107,6 +107,8 @@ public class SecondInSessionView extends PresenterBasedFrameLayout<SecondInSessi
     }
 }
 ```
+
+Pretty simple but quite powerful!
 
 #Core Components
 
