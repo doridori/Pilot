@@ -49,6 +49,14 @@ The `PilotStack` is the main core of this mini library which has the following p
 
 Annotation that can be applied to a `PilotFrame` subclass which signifies that it should be ignored for all stack callback operations. Very useful for handling scoped data within the stack
 
+##The `PresenterBasedFrameLayout`
+
+Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PresenterBasedFrameLayout.java) that can be extended for RichViews which accepts Presenter setting. Needs a [`@Presenter`](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/Presenter.java) annotation to be present.
+
+##The `PilotActivity`
+
+Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See this releated ticket for pending improvments here.
+
 #General Concepts
 
 ##Single-Activity Application
