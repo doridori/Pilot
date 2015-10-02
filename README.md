@@ -55,7 +55,7 @@ Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/m
 
 ##The `PilotActivity`
 
-Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See this releated ticket for pending improvments here.
+Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See [this releated ticket](https://github.com/doridori/Pilot/issues/11) for pending improvments here.
 
 #General Concepts
 
