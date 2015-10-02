@@ -29,7 +29,9 @@ This README will have the following structure:
 
 You may read the below and think 'thats what `FragmentManager` is for' or 'I use the Activity backstack for that' and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
 
-#Usage Examples
+#Quick Usage Examples
+
+Quick setup in applications root Activity by specifing an array of `@Presenter` backed `View` classes and the app launch state.
 
 ```java
 public class ExampleRootActivity extends PilotActivity
@@ -55,6 +57,8 @@ public class ExampleRootActivity extends PilotActivity
 }
 ```
 
+Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`)
+
 ```java
 @Presenter(FirstViewPresenter.class)
 public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
@@ -66,6 +70,8 @@ public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
     }
 }
 ```
+
+Example of view action causing a presenter method to be called, which in turn manipulated the application stack directly. This could just as easily have originated from internal logic to the presenter i.e. as the result of some asyncronous operation. This examples pushes a data-frame on the stack also (more on that later)
 
 ```java
 /**
@@ -81,11 +87,24 @@ public class FirstViewPresenter extends PilotFrame
      * 1) push another UI frame on the stack
      * 2) push a scoped-data frame on the stack and then a UI frame.
      */
-    public void mainViewClicked()
+    public void someButtonPressed()
     {
-        //example of pushing data frame then presenter frame
+        //example of pushing data frame then presenter frame *directly* from presenter
         getParentStack().pushFrame(new SessionScopedData("RandomSessionKey"));
         getParentStack().pushFrame(new SecondInSessionViewPresenter());
+    }
+}
+```
+
+The corresponding view that utilised the newly added Presenter will auto be added to the main contentView (and all other Views removed).
+
+```java
+@Presenter(SecondInSessionViewPresenter.class)
+public class SecondInSessionView extends PresenterBasedFrameLayout<SecondInSessionViewPresenter>
+{
+    public void someFuntionality()
+    {
+        getPresenter().someMethodCall...
     }
 }
 ```
