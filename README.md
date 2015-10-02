@@ -213,7 +213,7 @@ No one has asked me any questions about this as yet but if they do I will create
 
 #License
 
-    Copyright 2015 Dorian Cussen.
+    Copyright 2015 Dorian Cussen
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
