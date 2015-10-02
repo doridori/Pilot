@@ -44,7 +44,6 @@ public class ExampleRootActivity extends PilotActivity
         return new FirstViewPresenter("RandomInitData");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()
     {
