@@ -165,6 +165,10 @@ Some may complain that serialization is slow and is not ideal. You are right! A 
 
 #How To Use
 
+##Import .aar
+
+Check the github releases for this at present. Jcenter coming soon :)
+
 ##Extend PilotActivity
 
 Fundamentally you can extend `PilotActivity` as this handles:
