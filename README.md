@@ -15,17 +15,80 @@ If you have not already I **highly recommened** you read the `Motivations` post 
 
 This README will have the following structure:
 
-1. Outline the core library components
-2. Outline the general concepts
-3. How to use!
-4. Highlight what still needs to be worked on
-5. Mention any current known limitations
+1. Quick Intro to the project
+2. Some short usage examples
+3. Outline the core library components
+4. Outline the general concepts
+5. How to integrate
+6. Highlight what still needs to be worked on
+7. Mention any current known limitations
 
 #Intro
 
 **Pilot** is an effort to abstract a simple Application Stack from the common approaches to Controller/Presenter (from now on I will just use the word controller to cover all approaches here) based Android application architecture. An aim is to **not** tie any implementations to any specifc controller type or 3rd party dependencies i.e. to be as flexible as possible. I often use State-based Presenter (as outlined by [Dynamo](https://github.com/doridori/Dynamo)) but this is by no mean a requirement.
 
 You may read the below and think 'thats what `FragmentManager` is for' or 'I use the Activity backstack for that' and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
+
+#Usage Examples
+
+```java
+public class ExampleRootActivity extends PilotActivity
+{
+    ...
+
+    @Override
+    protected PilotFrame getLaunchPresenterFrame()
+    {
+        return new FirstViewPresenter("RandomInitData");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()
+    {
+        //all root level presenter backed views should go here
+        return new Class[]{
+                FirstView.class,
+                SecondInSessionView.class
+        };
+    }
+}
+```
+
+```java
+@Presenter(FirstViewPresenter.class)
+public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
+{
+    ...
+    public void someButtonPressed()
+    {
+        getPresenter().someButtonPressed();
+    }
+}
+```
+
+```java
+/**
+ * Implement the Presenter/Controller aspect of this whatever way you want
+ */ 
+public class FirstViewPresenter extends PilotFrame
+{
+    ...
+    /**
+     * This represents some app nav action which happens via the parent FatStack.
+     * Called by UI in production or called directly in tests. At this point you will generally want to
+     *
+     * 1) push another UI frame on the stack
+     * 2) push a scoped-data frame on the stack and then a UI frame.
+     */
+    public void mainViewClicked()
+    {
+        //example of pushing data frame then presenter frame
+        getParentStack().pushFrame(new SessionScopedData("RandomSessionKey"));
+        getParentStack().pushFrame(new SecondInSessionViewPresenter());
+    }
+}
+```
 
 #Core Components
 
@@ -171,7 +234,7 @@ Some times you want your apps state to survive process death. This can be done b
 
 Some may complain that serialization is slow and is not ideal. You are right! A pending improvement is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
 
-#How To Use
+#How To Integrate
 
 ##Import .aar
 
