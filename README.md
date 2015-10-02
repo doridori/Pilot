@@ -56,7 +56,7 @@ public class ExampleRootActivity extends PilotActivity
 }
 ```
 
-Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`)
+Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`) which is pulled from the applications `PilotStack`
 
 ```java
 @Presenter(FirstViewPresenter.class)
