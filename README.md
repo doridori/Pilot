@@ -294,7 +294,7 @@ Please see the projects Issues list for what still needs to be worked on. The ma
 There are some things that I never really end up using in the 5-6 years I have professionally building Android apps. These include:
 
 - 2 pane tablet layouts
-- Tasks
+- Tasks. By this I mean the ability to maintain a branching stack where each branch contains a backstack and share a common ancestor. Would suit specific app UX which is not that common in the Android world. Not a big deal its not included!
 
 For this reason I have not spent much time thinking about how to work with them. That said they are represented on the Issues list and I do have ideas how these can work with Pilot. Personally I will wait till I need them or they are requested before spending many thought-cycles on them.
 
