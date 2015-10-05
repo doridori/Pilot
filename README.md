@@ -29,6 +29,8 @@ This README will have the following structure:
 
 You may read the below and think 'thats what `FragmentManager` is for' or 'I use the Activity backstack for that' and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
 
+In some ways this approach is something like a micro-framework as the application navigation flows through and is handled by it. It also is an approach to building apps that makes the problems outlined by the discussed motivations easier to handle but is not a library that has been created to solve a specific individual issue.
+
 #Quick Usage Examples
 
 Quick setup in applications root Activity by specifing an array of `@Presenter` backed `View` classes and the app launch state.
