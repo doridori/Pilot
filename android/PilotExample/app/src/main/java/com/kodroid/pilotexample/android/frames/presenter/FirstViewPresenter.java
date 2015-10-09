@@ -20,17 +20,13 @@ public class FirstViewPresenter extends PilotFrame
     // Serializable init data
     //==================================================================//
 
-    //example init data
-    private String mSomeInitData;
+    //could contain some serializable data
 
     //==================================================================//
     // Constructor
     //==================================================================//
 
-    public FirstViewPresenter(String someInitData)
-    {
-        mSomeInitData = someInitData;
-    }
+    //as launch frame has default no arg constructor
 
     //==================================================================//
     // App transitions

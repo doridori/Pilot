@@ -1,8 +1,6 @@
 package com.kodroid.pilot.lib.stack;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -23,9 +21,9 @@ public class PilotStack implements Serializable
     private Stack<PilotFrame> mStack = new Stack<>();
 
     /**
-     * stack event listeners
+     * stack event listener
      */
-    private List<EventListener> mEventListeners = new ArrayList<>();
+    private transient EventListener mEventListener;
 
     //==================================================================//
     // Stack Operations (public)
@@ -53,7 +51,7 @@ public class PilotStack implements Serializable
         frameToPush.pushed();
 
         if(!isInvisibleFrame(frameToPush))
-            notifyListenersVisibleFrameChange(frameToPush, EventListener.Direction.FORWARD);
+            notifyListenerVisibleFrameChange(frameToPush, EventListener.Direction.FORWARD);
     }
 
     /**
@@ -86,7 +84,7 @@ public class PilotStack implements Serializable
 
         PilotFrame nextTopFrame = getTopVisibleFrame();
         if(nextTopFrame != null)
-            notifyListenersVisibleFrameChange(nextTopFrame, EventListener.Direction.BACK);
+            notifyListenerVisibleFrameChange(nextTopFrame, EventListener.Direction.BACK);
         else
             notifyListenersNoVisibleFrames();
 
@@ -135,12 +133,12 @@ public class PilotStack implements Serializable
                     return;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                for(EventListener eventListener : mEventListeners)
+                if(mEventListener != null)
                 {
                     if(topVisibleFrame == null)
-                        eventListener.noVisibleFramesLeft();
+                        mEventListener.noVisibleFramesLeft();
                     else
-                        eventListener.topVisibleFrameUpdated(topVisibleFrame, EventListener.Direction.BACK);
+                        mEventListener.topVisibleFrameUpdated(topVisibleFrame, EventListener.Direction.BACK);
                 }
 
                 //have found and popped at this point so now return
@@ -194,16 +192,16 @@ public class PilotStack implements Serializable
         return mStack.size();
     }
 
-    private void notifyListenersVisibleFrameChange(PilotFrame pilotFrame, EventListener.Direction direction)
+    private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, EventListener.Direction direction)
     {
-        for(EventListener listener : mEventListeners)
-            listener.topVisibleFrameUpdated(pilotFrame, direction);
+        if(mEventListener != null)
+            mEventListener.topVisibleFrameUpdated(pilotFrame, direction);
     }
 
     private void notifyListenersNoVisibleFrames()
     {
-        for (EventListener listener : mEventListeners)
-            listener.noVisibleFramesLeft();
+        if (mEventListener != null)
+            mEventListener.noVisibleFramesLeft();
     }
 
     private boolean isInvisibleFrame(PilotFrame pilotFrame)
@@ -222,13 +220,13 @@ public class PilotStack implements Serializable
 
     public void setEventListener(EventListener eventListener)
     {
-        mEventListeners.add(eventListener);
+        mEventListener = eventListener;
     }
 
 
-    public void deleteEventListener(EventListener eventListener)
+    public void deleteEventListener()
     {
-        mEventListeners.remove(eventListener);
+        mEventListener = null;
     }
 
     /**

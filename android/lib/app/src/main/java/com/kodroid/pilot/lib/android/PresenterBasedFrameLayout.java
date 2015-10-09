@@ -75,7 +75,7 @@ public abstract class PresenterBasedFrameLayout<P> extends FrameLayout
         if(hasPresenterAnnotation(clazz))
             return clazz.getAnnotation(Presenter.class).value();
         else
-            throw new RuntimeException("This view does not declare a @Presenter");
+            throw new RuntimeException("This view does not declare a @Presenter:"+clazz.getCanonicalName());
     }
 
     private static boolean hasPresenterAnnotation(Class clazz)
