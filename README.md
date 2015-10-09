@@ -311,7 +311,7 @@ See the [ExampleRootActivity](https://github.com/doridori/Pilot/blob/master/andr
 
 These represent the individual states and data-scopes of your application and are the things that will live on the stack.
 
-`PilotFrames` that appear on the stack that have a corresponding `@Presenter` annotated `PresenterBasedFrameLayout` extending `View` class in the initialised `PilotManager` will have their `View` auto displayed when that frame hits the top of the stack.
+`PilotFrames` that appear on the stack that have a corresponding `@Presenter` annotated `PresenterBasedFrameLayout` extending `View` class in the initialised `PilotManager` will have their `View` auto displayed when that frame hits the top of the `PilotStack`. These `Views` will have access to their `PilotFrame` backed `Presenter` and the parent `PilotStack`. The stack can be used for `Presenter` to `Presenter` [navigation](https://github.com/doridori/Pilot/blob/master/android/PilotExample/app/src/main/java/com/kodroid/pilotexample/android/frames/presenter/FirstViewPresenter.java#L46).
 
 `PilotFrames` that dont have a corresponding `View` setup will need to be handled by `ActivityDelegate.interceptTopFrameUpdatedForCategory` otherwise an [Exception will be thrown](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PilotManager.java#L221). This may be because you want to display a Dialog / Fragment / switch Activity.
 
