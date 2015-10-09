@@ -214,11 +214,12 @@ This may seem overly simple - but in my mind thats a good thing! There are many 
 
 ##How Presenters are attached to views.
 
-This is an important question as it often instantly highlights any usecase issues when using a library with similar concerns to Pilot.
+This is an important question as it often instantly highlights any usecase issues when using a library with similar concerns to Pilot. 
 
-This is probably most easily illustrated with a Sequence diagram. The main idea is that when a PilotFrame hits the top of the PilotStack a callback is fired, which the PilotActivity uses to create and add the new View to the defined ViewGroup. The PilotActivity knows which View takes which PilotFrame based upon the `@Presenter` annotation. `PilotActivity.init()` handles the state on Activity creation as the sequence diagram below shows - PilotStack updates then just fire the `topVisibleFrameUpdate()` method and exercise the code in the second half of the sequence.
+This is probably most easily illustrated with a Sequence diagram, see below.
 
-![Init sequence diagram](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/init_sequence.png)
+_TODO: MENTION STATIC INIT - SEE 'HOW TO INTEGRATE'_
+_TODO: ADD DIAGRAM!_
 
 ###What about after a config-change?
 
