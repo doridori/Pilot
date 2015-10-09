@@ -1,14 +1,25 @@
-PilotActivitySubclass->PilotActivitySubclass: onCreate()
-PilotActivitySubclass->PilotActivity: init()
-PilotActivity->PilotActivity:ensurePilotStackPresent()
-opt if freshStart == true
-    PilotActivity->PilotActivitySubclass: getLaunchPresenterFrame()
-    PilotActivitySubclass->PilotActivity:
-PilotActivity->PilotStack:pushFrame(...)
+YourRootActivity->YourRootActivity: onCreate()
+YourRootActivity->PilotManager: onCreateDelegate(saveStateBundle, rootView)
+opt if needsStateRestore
+    PilotManager->PilotManager:restoreState()
 end
-PilotActivity->PilotStack: getTopVisibleFrame()
-PilotStack->PilotActivity:
-PilotActivity->PilotActivity: topVisibleFrameUpdated()
-PilotActivity->PilotActivitySubclass:interceptTopFrameUpdatedForCategory
-PilotActivity->PilotActivity:ensureCurrentViewIsOfType()
-PilotActivity->CurrentView:setPresenter()
+alt else create new PilotStack
+    PilotManager->PilotStack:new PilotStack()
+    PilotManager->PilotStack:pushLaunchFrame()
+end
+PilotManager->PilotManager:topVisibleFrameUpdated()
+PilotManager->PilotManager:ensureCurrentViewIsOfType()
+PilotManager->CurrentView:setPresenter()
+PilotManager->YourRootActivity:setView() //via rootView
+opt frame transition
+    CurrentView->PilotStack:pushFrame()
+    PilotStack->PilotManager:topVisibleFrameUpdated()
+    PilotManager->YourRootActivity:interceptTopFrameUpdatedForCategory()
+    PilotManager->PilotManager:ensureCurrentViewIsOfType()
+    PilotManager->CurrentView:setPresenter()
+    PilotManager->YourRootActivity:setView() //via rootView
+end
+note left of YourRootActivity: ...
+YourRootActivity->YourRootActivity: onDestroy()
+YourRootActivity->PilotManager: onDestroyDelegate()
+note left of YourRootActivity: Repeat
