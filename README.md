@@ -34,34 +34,66 @@ You may read the below and think _'thats what `FragmentManager` is for'_ or _'I 
 
 This approach is something like a micro-framework as the application navigation flows through and is handled by it. It also is an approach to building apps that makes the problems outlined by the discussed motivations easier to handle but is not a library that has been created to solve a specific individual issue.
 
+Pilot can be used in single-Activity applications (recommened!) or one-per Activity if need be.
+
 #Quick Usage Examples
 
-Quick setup in applications root Activity by specifing an array of `@Presenter` backed `View` classes and the app launch state.
+Quick setup in your applications Root Activity (I find I only use one Activity per app) by specifing an array of `@Presenter` backed `View` classes and the app launch state.
 
 ```java
-public class ExampleRootActivity extends PilotActivity
+public class ExampleRootActivity extends Activity
 {
-    ...
+    private static PilotManager sPilotManager;
 
-    @Override
-    protected PilotFrame getLaunchPresenterFrame()
+    static
     {
-        return new FirstViewPresenter("RandomInitData");
-    }
-
-    @Override
-    protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()
-    {
-        //all root level presenter backed views should go here
-        return new Class[]{
+        Class<? extends PresenterBasedFrameLayout>[] rootViews = new Class[]{
                 FirstView.class,
                 SecondInSessionView.class
         };
+
+        sPilotManager = new PilotManager(rootViews, FirstViewPresenter.class);
     }
+    ...
 }
 ```
 
-Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`) which is pulled from the applications `PilotStack`
+_Im sure you may be thinking uh-oh when you see the `static`s above. This is explained elsewhere in this README._ 
+
+Delegate some `Activity` lifecycle calls to the `PilotManager`
+
+```java
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        FrameLayout rootView = new FrameLayout(this);
+        setContentView(rootView);
+        sPilotManager.onCreateDelegate(savedInstanceState, rootView, this);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        sPilotManager.onDestroyDelegate(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        sPilotManager.onSaveInstanceStateDelegate(outState);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        sPilotManager.onBackPressedDelegate();
+    }
+```
+
+The first time `Activity.onCreate()` is called it will triggers the `FirstView` to be added to the rootView (declared above), with access to its Presenter (as defined by `@Presenter`) which is pulled (and itself has access to) from the Activitys `PilotStack`.
 
 ```java
 @Presenter(FirstViewPresenter.class)
@@ -100,7 +132,7 @@ public class FirstViewPresenter extends PilotFrame
 }
 ```
 
-The corresponding view that utilised the newly added Presenter will auto be added to the main contentView (and all other Views removed).
+The corresponding view that utilised the newly added Presenter will auto be added to the main rootView (and all other Views removed).
 
 ```java
 @Presenter(SecondInSessionViewPresenter.class)
