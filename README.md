@@ -173,9 +173,11 @@ Annotation that can be applied to a `PilotFrame` subclass which signifies that i
 
 Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PresenterBasedFrameLayout.java) that can be extended for RichViews which accepts Presenter setting. Needs a [`@Presenter`](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/Presenter.java) annotation to be present.
 
-##The `PilotActivity`
+##The `PilotManager`
 
-Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See [this releated ticket](https://github.com/doridori/Pilot/issues/11) for pending improvments here.
+Handles a `PilotStack` for you and handles core `View` changes based upon stack transitions (if you are using Views). A `PilotManager` is intended to be used one-per-Activity and is designed to be referenced and setup _statically_ as it handles its own memory releasing inside the Activity lifecycle delegate calls. This allows for easy persistence accross config-changes and back-stack-memory-saving-death and will clear all memory used when the Activity is destroyed for good. It will also handle saving and restoring itself on process-death. **Think of the `PilotManager` as the glue code between Android `Activity`s lifecycle peculiarities / View handling and the simple `PilotStack` functionality and usefullness.**
+
+The `PilotManager` allows you to _compose_ your Activity with Pilot functionality as opposed to _inherit_ it from some form of PilotRootActivity.
 
 #General Concepts
 
