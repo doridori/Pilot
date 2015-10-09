@@ -223,11 +223,11 @@ _TODO: ADD DIAGRAM!_
 
 ###What about after a config-change?
 
-After a config-change the PilotStack has been preserved and the init() call will trigger again - which will auto show the view at the top of the PilotStack. This is the same as first Activity creation apart from ignoring the `freshStart` conditional.
+After a config-change the PilotStack has been preserved via the Activity lifecycle delegate methods - which will auto show the view at the top of the PilotStack. 
 
 ###What about re-inflated Views that are now presenter-less?
 
-These will either have their Presenter pushed back to them via `init()` or will be removed if they represent a PilotFrame that is not longer top of the PilotStack.
+These will either have their Presenter pushed back to them or will be removed if they represent a PilotFrame that is not longer top of the PilotStack. You would probably only encounter this case in you were using a PilotStack inside a `Fragment` that had been re-infalted. Not the recommended use-case anyhow.
 
 ###What about child views that also have Presenters?!
 
