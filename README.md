@@ -1,7 +1,5 @@
 #Pilot
 
-![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
-
 An abstract application stack which facilitates:
 
 - Presenter lifecycle management
@@ -9,23 +7,110 @@ An abstract application stack which facilitates:
 - Fine grained data scope management
 - Presenter lifecycle events
 
+![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
+
 **Note this is a WIP**
 
-If you have not already I **highly recommened** you read the `Motivations` post found [here]() as they lay a foundation for the solutions presented in this README.
+If you have not already I **highly recommened** you read the `Motivations` post found [here](http://doridori.github.io/Android-Architecture-Pilot/) as they lay a foundation for the solutions presented in this README.
 
 This README will have the following structure:
 
-1. Outline the core library components
-2. Outline the general concepts
-3. How to use!
-4. Highlight what still needs to be worked on
-5. Mention any current known limitations
+1. Quick Intro to the project
+2. Some short usage examples
+3. Outline the core library components
+4. Outline the general concepts
+5. How to integrate
+6. Highlight what still needs to be worked on
+7. Mention any current known limitations
 
 #Intro
 
-**Pilot** is an effort to abstract a simple Application Stack from the common approaches to Controller/Presenter (from now on I will just use the word controller to cover all approaches here) based Android application architecture. An aim is to not tie any implementations to any specifc controller type or 3rd party dependencies i.e. to be as flexible as possible.
+**Pilot** is an effort to abstract a simple Application Stack from the common approaches to Controller/Presenter (from now on I will just use the word controller to cover all approaches here) based Android application architecture. An aim is to **not** tie any implementations to any specifc controller type or 3rd party dependencies i.e. to be as flexible as possible. I often use State-based Presenter (as outlined by [Dynamo](https://github.com/doridori/Dynamo)) but this is by no mean a requirement.
 
 You may read the below and think 'thats what `FragmentManager` is for' or 'I use the Activity backstack for that' and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
+
+In some ways this approach is something like a micro-framework as the application navigation flows through and is handled by it. It also is an approach to building apps that makes the problems outlined by the discussed motivations easier to handle but is not a library that has been created to solve a specific individual issue.
+
+#Quick Usage Examples
+
+Quick setup in applications root Activity by specifing an array of `@Presenter` backed `View` classes and the app launch state.
+
+```java
+public class ExampleRootActivity extends PilotActivity
+{
+    ...
+
+    @Override
+    protected PilotFrame getLaunchPresenterFrame()
+    {
+        return new FirstViewPresenter("RandomInitData");
+    }
+
+    @Override
+    protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()
+    {
+        //all root level presenter backed views should go here
+        return new Class[]{
+                FirstView.class,
+                SecondInSessionView.class
+        };
+    }
+}
+```
+
+Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`) which is pulled from the applications `PilotStack`
+
+```java
+@Presenter(FirstViewPresenter.class)
+public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
+{
+    ...
+    public void someButtonPressed()
+    {
+        getPresenter().someButtonPressed();
+    }
+}
+```
+
+Example of view action causing a presenter method to be called, which in turn manipulates the application stack directly. This could just as easily have originated from internal logic to the presenter i.e. as the result of some asyncronous operation. This examples pushes a data-frame on the stack also (more on that later). Note how **no** `android.*` classes are involved in this app navigation / state transition.
+
+```java
+/**
+ * Implement the Presenter/Controller aspect of this whatever way you want
+ */ 
+public class FirstViewPresenter extends PilotFrame
+{
+    ...
+    /**
+     * This represents some app nav action which happens via the parent FatStack.
+     * Called by UI in production or called directly in tests. At this point you will generally want to
+     *
+     * 1) push another UI frame on the stack
+     * 2) push a scoped-data frame on the stack and then a UI frame.
+     */
+    public void someButtonPressed()
+    {
+        //example of pushing data frame then presenter frame *directly* from presenter
+        getParentStack().pushFrame(new SessionScopedData("RandomSessionKey"));
+        getParentStack().pushFrame(new SecondInSessionViewPresenter());
+    }
+}
+```
+
+The corresponding view that utilised the newly added Presenter will auto be added to the main contentView (and all other Views removed).
+
+```java
+@Presenter(SecondInSessionViewPresenter.class)
+public class SecondInSessionView extends PresenterBasedFrameLayout<SecondInSessionViewPresenter>
+{
+    public void someFuntionality()
+    {
+        getPresenter().someMethodCall...
+    }
+}
+```
+
+Pretty simple but quite powerful!
 
 #Core Components
 
@@ -48,6 +133,14 @@ The `PilotStack` is the main core of this mini library which has the following p
 ##The `@InvisibleFrame`
 
 Annotation that can be applied to a `PilotFrame` subclass which signifies that it should be ignored for all stack callback operations. Very useful for handling scoped data within the stack
+
+##The `PresenterBasedFrameLayout`
+
+Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PresenterBasedFrameLayout.java) that can be extended for RichViews which accepts Presenter setting. Needs a [`@Presenter`](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/Presenter.java) annotation to be present.
+
+##The `PilotActivity`
+
+Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See [this releated ticket](https://github.com/doridori/Pilot/issues/11) for pending improvments here.
 
 #General Concepts
 
@@ -163,7 +256,11 @@ Some times you want your apps state to survive process death. This can be done b
 
 Some may complain that serialization is slow and is not ideal. You are right! A pending improvement is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
 
-#How To Use
+#How To Integrate
+
+##Import .aar
+
+Check the github releases for this at present. Jcenter coming soon :)
 
 ##Extend PilotActivity
 
@@ -199,12 +296,28 @@ Please see the projects Issues list for what still needs to be worked on. The ma
 There are some things that I never really end up using in the 5-6 years I have professionally building Android apps. These include:
 
 - 2 pane tablet layouts
-- Tasks
+- Tasks. By this I mean the ability to maintain a branching stack where each branch contains a backstack and share a common ancestor. Would suit specific app UX which is not that common in the Android world. Not a big deal its not included!
 
 For this reason I have not spent much time thinking about how to work with them. That said they are represented on the Issues list and I do have ideas how these can work with Pilot. Personally I will wait till I need them or they are requested before spending many thought-cycles on them.
 
 ##F.A.Q.
 
 No one has asked me any questions about this as yet but if they do I will create an F.A.Q. :)
+
+#License
+
+    Copyright 2015 Dorian Cussen
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
 
