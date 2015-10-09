@@ -289,7 +289,7 @@ This relationship will be preserved on Deserialization! This however does requir
 
 ##Handling Process Death
 
-Some times you want your apps state to survive process death. This can be done by serializing the PilotStack in the SavedState `Bundle`. This happens for free inside the `PilotActivity` class.
+Some times you want your apps state to survive process death. This happens for free inside the `PilotManager` class via the `Activity` lifecycle delegation methods.
 
 Some may complain that serialization is slow and is not ideal. You are right! A pending improvement is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
 
