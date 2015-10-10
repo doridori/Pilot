@@ -175,7 +175,7 @@ Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/m
 
 ##The `PilotManager`
 
-Handles a `PilotStack` for you and handles core `View` changes based upon stack transitions (if you are using Views). A `PilotManager` is intended to be used one-per-Activity and is designed to be referenced and setup [_statically_](https://github.com/doridori/Pilot/issues/8) as it handles its own memory releasing inside the Activity lifecycle delegate calls. This allows for easy persistence accross config-changes and back-stack-memory-saving-death and will clear all memory used when the Activity is destroyed for good. It will also handle saving and restoring itself on process-death. **Think of the `PilotManager` as the glue code between Android `Activity`s lifecycle peculiarities / View handling and the simple `PilotStack` functionality and usefullness.**
+Handles a `PilotStack` for you and handles core `View` changes based upon stack transitions (if you are using Views). A `PilotManager` is intended to be used one-per-Activity and is designed to be referenced and setup statically as it handles its own memory releasing inside the Activity lifecycle delegate calls. This allows for easy persistence accross config-changes and back-stack-memory-saving-death and will clear all memory used when the Activity is destroyed for good. It will also handle saving and restoring itself on process-death. For a any discussion or questions about this please see [this related ticket](https://github.com/doridori/Pilot/issues/8). **Think of the `PilotManager` as the glue code between Android `Activity`s lifecycle peculiarities / View handling and the simple `PilotStack` functionality and usefullness.**
 
 The `PilotManager` allows you to _compose_ your Activity with Pilot functionality as opposed to _inherit_ it from some form of PilotRootActivity, hence the need for delegation methods.
 
@@ -212,14 +212,11 @@ As is the root goal of most frameworks that interact with controller lifecycle m
 
 This may seem overly simple - but in my mind thats a good thing! There are many approaches to this singular issue that can easily get over-complicated when controllers and liveness are tied too much into an Activity or view components particular lifecycle.
 
-##How Presenters are attached to views.
-
-This is an important question as it often instantly highlights any usecase issues when using a library with similar concerns to Pilot. 
+##How Presenters are attached to Views and displayed.
 
 This is probably most easily illustrated with a Sequence diagram, see below.
 
-_TODO: MENTION STATIC INIT - SEE 'HOW TO INTEGRATE'_
-_TODO: ADD DIAGRAM!_
+![Main sequence](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/init_sequence.png)
 
 ###What about after a config-change?
 
