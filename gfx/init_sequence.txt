@@ -9,10 +9,10 @@ alt else create new PilotStack
 end
 PilotManager->PilotManager:topVisibleFrameUpdated()
 PilotManager->PilotManager:ensureCurrentViewIsOfType()
-PilotManager->CurrentView:setPresenter()
+PilotManager->CurrentView:setPresenter() //currentFrame
 PilotManager->YourRootActivity:setView() //via rootView
 opt frame transition
-    CurrentView->PilotStack:pushFrame()
+    CurrentFrame->PilotStack:pushFrame()
     PilotStack->PilotManager:topVisibleFrameUpdated()
     PilotManager->YourRootActivity:interceptTopFrameUpdatedForCategory()
     PilotManager->PilotManager:ensureCurrentViewIsOfType()
