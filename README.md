@@ -6,6 +6,7 @@ An abstract application stack which facilitates:
 - Presenter -> Presenter control flow
 - Fine grained data scope management
 - Presenter lifecycle events
+- A `View` based architecture 
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
 
@@ -25,40 +26,74 @@ This README will have the following structure:
 
 #Intro
 
-**Pilot** is an effort to abstract a simple Application Stack from the common approaches to Controller/Presenter (from now on I will just use the word controller to cover all approaches here) based Android application architecture. An aim is to **not** tie any implementations to any specifc controller type or 3rd party dependencies i.e. to be as flexible as possible. I often use State-based Presenter (as outlined by [Dynamo](https://github.com/doridori/Dynamo)) but this is by no mean a requirement.
+**Pilot** is an effort to abstract a simple Application Stack from the common approaches to Controller/Presenter (from now on I will just use these terms interchangeably) based Android application architecture. An aim is to **not** tie any implementations to any specifc controller type or 3rd party dependencies i.e. to be as flexible as possible. I often use State-based Presenter (as outlined by [Dynamo](https://github.com/doridori/Dynamo)) but this is by no mean a requirement.
 
-You may read the below and think 'thats what `FragmentManager` is for' or 'I use the Activity backstack for that' and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
+This is _somewhat like_ a `FragmentManager` for `Views` but it is also much more than that. It is **Presenter-aware**, simple in implementation, has plumbing to handle `View` creation and **Presenter mapping** out of the box (which is optional and can be used to trigger Fragment/Activity transitions also), **survives config-changes and process-death** and has a **queryable** app stack **which can hold scoped data** as well as view-backing-presenters. 
 
-In some ways this approach is something like a micro-framework as the application navigation flows through and is handled by it. It also is an approach to building apps that makes the problems outlined by the discussed motivations easier to handle but is not a library that has been created to solve a specific individual issue.
+You may read the below and think _'thats what `FragmentManager` is for'_ or _'I use the Activity backstack for that'_ and if you find those solutions are working for you thats great. I find that there is often cases where these two api concepts either over-complicate or restrict the things I need to do and feel there is a good case for some applications to use an abstracted stack instead.
+
+This approach is something like a micro-framework as the application navigation flows through and is handled by it. It also is an approach to building apps that makes the problems outlined by the discussed motivations easier to handle but is not a library that has been created to solve a specific individual issue.
+
+Pilot can be used in single-Activity applications (recommened!) or one-per Activity if need be.
 
 #Quick Usage Examples
 
-Quick setup in applications root Activity by specifing an array of `@Presenter` backed `View` classes and the app launch state.
+Quick setup in your applications Root Activity (I find I only use one Activity per app) by specifing an array of `@Presenter` backed `View` classes and the app launch state.
 
 ```java
-public class ExampleRootActivity extends PilotActivity
+public class ExampleRootActivity extends Activity
 {
-    ...
+    private static PilotManager sPilotManager;
 
-    @Override
-    protected PilotFrame getLaunchPresenterFrame()
+    static
     {
-        return new FirstViewPresenter("RandomInitData");
-    }
-
-    @Override
-    protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()
-    {
-        //all root level presenter backed views should go here
-        return new Class[]{
+        Class<? extends PresenterBasedFrameLayout>[] rootViews = new Class[]{
                 FirstView.class,
                 SecondInSessionView.class
         };
+
+        sPilotManager = new PilotManager(rootViews, FirstViewPresenter.class);
     }
+    ...
 }
 ```
 
-Triggers the `FirstView` to be added to the Activitys content view, with access to its Presenter (as defined by `@Presenter`) which is pulled from the applications `PilotStack`
+_Im sure you may be thinking uh-oh when you see the `static`s above. This is explained elsewhere in this README._ 
+
+Delegate some `Activity` lifecycle calls to the `PilotManager`
+
+```java
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        FrameLayout rootView = new FrameLayout(this);
+        setContentView(rootView);
+        sPilotManager.onCreateDelegate(savedInstanceState, rootView, this);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        sPilotManager.onDestroyDelegate(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        sPilotManager.onSaveInstanceStateDelegate(outState);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        sPilotManager.onBackPressedDelegate();
+    }
+```
+
+The first time `Activity.onCreate()` is called it will triggers the `FirstView` to be added to the rootView (declared above), with access to its Presenter (as defined by `@Presenter`) which is pulled (and itself has access to) from the Activitys `PilotStack`.
 
 ```java
 @Presenter(FirstViewPresenter.class)
@@ -97,7 +132,7 @@ public class FirstViewPresenter extends PilotFrame
 }
 ```
 
-The corresponding view that utilised the newly added Presenter will auto be added to the main contentView (and all other Views removed).
+The corresponding view that utilised the newly added Presenter will auto be added to the main rootView (and all other Views removed).
 
 ```java
 @Presenter(SecondInSessionViewPresenter.class)
@@ -138,9 +173,11 @@ Annotation that can be applied to a `PilotFrame` subclass which signifies that i
 
 Base [class](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PresenterBasedFrameLayout.java) that can be extended for RichViews which accepts Presenter setting. Needs a [`@Presenter`](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/Presenter.java) annotation to be present.
 
-##The `PilotActivity`
+##The `PilotManager`
 
-Base Activity that handles a PilotStack for you and handles core View changes based upon stack transitions (if you are using Views). See [this releated ticket](https://github.com/doridori/Pilot/issues/11) for pending improvments here.
+Handles a `PilotStack` for you and handles core `View` changes based upon stack transitions (if you are using Views). A `PilotManager` is intended to be used one-per-Activity and is designed to be referenced and setup **statically** as it handles its own memory releasing inside the Activity lifecycle delegate calls. This allows for easy persistence accross config-changes and back-stack-memory-saving-death and will clear all memory used when the Activity is destroyed for good. It will also handle saving and restoring itself on process-death. For a any discussion or questions about this please see [this related ticket](https://github.com/doridori/Pilot/issues/8). **Think of the `PilotManager` as the glue code between Android `Activity`s lifecycle peculiarities / View handling and the simple `PilotStack` functionality and usefullness.**
+
+The `PilotManager` allows you to _compose_ your Activity with Pilot functionality as opposed to _inherit_ it from some form of PilotRootActivity, hence the need for delegation methods.
 
 #General Concepts
 
@@ -175,21 +212,19 @@ As is the root goal of most frameworks that interact with controller lifecycle m
 
 This may seem overly simple - but in my mind thats a good thing! There are many approaches to this singular issue that can easily get over-complicated when controllers and liveness are tied too much into an Activity or view components particular lifecycle.
 
-##How Presenters are attached to views.
+##How Presenters are attached to Views and displayed.
 
-This is an important question as it often instantly highlights any usecase issues when using a library with similar concerns to Pilot.
+This is probably most easily illustrated with a Sequence diagram, see below.
 
-This is probably most easily illustrated with a Sequence diagram. The main idea is that when a PilotFrame hits the top of the PilotStack a callback is fired, which the PilotActivity uses to create and add the new View to the defined ViewGroup. The PilotActivity knows which View takes which PilotFrame based upon the `@Presenter` annotation. `PilotActivity.init()` handles the state on Activity creation as the sequence diagram below shows - PilotStack updates then just fire the `topVisibleFrameUpdate()` method and exercise the code in the second half of the sequence.
-
-![Init sequence diagram](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/init_sequence.png)
+![Main sequence](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/init_sequence.png)
 
 ###What about after a config-change?
 
-After a config-change the PilotStack has been preserved and the init() call will trigger again - which will auto show the view at the top of the PilotStack. This is the same as first Activity creation apart from ignoring the `freshStart` conditional.
+After a config-change the PilotStack has been preserved via the Activity lifecycle delegate methods - which will auto show the view at the top of the PilotStack. 
 
 ###What about re-inflated Views that are now presenter-less?
 
-These will either have their Presenter pushed back to them via `init()` or will be removed if they represent a PilotFrame that is not longer top of the PilotStack.
+These will either have their Presenter pushed back to them or will be removed if they represent a PilotFrame that is not longer top of the PilotStack. You would probably only encounter this case in you were using a PilotStack inside a `Fragment` that had been re-infalted. Not the recommended use-case anyhow.
 
 ###What about child views that also have Presenters?!
 
@@ -252,7 +287,7 @@ This relationship will be preserved on Deserialization! This however does requir
 
 ##Handling Process Death
 
-Some times you want your apps state to survive process death. This can be done by serializing the PilotStack in the SavedState `Bundle`. This happens for free inside the `PilotActivity` class.
+Some times you want your apps state to survive process death. This happens for free inside the `PilotManager` class via the `Activity` lifecycle delegation methods.
 
 Some may complain that serialization is slow and is not ideal. You are right! A pending improvement is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
 
@@ -262,26 +297,23 @@ Some may complain that serialization is slow and is not ideal. You are right! A 
 
 Check the github releases for this at present. Jcenter coming soon :)
 
-##Extend PilotActivity
+##Integrate `PilotManager` into your `Activity`
 
-Fundamentally you can extend `PilotActivity` as this handles:
+1. Implement a `static` initialiser for the `Views` that should be auto-handled by the `PilotManager` i.e. when a `PilotFrame` appears on the backing `PilotStack` the corresponding `View` will be shown.
+2. Delegate a few `Activity` lifecycle methods to the `PilotManager`
+3. Implement the `PilotManager.ActivityDelegate` interface.
 
-- Initiating / saving / restoring the current PilotStack
-- Passing `PilotFrames` to the correct Views
-
-and your subclass needs to:
-
-- call `PilotActivity.init(FrameLayout rootView)` with the parent view of any `PilotFrame` backed View that will be shown
-- Override `protected Class<? extends PresenterBasedFrameLayout>[] getRootViewClasses()` and pass back an array of Views which should be handled automatically when their corresponding `PilotFrames` hit the top of the 'PilotStack'.
-- Override `protected abstract PilotFrame getLaunchPresenterFrame();` and return the starting `PilotFrame` for the app
-
-and the subclass can optionally:
-
-- Override `boolean interceptTopFrameUpdatedForCategory(PilotFrame topVisibleFrame, Direction direction)` for any `PilotFrames` that are not represented in the `getRootViewClasses()` array above and perform custom rendering logic i.e. show a DialogFragment / switch Activity etc.
+See the [ExampleRootActivity](https://github.com/doridori/Pilot/blob/master/android/PilotExample/app/src/main/java/com/kodroid/pilotexample/android/ExampleRootActivity.java) for an example.
 
 ##Create some `PilotFrame` subclasses
 
 These represent the individual states and data-scopes of your application and are the things that will live on the stack.
+
+`PilotFrames` that appear on the stack that have a corresponding `@Presenter` annotated `PresenterBasedFrameLayout` extending `View` class in the initialised `PilotManager` will have their `View` auto displayed when that frame hits the top of the `PilotStack`. These `Views` will have access to their `PilotFrame` backed `Presenter` and the parent `PilotStack`. The stack can be used for `Presenter` to `Presenter` [navigation](https://github.com/doridori/Pilot/blob/master/android/PilotExample/app/src/main/java/com/kodroid/pilotexample/android/frames/presenter/FirstViewPresenter.java#L46).
+
+`PilotFrames` that dont have a corresponding `View` setup will need to be handled by `ActivityDelegate.interceptTopFrameUpdatedForCategory` otherwise an [Exception will be thrown](https://github.com/doridori/Pilot/blob/master/android/lib/app/src/main/java/com/kodroid/pilot/lib/android/PilotManager.java#L221). This may be because you want to display a Dialog / Fragment / switch Activity.
+
+`PilotFrames` that are annotated with `@InvisibleFrame` will not trigger stack events when pushed. These are useful for data-scoping (as [shown in the Example app](https://github.com/doridori/Pilot/blob/master/android/PilotExample/app/src/main/java/com/kodroid/pilotexample/android/frames/presenter/SecondInSessionViewPresenter.java#L26))
 
 ##Example App
 
