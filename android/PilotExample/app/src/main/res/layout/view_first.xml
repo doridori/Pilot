@@ -5,12 +5,11 @@
               android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/secondTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="80dp"
-        android:text="SECOND!"
+        android:textSize="20dp"
+        android:text="This is FirstView backed by the FirstViewPresenter\n\nTapping on this view will pretend to start a Session by pushing the SessionScopedData PilotFrame onto the stack. No view change will be triggered as a result of this new data frame\n\nIt will then push SecondInSessionViewPresenter onto the stack, which will trigger a corresponding view operation change"
         />
 
 </RelativeLayout>

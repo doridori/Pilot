@@ -5,9 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.kodroid.pilot.R;
 import com.kodroid.pilot.lib.android.Presenter;
 import com.kodroid.pilot.lib.android.PresenterBasedFrameLayout;
+import com.kodroid.pilotexample.R;
 import com.kodroid.pilotexample.android.frames.presenter.SecondInSessionViewPresenter;
 
 @Presenter(SecondInSessionViewPresenter.class)

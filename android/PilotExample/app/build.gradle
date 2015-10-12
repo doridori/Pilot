@@ -20,5 +20,5 @@ android {
 }
 
 dependencies {
-    compile 'com.kodroid:pilot:0.2.0'
+    compile 'com.kodroid:pilot:0.2.1'
 }

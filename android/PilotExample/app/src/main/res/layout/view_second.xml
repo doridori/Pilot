@@ -5,11 +5,12 @@
               android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/secondTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="100dp"
-        android:text="FIRST!"
+        android:textSize="20dp"
+        android:text="This is SecondInSessionView backed by the SecondInSessionViewPresenter\n\nTapping on this View will grab and display (in the same view) some data from the scoped SessionScopedData PilotFrame thats on the stack\n\nTapping back will pop the top visible frame (and any data frames above it)"
         />
 
 </RelativeLayout>

@@ -24,6 +24,6 @@ public class SecondInSessionViewPresenter extends PilotFrame
     public String getSessionDataToDisplay()
     {
         SessionScopedData sessionScopedData = getParentStack().getFrameOfType(SessionScopedData.class);
-        return sessionScopedData.getSomeSessionData();
+        return "Scoped session data:"+sessionScopedData.getSomeSessionData();
     }
 }

@@ -42,7 +42,7 @@ public class FirstViewPresenter extends PilotFrame
     public void mainViewClicked()
     {
         //example of pushing data frame then presenter frame
-        getParentStack().pushFrame(new SessionScopedData("RandomSessionKey"));
+        getParentStack().pushFrame(new SessionScopedData("<RandomSessionKey>"));
         getParentStack().pushFrame(new SecondInSessionViewPresenter());
     }
 }
