@@ -153,6 +153,8 @@ public class PilotStack implements Serializable
      * Returns the frame of type that exists in the stack. Not defined behaviour if more than one
      * frame of the same type exists in the stack.
      *
+     * //TODO defensive approach and optionally only return top of stack?
+     *
      * @param clazz
      * @param <T>
      * @return
