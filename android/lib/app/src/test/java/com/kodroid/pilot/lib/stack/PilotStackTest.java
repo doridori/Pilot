@@ -141,8 +141,8 @@ public class PilotStackTest extends TestCase
         pilotStack.pushFrame(new TestUIFrame3());
 
         //add listener
-        PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
-        pilotStack.setTopFrameChangedListener(mockedListener);
+        PilotStack.StackEmptyListener mockedListener = Mockito.mock(PilotStack.StackEmptyListener.class);
+        pilotStack.setStackEmptyListener(mockedListener);
 
         //perform pop
         pilotStack.popStackAtFrameType(TestUIFrame1.class, PilotStack.PopType.INCLUSIVE, true);
@@ -234,8 +234,8 @@ public class PilotStackTest extends TestCase
         TestUIFrame1 testFrame = new TestUIFrame1();
         pilotStack.pushFrame(testFrame);
         //add listener after push
-        PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
-        pilotStack.setTopFrameChangedListener(mockedListener);
+        PilotStack.StackEmptyListener mockedListener = Mockito.mock(PilotStack.StackEmptyListener.class);
+        pilotStack.setStackEmptyListener(mockedListener);
         pilotStack.popTopVisibleFrame(testFrame);
         //verify
         Mockito.verify(mockedListener).noVisibleFramesLeft();
@@ -251,8 +251,8 @@ public class PilotStackTest extends TestCase
         pilotStack.pushFrame(testInvisibleDataFrame);
         pilotStack.pushFrame(testUiFrame1);
         //add listener after push
-        PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
-        pilotStack.setTopFrameChangedListener(mockedListener);
+        PilotStack.StackEmptyListener mockedListener = Mockito.mock(PilotStack.StackEmptyListener.class);
+        pilotStack.setStackEmptyListener(mockedListener);
         pilotStack.popTopVisibleFrame(testUiFrame1);
         //verify
         Mockito.verify(mockedListener).noVisibleFramesLeft();

@@ -29,7 +29,7 @@ public class ViewUITypeHandler implements UITypeHandler
     //==================================================================//
 
     @Override
-    public boolean handle(PilotFrame frame)
+    public boolean showUiForFrame(PilotFrame frame)
     {
         Class<? extends PilotFrame> frameClass = frame.getClass();
         if(mFrameToViewMappings.containsKey(frameClass)) //does handle this frame type

@@ -9,8 +9,10 @@ import com.kodroid.pilot.lib.stack.PilotFrame;
 public interface UITypeHandler
 {
     /**
-     * @param frameClass
+     * Handle the latest frame i.e. show it
+     *
+     * @param frame
      * @return true if this handler can create a UI for that frame type
      */
-    boolean handle(PilotFrame frame);
+    boolean showUiForFrame(PilotFrame frame);
 }

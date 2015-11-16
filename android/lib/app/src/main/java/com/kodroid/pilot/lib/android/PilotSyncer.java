@@ -29,7 +29,7 @@ public class PilotSyncer implements PilotStack.TopFrameChangedListener
     {
         for(UITypeHandler uiTypeHandler : mUITypeHandlers)
         {
-            if(uiTypeHandler.handle(topVisibleFrame))
+            if(uiTypeHandler.showUiForFrame(topVisibleFrame))
                 return;
         }
 

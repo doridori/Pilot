@@ -134,13 +134,10 @@ public class PilotStack implements Serializable
                     return;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(mTopFrameChangedListener != null)
-                {
-                    if(topVisibleFrame == null)
-                        mStackEmptyListener.noVisibleFramesLeft();
-                    else
-                        mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
-                }
+                if(topVisibleFrame == null && mStackEmptyListener != null)
+                    mStackEmptyListener.noVisibleFramesLeft();
+                else if(mTopFrameChangedListener != null)
+                    mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
                 return;
