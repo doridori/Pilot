@@ -119,6 +119,7 @@ public class ViewUITypeHandler implements UITypeHandler
         @Override
         public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
         {
+            if(getCurrentView() == null) return false;
             final PresenterBasedFrameLayout currentView = (PresenterBasedFrameLayout) getCurrentView();
             return currentView.getPresenterClass().equals(frameClass);
         }

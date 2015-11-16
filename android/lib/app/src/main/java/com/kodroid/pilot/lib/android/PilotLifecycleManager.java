@@ -15,7 +15,21 @@ import com.kodroid.pilot.lib.stack.PilotStack;
  */
 public class PilotLifecycleManager
 {
+    private final Class<? extends PilotFrame> launchFrameClass;
+
     private PilotStack mPilotStack;
+
+    //==================================================================//
+    // Constructor
+    //==================================================================//
+
+    /**
+     * @param launchFrameClass The launch frame for the handled PilotStack. Will only be created on first creation of the stack.
+     */
+    public PilotLifecycleManager(Class<? extends PilotFrame> launchFrameClass)
+    {
+        this.launchFrameClass = launchFrameClass;
+    }
 
     //==================================================================//
     // Delegate methods
@@ -27,13 +41,11 @@ public class PilotLifecycleManager
      * @param savedInstanceState forward the activity's save state bundle here for auto pilot stack state restoration on process death (only)
      * @param pilotSyncer will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
-     * @param launchFrameClass The launch frame for the handled PilotStack. Will only be created on first creation of the stack.
      */
     public void onCreateDelegate(
             Bundle savedInstanceState,
             PilotSyncer pilotSyncer,
-            PilotStack.StackEmptyListener stackEmptyListener,
-            Class<? extends PilotFrame> launchFrameClass)
+            PilotStack.StackEmptyListener stackEmptyListener)
     {
         //This PilotLifecycleManager instance is designed to be held statically which means the
         //PilotStack should only be null when the Activity is first created or when its been recreated
@@ -108,7 +120,7 @@ public class PilotLifecycleManager
      */
     private void initializePilotStack(Bundle savedInstanceState, final Class<? extends PilotFrame> launchFrameClass)
     {
-        if(mPilotStack == null)
+        if(mPilotStack != null)
             throw new IllegalStateException("PilotStack already exists!");
 
         //check if we need to restore any saves state

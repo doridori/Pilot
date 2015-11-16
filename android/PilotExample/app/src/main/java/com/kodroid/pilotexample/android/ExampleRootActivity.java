@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.PilotManager;
+
+import com.kodroid.pilot.lib.android.PilotLifecycleManager;
+import com.kodroid.pilot.lib.android.PilotSyncer;
 import com.kodroid.pilot.lib.android.PresenterBasedFrameLayout;
+import com.kodroid.pilot.lib.android.ViewUITypeHandler;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
 import com.kodroid.pilotexample.android.frames.presenter.FirstViewPresenter;
@@ -15,23 +18,23 @@ import com.kodroid.pilotexample.android.ui.SecondInSessionView;
 /**
  * This represents an Activity which contains a whole application
  */
-public class ExampleRootActivity extends Activity implements PilotManager.ActivityDelegate
+public class ExampleRootActivity extends Activity implements PilotStack.StackEmptyListener
 {
-    private static PilotManager sPilotManager;
+    //==================================================================//
+    // Pilot Config
+    //==================================================================//
 
-    static
+    private static PilotLifecycleManager sPilotLifecycleManager = new PilotLifecycleManager(FirstViewPresenter.class);
+
+    @SuppressWarnings("unchecked")
+    static final Class<? extends PresenterBasedFrameLayout>[] rootViews = new Class[]{
+            FirstView.class,
+            SecondInSessionView.class
+    };
+
+    private PilotSyncer buildPilotSyncer(FrameLayout rootView)
     {
-        //not worrying too much about this warning as for now just want a quick way to specify a load
-        //of classes - the generic declaration is almost just a note for the developer of the type of
-        //this array. Anything specified here will be type checked by the PilotManager so any type
-        //issues will be picked up on Activity start.
-        @SuppressWarnings("unchecked")
-        Class<? extends PresenterBasedFrameLayout>[] rootViews = new Class[]{
-                FirstView.class,
-                SecondInSessionView.class
-        };
-
-        sPilotManager = new PilotManager(rootViews, FirstViewPresenter.class);
+        return new PilotSyncer(new ViewUITypeHandler(rootViews, new ViewUITypeHandler.SimpleDisplayer(rootView)));
     }
 
     //==================================================================//
@@ -44,38 +47,32 @@ public class ExampleRootActivity extends Activity implements PilotManager.Activi
         super.onCreate(savedInstanceState);
         FrameLayout rootView = new FrameLayout(this);
         setContentView(rootView);
-        sPilotManager.onCreateDelegate(savedInstanceState, rootView, this);
+        sPilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        sPilotManager.onDestroyDelegate(this);
+        sPilotLifecycleManager.onDestroyDelegate(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        sPilotManager.onSaveInstanceStateDelegate(outState);
+        sPilotLifecycleManager.onSaveInstanceStateDelegate(outState);
     }
 
     @Override
     public void onBackPressed()
     {
-        sPilotManager.onBackPressedDelegate();
+        sPilotLifecycleManager.onBackPressedDelegate();
     }
 
     //==================================================================//
-    // PilotManager.ActivityDelegate methods
+    // PilotStack listener methods
     //==================================================================//
-
-    @Override
-    public boolean interceptTopFrameUpdatedForCategory(PilotFrame pilotFrame, PilotStack.EventListener.Direction direction)
-    {
-        return false;
-    }
 
     @Override
     public void noVisibleFramesLeft()
