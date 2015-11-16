@@ -1,28 +1,21 @@
 package com.kodroid.pilot.lib.android;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This classes SRP is to bridge between the hosting Activities lifecycle events (and death / recreation) and a constant PilotStack instance.
  *
  * All reactions to the contained {@link PilotStack} events (between the delegated onCreate() and onDestroy() lifecycle methods) are
- * handled by a passed {@link com.kodroid.pilot.lib.stack.PilotStack.EventListener}.
+ * handled by a passed {@link PilotStack.TopFrameChangedListener}.
  */
 public class PilotLifecycleManager
 {
     private PilotStack mPilotStack;
-    private PilotStack.EventListener mStackEventListener;
 
     //==================================================================//
     // Delegate methods
@@ -32,10 +25,15 @@ public class PilotLifecycleManager
      * This must be called from your {@link Activity#onCreate(Bundle)}
      *
      * @param savedInstanceState forward the activity's save state bundle here for auto pilot stack state restoration on process death (only)
-     * @param stackEventListener will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
+     * @param pilotSyncer will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
+     * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      * @param launchFrameClass The launch frame for the handled PilotStack. Will only be created on first creation of the stack.
      */
-    public void onCreateDelegate(Bundle savedInstanceState, PilotStack.EventListener stackEventListener, Class<? extends PilotFrame> launchFrameClass)
+    public void onCreateDelegate(
+            Bundle savedInstanceState,
+            PilotSyncer pilotSyncer,
+            PilotStack.StackEmptyListener stackEmptyListener,
+            Class<? extends PilotFrame> launchFrameClass)
     {
         //This PilotLifecycleManager instance is designed to be held statically which means the
         //PilotStack should only be null when the Activity is first created or when its been recreated
@@ -43,14 +41,15 @@ public class PilotLifecycleManager
         if(mPilotStack == null)
             initializePilotStack(savedInstanceState, launchFrameClass);
 
-        mStackEventListener = stackEventListener;
         //re-hookup event listener for view mngr
-        mPilotStack.setEventListener(mStackEventListener);
+        mPilotStack.setTopFrameChangedListener(pilotSyncer);
+        mPilotStack.setStackEmptyListener(stackEmptyListener);
 
+        //TODO need to delegate to the Rebuilder at this point https://github.com/doridori/Pilot/issues/5
         //get the top frame of the stack and visit it - this will ensure that the view displayed matches the top frame.
         final PilotFrame topFrame = mPilotStack.getTopVisibleFrame();
         //manually call the stack listener
-        mStackEventListener.topVisibleFrameUpdated(topFrame, PilotStack.EventListener.Direction.FORWARD);
+        pilotSyncer.topVisibleFrameUpdated(topFrame, PilotStack.TopFrameChangedListener.Direction.FORWARD);
     }
 
     /**
@@ -61,13 +60,12 @@ public class PilotLifecycleManager
     public void onDestroyDelegate(Activity activity)
     {
         //remove listener so callbacks are not triggered when Activity in destroy state
-        mStackEventListener = null;
-        mPilotStack.deleteEventListener();
+        mPilotStack.deleteListeners();
 
         //Get rid of the stack if activity is finishing for good. This will not be true if something temp killed in the backstack https://github.com/doridori/Pilot/issues/8
         if(activity.isFinishing())
         {
-            //todo call clear on stack to allow any explicit data cleanup inside frame callbacks if don't want to wait for JVM
+            //TODO call clear on stack to allow any explicit data cleanup inside frame callbacks if don't want to wait for JVM
             mPilotStack = null;
         }
     }
