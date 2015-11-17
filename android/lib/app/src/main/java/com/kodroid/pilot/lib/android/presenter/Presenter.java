@@ -1,4 +1,4 @@
-package com.kodroid.pilot.lib.android;
+package com.kodroid.pilot.lib.android.presenter;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 

@@ -1,12 +1,13 @@
-package com.kodroid.pilot.lib.android;
+package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
+import com.kodroid.pilot.lib.android.presenter.PresenterBackedUI;
+import com.kodroid.pilot.lib.android.presenter.PresenterUtils;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +31,9 @@ public class UIFragmentTypeHandler implements UITypeHandler
     /**
      *
      * @param rootFragments all fragment classes passed here need to implement {@link PresenterBackedUI}
-     * @param displayer A {@link com.kodroid.pilot.lib.android.UIFragmentTypeHandler.Displayer} that
+     * @param displayer A {@link UIFragmentTypeHandler.Displayer} that
      *                  is to be used to handle the displaying of your fragments. You can use
-     *                  {@link com.kodroid.pilot.lib.android.UIFragmentTypeHandler.SimpleDisplayer} if required.
+     *                  {@link UIFragmentTypeHandler.SimpleDisplayer} if required.
      */
     public UIFragmentTypeHandler(Class<? extends Fragment>[] rootFragments, Displayer displayer)
     {

@@ -1,4 +1,4 @@
-package com.kodroid.pilot.lib.android;
+package com.kodroid.pilot.lib.android.presenter;
 
 import android.content.Context;
 import android.util.AttributeSet;

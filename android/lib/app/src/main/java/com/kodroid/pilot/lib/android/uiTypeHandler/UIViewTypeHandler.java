@@ -1,9 +1,11 @@
-package com.kodroid.pilot.lib.android;
+package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
+import com.kodroid.pilot.lib.android.presenter.PresenterUtils;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
 import java.util.HashMap;
@@ -20,9 +22,9 @@ public class UIViewTypeHandler implements UITypeHandler
 
     /**
      * @param rootViews An array of views that make up the main first level views of your app.
-     * @param displayer A {@link com.kodroid.pilot.lib.android.UIViewTypeHandler.Displayer} that will
+     * @param displayer A {@link UIViewTypeHandler.Displayer} that will
      *                  handle showing your views. You can use the provided
-     *                  {@link com.kodroid.pilot.lib.android.UIViewTypeHandler.SimpleDisplayer} here if needed.
+     *                  {@link UIViewTypeHandler.SimpleDisplayer} here if needed.
      */
     public UIViewTypeHandler(Class<? extends PresenterBackedFrameLayout>[] rootViews, Displayer displayer)
     {
