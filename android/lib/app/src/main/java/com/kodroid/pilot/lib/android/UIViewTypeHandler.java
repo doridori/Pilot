@@ -9,25 +9,32 @@ import com.kodroid.pilot.lib.stack.PilotFrame;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ViewUITypeHandler implements UITypeHandler
+public class UIViewTypeHandler implements UITypeHandler
 {
     private final Displayer mDisplayer;
-    private Map<Class<? extends PilotFrame>, Class<? extends PresenterBasedFrameLayout>> mFrameToViewMappings = new HashMap<>();
+    private Map<Class<? extends PilotFrame>, Class<? extends PresenterBackedFrameLayout>> mFrameToViewMappings = new HashMap<>();
 
     //==================================================================//
     // Constructor
     //==================================================================//
 
-    public ViewUITypeHandler(Class<? extends PresenterBasedFrameLayout>[] rootViews, Displayer displayer)
+    /**
+     * @param rootViews An array of views that make up the main first level views of your app.
+     * @param displayer A {@link com.kodroid.pilot.lib.android.UIViewTypeHandler.Displayer} that will
+     *                  handle showing your views. You can use the provided
+     *                  {@link com.kodroid.pilot.lib.android.UIViewTypeHandler.SimpleDisplayer} here if needed.
+     */
+    public UIViewTypeHandler(Class<? extends PresenterBackedFrameLayout>[] rootViews, Displayer displayer)
     {
         mDisplayer = displayer;
         setupRootViewAndPresenterMappings(rootViews);
     }
 
     //==================================================================//
-    // Interface
+    // UITypeHandler Interface
     //==================================================================//
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean showUiForFrame(PilotFrame frame)
     {
@@ -38,8 +45,8 @@ public class ViewUITypeHandler implements UITypeHandler
                 return true;
             else
             {
-                Class<? extends PresenterBasedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
-                PresenterBasedFrameLayout newView = createView(viewClass);
+                Class<? extends PresenterBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
+                PresenterBackedFrameLayout newView = createView(viewClass);
                 newView.setPresenter(frame);
                 mDisplayer.makeVisible(newView);
                 return true;
@@ -53,19 +60,19 @@ public class ViewUITypeHandler implements UITypeHandler
     // Private
     //==================================================================//
 
-    private void setupRootViewAndPresenterMappings(Class<? extends PresenterBasedFrameLayout>[] rootViews)
+    private void setupRootViewAndPresenterMappings(Class<? extends PresenterBackedFrameLayout>[] rootViews)
     {
         //get view classes that make up the root level of the app
-        for(Class<? extends PresenterBasedFrameLayout> viewClass : rootViews)
+        for(Class<? extends PresenterBackedFrameLayout> viewClass : rootViews)
         {
-            if(!PresenterBasedFrameLayout.class.isAssignableFrom(viewClass))
+            if(!PresenterBackedFrameLayout.class.isAssignableFrom(viewClass))
                 throw new RuntimeException("Passed class does not extend PresenterBasedFrameLayout:"+viewClass.getCanonicalName());
-            Class<? extends PilotFrame> presenterClass = PresenterBasedFrameLayout.getPresenterClass(viewClass);
+            Class<? extends PilotFrame> presenterClass = PresenterUtils.getPresenterClass(viewClass);
             mFrameToViewMappings.put(presenterClass, viewClass);
         }
     }
 
-    private <T extends PresenterBasedFrameLayout> T createView(Class<T> viewClass)
+    private <T extends PresenterBackedFrameLayout> T createView(Class<T> viewClass)
     {
         try
         {
@@ -78,11 +85,11 @@ public class ViewUITypeHandler implements UITypeHandler
     }
 
     //==================================================================//
-    // Delegation
+    // Displayer Delegation
     //==================================================================//
 
     /**
-     * Integrators can supply their own Displayer or use/extend the suppled {@link com.kodroid.pilot.lib.android.ViewUITypeHandler.SimpleDisplayer}
+     * Integrators can supply their own Displayer or use/extend the suppled {@link UIViewTypeHandler.SimpleDisplayer}
      */
     public interface Displayer
     {
@@ -120,8 +127,8 @@ public class ViewUITypeHandler implements UITypeHandler
         public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
         {
             if(getCurrentView() == null) return false;
-            final PresenterBasedFrameLayout currentView = (PresenterBasedFrameLayout) getCurrentView();
-            return currentView.getPresenterClass().equals(frameClass);
+            final PresenterBackedFrameLayout currentView = (PresenterBackedFrameLayout) getCurrentView();
+            return PresenterUtils.getPresenterClass(currentView.getClass()).equals(frameClass);
         }
 
         @Override

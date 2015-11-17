@@ -9,7 +9,6 @@ import com.kodroid.pilot.lib.android.PilotLifecycleManager;
 import com.kodroid.pilot.lib.android.PilotSyncer;
 import com.kodroid.pilot.lib.android.PresenterBasedFrameLayout;
 import com.kodroid.pilot.lib.android.ViewUITypeHandler;
-import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
 import com.kodroid.pilotexample.android.frames.presenter.FirstViewPresenter;
 import com.kodroid.pilotexample.android.ui.FirstView;

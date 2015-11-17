@@ -9,13 +9,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the class type of the Presenter used for a {@link PresenterBasedFrameLayout}
+ * Used to declare the class type of the Presenter used for a {@link PresenterBackedFrameLayout}
  */
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Presenter
 {
-    public Class<? extends PilotFrame> value();
-
+    Class<? extends PilotFrame> value();
 }

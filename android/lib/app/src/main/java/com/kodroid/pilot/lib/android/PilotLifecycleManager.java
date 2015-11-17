@@ -36,7 +36,10 @@ public class PilotLifecycleManager
     //==================================================================//
 
     /**
-     * This must be called from your {@link Activity#onCreate(Bundle)}
+     * This must be called from your {@link Activity#onCreate(Bundle)}.
+     *
+     * This has to be called *after* setContentView otherwise any Fragments which may be backed by
+     * Pilot will not have had a chance to be recreated and therefore will be duplicated.
      *
      * @param savedInstanceState forward the activity's save state bundle here for auto pilot stack state restoration on process death (only)
      * @param pilotSyncer will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
