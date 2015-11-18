@@ -16,6 +16,10 @@ public class PilotSyncer implements PilotStack.TopFrameChangedListener
     // Constructor
     //==================================================================//
 
+    /**
+     * @param uiTypeHandlers UITypeHandlers passed in here have to have corresponding entries for
+     *                       *all* PilotFrame classes that exist in this project.
+     */
     public PilotSyncer(UITypeHandler... uiTypeHandlers)
     {
         mUITypeHandlers = uiTypeHandlers;
@@ -30,10 +34,10 @@ public class PilotSyncer implements PilotStack.TopFrameChangedListener
     {
         for(UITypeHandler uiTypeHandler : mUITypeHandlers)
         {
-            if(uiTypeHandler.showUiForFrame(topVisibleFrame))
+            if(uiTypeHandler.onFrame(topVisibleFrame))
                 return;
         }
 
-        throw new IllegalStateException("No handler registered for frame type "+topVisibleFrame.getClass().getName());
+        throw new IllegalStateException("No UITypeHandler registered for PilotFrame of type "+topVisibleFrame.getClass().getName());
     }
 }

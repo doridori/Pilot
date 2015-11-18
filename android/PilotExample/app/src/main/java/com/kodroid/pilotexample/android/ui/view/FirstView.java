@@ -1,16 +1,16 @@
-package com.kodroid.pilotexample.android.ui;
+package com.kodroid.pilotexample.android.ui.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.kodroid.pilot.lib.android.Presenter;
-import com.kodroid.pilot.lib.android.PresenterBasedFrameLayout;
+import com.kodroid.pilot.lib.android.presenter.Presenter;
+import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
 import com.kodroid.pilotexample.R;
 import com.kodroid.pilotexample.android.frames.presenter.FirstViewPresenter;
 
 @Presenter(FirstViewPresenter.class)
-public class FirstView extends PresenterBasedFrameLayout<FirstViewPresenter>
+public class FirstView extends PresenterBackedFrameLayout<FirstViewPresenter>
 {
     //==================================================================//
     // Constructor

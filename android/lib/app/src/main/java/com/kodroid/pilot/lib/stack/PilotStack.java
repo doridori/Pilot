@@ -83,12 +83,25 @@ public class PilotStack implements Serializable
         poppedFrame.popped();
         poppedFrame.setParentStack(null);
 
-        PilotFrame nextTopFrame = getTopVisibleFrame();
-        if(nextTopFrame != null)
-            notifyListenerVisibleFrameChange(nextTopFrame, TopFrameChangedListener.Direction.BACK);
-        else
-            notifyListenersNoVisibleFrames();
+        notifyListenersNewBackFrame();
 
+    }
+
+    /**
+     * Use this to remove a frame from the stack. This does not have to be the top frame. Useful as
+     * sometimes frames may be dismissed that are not top of the stack.
+     *
+     * @param frameToRemove if this does not exist in the stack this will throw a {@link RuntimeException}
+     */
+    public void removeThisFrame(PilotFrame frameToRemove)
+    {
+        if(!mStack.remove(frameToRemove))
+            throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");
+
+        frameToRemove.popped();
+        frameToRemove.setParentStack(null);
+
+        notifyListenersNewBackFrame();
     }
 
     /**
@@ -171,6 +184,15 @@ public class PilotStack implements Serializable
     //==================================================================//
     // Private methods
     //==================================================================//
+
+    private void notifyListenersNewBackFrame()
+    {
+        PilotFrame nextTopFrame = getTopVisibleFrame();
+        if(nextTopFrame != null)
+            notifyListenerVisibleFrameChange(nextTopFrame, TopFrameChangedListener.Direction.BACK);
+        else
+            notifyListenersNoVisibleFrames();
+    }
 
     /**
      * @param index

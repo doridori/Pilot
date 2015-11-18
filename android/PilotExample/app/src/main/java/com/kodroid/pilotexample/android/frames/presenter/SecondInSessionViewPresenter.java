@@ -26,4 +26,9 @@ public class SecondInSessionViewPresenter extends PilotFrame
         SessionScopedData sessionScopedData = getParentStack().getFrameOfType(SessionScopedData.class);
         return "Scoped session data:"+sessionScopedData.getSomeSessionData();
     }
+
+    public void warnUser()
+    {
+        getParentStack().pushFrame(new WarningPresenter());
+    }
 }

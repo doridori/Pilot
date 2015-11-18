@@ -30,15 +30,15 @@ public class UIFragmentTypeHandler implements UITypeHandler
 
     /**
      *
-     * @param rootFragments all fragment classes passed here need to implement {@link PresenterBackedUI}
+     * @param topLevelFragments all fragment classes passed here need to implement {@link PresenterBackedUI}
      * @param displayer A {@link UIFragmentTypeHandler.Displayer} that
      *                  is to be used to handle the displaying of your fragments. You can use
      *                  {@link UIFragmentTypeHandler.SimpleDisplayer} if required.
      */
-    public UIFragmentTypeHandler(Class<? extends Fragment>[] rootFragments, Displayer displayer)
+    public UIFragmentTypeHandler(Class<? extends Fragment>[] topLevelFragments, Displayer displayer)
     {
         mDisplayer = displayer;
-        setupRootFragmentAndPresenterMappings(rootFragments);
+        setupRootFragmentAndPresenterMappings(topLevelFragments);
     }
 
     //==================================================================//
@@ -46,7 +46,7 @@ public class UIFragmentTypeHandler implements UITypeHandler
     //==================================================================//
 
     @Override
-    public boolean showUiForFrame(PilotFrame frame)
+    public boolean onFrame(PilotFrame frame)
     {
         Class<? extends PilotFrame> frameClass = frame.getClass();
         if(mFrameToFragmentMappings.containsKey(frameClass)) //does handle this frame type

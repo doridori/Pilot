@@ -4,10 +4,11 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/testId"
+    <Button
+        android:id="@+id/warning_but"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="Show Warning!"/>
 
     <TextView
         android:id="@+id/secondTxt"

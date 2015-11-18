@@ -21,15 +21,15 @@ public class UIViewTypeHandler implements UITypeHandler
     //==================================================================//
 
     /**
-     * @param rootViews An array of views that make up the main first level views of your app.
+     * @param topLevelViews An array of views that make up the main first level views of your app.
      * @param displayer A {@link UIViewTypeHandler.Displayer} that will
      *                  handle showing your views. You can use the provided
      *                  {@link UIViewTypeHandler.SimpleDisplayer} here if needed.
      */
-    public UIViewTypeHandler(Class<? extends PresenterBackedFrameLayout>[] rootViews, Displayer displayer)
+    public UIViewTypeHandler(Class<? extends PresenterBackedFrameLayout>[] topLevelViews, Displayer displayer)
     {
         mDisplayer = displayer;
-        setupRootViewAndPresenterMappings(rootViews);
+        setupRootViewAndPresenterMappings(topLevelViews);
     }
 
     //==================================================================//
@@ -38,7 +38,7 @@ public class UIViewTypeHandler implements UITypeHandler
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean showUiForFrame(PilotFrame frame)
+    public boolean onFrame(PilotFrame frame)
     {
         Class<? extends PilotFrame> frameClass = frame.getClass();
         if(mFrameToViewMappings.containsKey(frameClass)) //does handle this frame type

@@ -197,6 +197,28 @@ public class PilotStackTest extends TestCase
         Assert.assertEquals(3, pilotStack.getFrameSize());
     }
 
+    @Test
+    public void removeThisFrame_threeFramesRemoveMiddle_listenerShouldBeRecalledWithTopFrame()
+    {
+        PilotStack pilotStack = new PilotStack();
+        pilotStack.pushFrame(new TestUIFrame1());
+        PilotFrame testUIFrame2 = new TestUIFrame2();
+        pilotStack.pushFrame(testUIFrame2);
+        PilotFrame testUIFrame3 = new TestUIFrame3();
+        pilotStack.pushFrame(testUIFrame3);
+
+        //add listener
+        PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
+        pilotStack.setTopFrameChangedListener(mockedListener);
+
+        //perform pop
+        pilotStack.removeThisFrame(testUIFrame2);
+
+        //verify listener method called
+        Mockito.verify(mockedListener).topVisibleFrameUpdated(testUIFrame3, PilotStack.TopFrameChangedListener.Direction.BACK);
+        Assert.assertEquals(2, pilotStack.getFrameSize());
+    }
+
     //==================================================================//
     // Listener Tests
     //==================================================================//

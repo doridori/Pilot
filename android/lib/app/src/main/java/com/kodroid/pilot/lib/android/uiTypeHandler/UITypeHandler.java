@@ -12,7 +12,7 @@ public interface UITypeHandler
      * Handle the latest frame i.e. show it
      *
      * @param frame
-     * @return true if this handler can create a UI for that frame type
+     * @return true if this handler can create a UI for that frame type. False if it does not handle this frame
      */
-    boolean showUiForFrame(PilotFrame frame);
+    boolean onFrame(PilotFrame frame);
 }
