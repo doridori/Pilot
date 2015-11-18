@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot)
 #Pilot
 
 An abstract application stack which facilitates:
