@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.FrameLayout;
 
 
@@ -14,12 +15,15 @@ import com.kodroid.pilot.lib.android.PilotLifecycleManager;
 import com.kodroid.pilot.lib.android.PilotSyncer;
 
 import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
+import com.kodroid.pilot.lib.android.uiTypeHandler.UIFragmentTypeHandler;
 import com.kodroid.pilot.lib.android.uiTypeHandler.UIGenericTypeHandler;
 import com.kodroid.pilot.lib.android.uiTypeHandler.UIViewTypeHandler;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
+import com.kodroid.pilotexample.R;
 import com.kodroid.pilotexample.android.frames.presenter.FirstViewPresenter;
 import com.kodroid.pilotexample.android.frames.presenter.WarningPresenter;
+import com.kodroid.pilotexample.android.ui.fragment.WarningDialogFragment;
 import com.kodroid.pilotexample.android.ui.view.FirstView;
 import com.kodroid.pilotexample.android.ui.view.SecondInSessionView;
 
@@ -48,6 +52,11 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
                 SecondInSessionView.class
             };
 
+    static final Class<? extends Fragment>[] topLevelFragments = new Class[]
+            {
+                WarningDialogFragment.class
+            };
+
     /**
      * keep a reference to this old school dialog handler as simple dialogs need to be dismissed in
      * onDestroy otherwise the Activity context will be leaked
@@ -66,7 +75,8 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
 
         return new PilotSyncer(
                 new UIViewTypeHandler(topLevelViews, new UIViewTypeHandler.SimpleDisplayer(rootView)),
-                mExampleUIDialogTypeHandler
+                new UIFragmentTypeHandler(topLevelFragments, new UIFragmentTypeHandler.SimpleDisplayer(getFragmentManager(), R.id.fragment_container))
+                //mExampleUIDialogTypeHandler
         );
     }
 
@@ -78,8 +88,8 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        FrameLayout rootView = new FrameLayout(this);
-        setContentView(rootView);
+        setContentView(R.layout.activity_root);
+        FrameLayout rootView = (FrameLayout) findViewById(R.id.root_view);
         sPilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
     }
 
@@ -118,6 +128,11 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
     // Dialogs (old school)
     //==================================================================//
 
+    /**
+     * An example of a type handler that is responsible for showing dialogs. Dialogs can be shown directly
+     * from Views - this typeHandler approach can be used if the use-case is to display a dialog as a direct result of
+     * a frame being pushed onto the stack.
+     */
     private static class ExampleUIDialogTypeHandler extends UIGenericTypeHandler
     {
         private static final Class<? extends PilotFrame>[] HANDLED_FRAMES = new Class[] { WarningPresenter.class };

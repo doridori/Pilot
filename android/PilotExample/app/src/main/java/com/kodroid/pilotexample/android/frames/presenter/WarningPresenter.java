@@ -3,7 +3,7 @@ package com.kodroid.pilotexample.android.frames.presenter;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
 /**
- * An example of a frame that will be displayed using a DialogFragment
+ * An example of a frame that will be displayed using a Dialog
  */
 public class WarningPresenter extends PilotFrame
 {

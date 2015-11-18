@@ -1,7 +1,7 @@
 apply plugin: 'android-library'
 apply plugin: 'maven-publish'
 
-version = "0.4.3"
+version = "0.4.6"
 
 android {
     compileSdkVersion 22

@@ -1,23 +1,44 @@
 package com.kodroid.pilotexample.android.ui.fragment;
 
-import android.app.DialogFragment;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-public class WarningDialogFragment extends DialogFragment
+import com.kodroid.pilot.lib.android.presenter.Presenter;
+import com.kodroid.pilot.lib.android.presenter.PresenterBackedUI;
+import com.kodroid.pilotexample.R;
+import com.kodroid.pilotexample.android.frames.presenter.WarningPresenter;
+
+@Presenter(WarningPresenter.class)
+public class WarningDialogFragment extends Fragment implements PresenterBackedUI<WarningPresenter>
 {
-    /** TODO
-     fine on first run but oncreateDialog called before onCreateView so when it auto readds will have problems
-    may be simpler to avoid the shitty fragments and just use old school dialogs in stead - however we will have
-    a similar problem with strait fragments. Actually these are not as bad as onCreateView can just set a root
-    view in onCreate and the real view in onAttach?
+    private WarningPresenter mWarningPresenter;
 
-    **Should write this example with dialogs shown via a custom UI type handler and then think about
-    frags - can then start using - create issue for fragment support and remove frag type handler to seperate branch**
+    @Override
+    public View setPresenter(WarningPresenter warningPresenter)
+    {
+        Log.d("TAG..", "setting presenter");
+        mWarningPresenter = warningPresenter;
+        return null; //TODO change the interface return to remove view
+    }
 
-    need to actually test the order of lifcycle methods and pilot processing methods when adding
-    frag and when its auto readded http://staticfree.info/~steve/complete_android_fragment_lifecycle.png
-    */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        Log.d("TAG..", "onCreate");
+        super.onCreate(savedInstanceState);
+    }
 
-//    @Override
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        return inflater.inflate(R.layout.fragment_test_warning_dialog, container, false);
+    }
+
+    //    @Override
 //    public Dialog onCreateDialog(Bundle savedInstanceState) {
 //        int title = getArguments().getInt("title");
 //

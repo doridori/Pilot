@@ -149,7 +149,7 @@ public class UIFragmentTypeHandler implements UITypeHandler
             //of the stack. Fragments added programmatically will be given the container id as id.
             //findFragmentById searches the internal mAdded fragment List from LRU order
             Fragment fragment = mFragmentManager.findFragmentById(mContainerViewId);
-            if(PresenterUtils.getPresenterClass(fragment.getClass()).equals(frameClass))
+            if(fragment != null && PresenterUtils.getPresenterClass(fragment.getClass()).equals(frameClass))
                 return fragment;
             else
                 return null;
