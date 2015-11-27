@@ -3,10 +3,9 @@
 
 An abstract application stack which facilitates:
 
-- Presenter lifecycle management
 - Presenter -> Presenter control flow
 - Fine grained data scope management
-- Presenter lifecycle events
+- Presenter lifecycle management
 - A `View` based architecture 
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
