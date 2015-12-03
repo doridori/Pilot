@@ -52,11 +52,6 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
                 SecondInSessionView.class
             };
 
-    static final Class<? extends Fragment>[] topLevelFragments = new Class[]
-            {
-                WarningDialogFragment.class
-            };
-
     /**
      * keep a reference to this old school dialog handler as simple dialogs need to be dismissed in
      * onDestroy otherwise the Activity context will be leaked
@@ -75,9 +70,7 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
 
         return new PilotSyncer(
                 new UIViewTypeHandler(topLevelViews, new UIViewTypeHandler.SimpleDisplayer(rootView)),
-                new UIFragmentTypeHandler(topLevelFragments, new UIFragmentTypeHandler.SimpleDisplayer(getFragmentManager(), R.id.fragment_container))
-                //mExampleUIDialogTypeHandler
-        );
+                mExampleUIDialogTypeHandler);
     }
 
     //==================================================================//
