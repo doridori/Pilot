@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.kodroid.pilotexample"
-        minSdkVersion 18
+        minSdkVersion 17
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -20,5 +20,5 @@ android {
 }
 
 dependencies {
-    compile 'com.kodroid:pilot:0.2.1'
+    compile 'com.kodroid:pilot:0.4.6'
 }

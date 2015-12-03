@@ -1,7 +1,5 @@
 package com.kodroid.pilot.lib.stack;
 
-import com.kodroid.pilot.lib.android.PresenterBasedFrameLayout;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -10,7 +10,7 @@ import java.util.Stack;
  * - support for frames that are marked as VISIBLE (default) or {@link InvisibleFrame} (useful for scoped data)
  * - support for slightly more complex stack operations when adding or removing frames
  *
- * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link EventListener}.
+ * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link TopFrameChangedListener}.
  *
  * Not thread safe.
  *
@@ -23,7 +23,8 @@ public class PilotStack implements Serializable
     /**
      * stack event listener
      */
-    private transient EventListener mEventListener;
+    private transient TopFrameChangedListener mTopFrameChangedListener;
+    private transient StackEmptyListener mStackEmptyListener;
 
     //==================================================================//
     // Stack Operations (public)
@@ -51,7 +52,7 @@ public class PilotStack implements Serializable
         frameToPush.pushed();
 
         if(!isInvisibleFrame(frameToPush))
-            notifyListenerVisibleFrameChange(frameToPush, EventListener.Direction.FORWARD);
+            notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
     }
 
     /**
@@ -82,12 +83,25 @@ public class PilotStack implements Serializable
         poppedFrame.popped();
         poppedFrame.setParentStack(null);
 
-        PilotFrame nextTopFrame = getTopVisibleFrame();
-        if(nextTopFrame != null)
-            notifyListenerVisibleFrameChange(nextTopFrame, EventListener.Direction.BACK);
-        else
-            notifyListenersNoVisibleFrames();
+        notifyListenersNewBackFrame();
 
+    }
+
+    /**
+     * Use this to remove a frame from the stack. This does not have to be the top frame. Useful as
+     * sometimes frames may be dismissed that are not top of the stack.
+     *
+     * @param frameToRemove if this does not exist in the stack this will throw a {@link RuntimeException}
+     */
+    public void removeThisFrame(PilotFrame frameToRemove)
+    {
+        if(!mStack.remove(frameToRemove))
+            throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");
+
+        frameToRemove.popped();
+        frameToRemove.setParentStack(null);
+
+        notifyListenersNewBackFrame();
     }
 
     /**
@@ -133,13 +147,10 @@ public class PilotStack implements Serializable
                     return;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(mEventListener != null)
-                {
-                    if(topVisibleFrame == null)
-                        mEventListener.noVisibleFramesLeft();
-                    else
-                        mEventListener.topVisibleFrameUpdated(topVisibleFrame, EventListener.Direction.BACK);
-                }
+                if(topVisibleFrame == null && mStackEmptyListener != null)
+                    mStackEmptyListener.noVisibleFramesLeft();
+                else if(mTopFrameChangedListener != null)
+                    mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
                 return;
@@ -174,6 +185,15 @@ public class PilotStack implements Serializable
     // Private methods
     //==================================================================//
 
+    private void notifyListenersNewBackFrame()
+    {
+        PilotFrame nextTopFrame = getTopVisibleFrame();
+        if(nextTopFrame != null)
+            notifyListenerVisibleFrameChange(nextTopFrame, TopFrameChangedListener.Direction.BACK);
+        else
+            notifyListenersNoVisibleFrames();
+    }
+
     /**
      * @param index
      * @return true if any of the frames removed were not marked with {@link InvisibleFrame}
@@ -194,16 +214,16 @@ public class PilotStack implements Serializable
         return mStack.size();
     }
 
-    private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, EventListener.Direction direction)
+    private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, TopFrameChangedListener.Direction direction)
     {
-        if(mEventListener != null)
-            mEventListener.topVisibleFrameUpdated(pilotFrame, direction);
+        if(mTopFrameChangedListener != null)
+            mTopFrameChangedListener.topVisibleFrameUpdated(pilotFrame, direction);
     }
 
     private void notifyListenersNoVisibleFrames()
     {
-        if (mEventListener != null)
-            mEventListener.noVisibleFramesLeft();
+        if (mStackEmptyListener != null)
+            mStackEmptyListener.noVisibleFramesLeft();
     }
 
     private boolean isInvisibleFrame(PilotFrame pilotFrame)
@@ -220,29 +240,38 @@ public class PilotStack implements Serializable
     // Event listener
     //==================================================================//
 
-    public void setEventListener(EventListener eventListener)
+    public void setTopFrameChangedListener(TopFrameChangedListener topFrameChangedListener)
     {
-        mEventListener = eventListener;
+        mTopFrameChangedListener = topFrameChangedListener;
     }
 
-
-    public void deleteEventListener()
+    public void setStackEmptyListener(StackEmptyListener stackEmptyListener)
     {
-        mEventListener = null;
+        mStackEmptyListener = stackEmptyListener;
+    }
+
+    public void deleteListeners()
+    {
+        mTopFrameChangedListener = null;
+        mStackEmptyListener = null;
     }
 
     /**
      * Useful for your controlling Activity to listen to so can show appropriate views
      */
-    public interface EventListener extends Serializable
+    public interface TopFrameChangedListener
     {
         void topVisibleFrameUpdated(PilotFrame topVisibleFrame, Direction direction);
-        void noVisibleFramesLeft();
 
         enum Direction
         {
             FORWARD, BACK;
         }
+    }
+
+    public interface StackEmptyListener
+    {
+        void noVisibleFramesLeft();
     }
 
 

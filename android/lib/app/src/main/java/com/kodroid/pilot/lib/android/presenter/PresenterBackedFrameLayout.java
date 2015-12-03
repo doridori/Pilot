@@ -1,17 +1,18 @@
-package com.kodroid.pilot.lib.android;
+package com.kodroid.pilot.lib.android.presenter;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.stack.PilotFrame;
-
 /**
+ * Convenience FrameLayout base for Presenter backed views. Custom views do not have to use this as
+ * long as they conform to the {@link PresenterBackedUI} interface.
+ *
  * @param <P> The Presenter (controller / whatever) you want to use for this view. Support for thin
  *           views but easily usable with fragments.
  */
-public abstract class PresenterBasedFrameLayout<P> extends FrameLayout
+public abstract class PresenterBackedFrameLayout<P> extends FrameLayout implements PresenterBackedUI<P>
 {
     //==================================================================//
     // Fields
@@ -23,17 +24,17 @@ public abstract class PresenterBasedFrameLayout<P> extends FrameLayout
     // Constructor
     //==================================================================//
 
-    public PresenterBasedFrameLayout(Context context)
+    public PresenterBackedFrameLayout(Context context)
     {
         super(context);
     }
 
-    public PresenterBasedFrameLayout(Context context, AttributeSet attrs)
+    public PresenterBackedFrameLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
     }
 
-    public PresenterBasedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
+    public PresenterBackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
     }
@@ -49,7 +50,7 @@ public abstract class PresenterBasedFrameLayout<P> extends FrameLayout
      * @param presenter
      * @return
      */
-    View setPresenter(P presenter)
+    public View setPresenter(P presenter)
     {
         mPresenter = presenter;
         return this;
@@ -58,28 +59,5 @@ public abstract class PresenterBasedFrameLayout<P> extends FrameLayout
     protected P getPresenter()
     {
         return mPresenter;
-    }
-
-    public Class<? extends PilotFrame> getPresenterClass()
-    {
-        return getPresenterClass(getClass());
-    }
-
-    /**
-     * Could be replaced with annotation
-     *
-     * @return class of presenter
-     */
-    public static Class<? extends PilotFrame> getPresenterClass(Class<? extends PresenterBasedFrameLayout> clazz)
-    {
-        if(hasPresenterAnnotation(clazz))
-            return clazz.getAnnotation(Presenter.class).value();
-        else
-            throw new RuntimeException("This view does not declare a @Presenter:"+clazz.getCanonicalName());
-    }
-
-    private static boolean hasPresenterAnnotation(Class clazz)
-    {
-        return clazz.getAnnotation(Presenter.class) != null;
     }
 }
