@@ -14,7 +14,7 @@ An abstract application stack which facilitates:
 
 #Intro
 
-**Pilot** is an effort to abstract a simple Application-Navigation-Stack. 
+**Pilot** is an effort to abstract a simple Android Application-Navigation-Stack. 
 
 Android development blurs the line between UI declaration and application flow. Activity and Fragment Lifecycle methods coupled with asynchronous operations can be a headache. These problems are well known and have various solutions represented by various projects on GitHub.
 
