@@ -54,6 +54,8 @@ This issue has led to an explosion of MVP libraries and approaches to try and mo
 
 Pilot is also **Presenter-aware**, has plumbing to handle `View` creation and **Presenter mapping** out of the box (which is optional and can be used to trigger Fragment/Activity/Dialog creation also), **survives config-changes and process-death** and has a **queryable** app stack **which can hold scoped data** as well as view-backing-presenters. 
 
+#Doc Contents
+
 The rest of this README is split across a few doc files:
 
 - Show me some code! (WIP)
