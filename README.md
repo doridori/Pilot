@@ -32,7 +32,7 @@ To make usage of this project as flexible as possible, the following decisions h
 
 #View only?
 
-At present Pilot is for use primarily with `View`-only UI's. While this seems restrictive I feel adding `Fragment` support at this point would distract from the main aim of this project. Fragments are great as they are a wrapper for a sub-section of the UI, which have lifecycle callback support and backstack etc. I find when these concepts are pulled out (as they are in Pilot) UI components suddenly become simpler and less bothered about these concepts, and therefore humble `View` become the obvious choice for how to render an applications state, as represented by `Pilot`.
+At present Pilot is for use primarily with `View`-only UI's. While this seems restrictive I feel adding `Fragment` support at this point would distract from the main aim of this project. Fragments are great as they are a wrapper for a sub-section of the UI, which have lifecycle callback support and backstack etc. I find when these concepts are pulled out (as they are in Pilot) UI components suddenly become simpler and less bothered about these concepts, and therefore humble `View` becomes the obvious choice for how to render an applications state, as represented by `Pilot`.
 
 You may end up with a single-`Activity` application with nothing but simple `Views`!
 
