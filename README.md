@@ -5,8 +5,8 @@ An abstract application stack which facilitates:
 
 - Presenter -> Presenter control flow
 - Stack-based Presenter lifecycle management
-- Fine grained data scope management
 - A `View` based architecture 
+- Fine grained data scope management
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
 
