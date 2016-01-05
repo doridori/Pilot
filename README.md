@@ -58,10 +58,7 @@ Pilot is also **Presenter-aware**, has plumbing to handle `View` creation and **
 
 The rest of this README is split across a few doc files:
 
-- Show me some code! (WIP)
-- Outline of the core library components (WIP)
-- Outline the general concepts (WIP)
-- How to integrate (WIP)
+- [Quick Start]()
 
 ##F.A.Q.
 
