@@ -58,7 +58,8 @@ Pilot is also **Presenter-aware**, has plumbing to handle `View` creation and **
 
 The rest of this README is split across a few doc files:
 
-- [Quick Start]()
+- [Quick Start](https://github.com/doridori/Pilot/blob/master/docs/quick_start.md)
+- [General Concepts WIP](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md)
 
 ##F.A.Q.
 
