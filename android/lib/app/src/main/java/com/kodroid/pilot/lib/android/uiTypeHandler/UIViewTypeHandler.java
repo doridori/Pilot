@@ -50,6 +50,7 @@ public class UIViewTypeHandler implements UITypeHandler
                 Class<? extends PresenterBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
                 PresenterBackedFrameLayout newView = createView(viewClass);
                 newView.setPresenter(frame);
+                newView.presenterSet();
                 mDisplayer.makeVisible(newView);
                 return true;
             }
