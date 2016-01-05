@@ -15,7 +15,7 @@ Each main view/screen of the application will be represented by a `PilotFrame` s
         ...
     };
 
-Each of these TLVs are matched to a `PilotFrame` subclass with a `@Presenter` annotation - more on this in a bit.
+Each of these TLVs are matched to a `PilotFrame` subclass via a `@Presenter` annotation declared in the TLV - more on this in a bit.
 
 ##Declare a `PilotSyncer` for these TLVs
  
