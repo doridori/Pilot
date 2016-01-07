@@ -84,6 +84,10 @@ All other `PilotFrames` represent an `app state` and are the ones which will hav
 
 As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes should be structured as everyone has their own approach to controller / presenter / view-model logic and I do not want to force anyone down a particular route. If you want to see my approach [have a look here](#) WIP
 
+##`View` should reflect state of corressponding `PilotFrame`
+
+When a `PresenterBackedFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getPresenter()`) and attach any state change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
+
 ##Launch your app
 
 Following the above on app launch your initial PilotFrame should be pushed on the `PilotStack` and your `PilotSyncer` registered `UIViewTypeHandler` should create and display the corresponding `View`, Voila!
