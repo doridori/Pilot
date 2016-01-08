@@ -45,9 +45,6 @@ public class PilotSyncer implements PilotStack.TopFrameChangedListener
         if(handlingTypeHandler == null)
             throw new IllegalStateException("No UITypeHandler registered for PilotFrame of type "+topVisibleFrame.getClass().getName());
 
-        //handle
-        handlingTypeHandler.onFrame(topVisibleFrame);
-
         //clear all other handlers
         for(UITypeHandler uiTypeHandler : mUITypeHandlers) {
             if (uiTypeHandler != handlingTypeHandler) {
