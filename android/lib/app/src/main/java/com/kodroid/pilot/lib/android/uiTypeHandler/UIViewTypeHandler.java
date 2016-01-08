@@ -50,6 +50,7 @@ public class UIViewTypeHandler implements UITypeHandler
                 Class<? extends PilotFrameBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
                 PilotFrameBackedFrameLayout newView = createView(viewClass);
                 newView.setBackingPilotFrame(frame);
+                newView.backingFrameSet(frame);
                 mDisplayer.makeVisible(newView);
                 return true;
             }
