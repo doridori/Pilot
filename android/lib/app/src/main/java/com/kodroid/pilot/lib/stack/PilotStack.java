@@ -45,7 +45,7 @@ public class PilotStack implements Serializable
         return null;
     }
 
-    public void pushFrame(PilotFrame frameToPush)
+    public PilotStack pushFrame(PilotFrame frameToPush)
     {
         frameToPush.setParentStack(this);
         mStack.push(frameToPush);
@@ -53,6 +53,8 @@ public class PilotStack implements Serializable
 
         if(!isInvisibleFrame(frameToPush))
             notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
+
+        return this;
     }
 
     /**
@@ -61,10 +63,11 @@ public class PilotStack implements Serializable
      *
      * If no non {@link InvisibleFrame} frames exist nothing will happen.
      */
-    public void popTopVisibleFrame()
+    public PilotStack popTopVisibleFrame()
     {
         Class<? extends PilotFrame> frameClazz = getTopVisibleFrame().getClass();
         popStackAtFrameType(frameClazz, PopType.INCLUSIVE, true);
+        return this;
     }
 
     /**
@@ -73,7 +76,7 @@ public class PilotStack implements Serializable
      *
      * @param frameToPop not null
      */
-    public void popTopVisibleFrame(PilotFrame frameToPop)
+    public PilotStack popTopVisibleFrame(PilotFrame frameToPop)
     {
         PilotFrame poppedFrame = mStack.pop();
         if(poppedFrame != frameToPop)
@@ -84,7 +87,7 @@ public class PilotStack implements Serializable
         poppedFrame.setParentStack(null);
 
         notifyListenersNewBackFrame();
-
+        return this;
     }
 
     /**
@@ -93,7 +96,7 @@ public class PilotStack implements Serializable
      *
      * @param frameToRemove if this does not exist in the stack this will throw a {@link RuntimeException}
      */
-    public void removeThisFrame(PilotFrame frameToRemove)
+    public PilotStack removeThisFrame(PilotFrame frameToRemove)
     {
         if(!mStack.remove(frameToRemove))
             throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");
@@ -102,6 +105,7 @@ public class PilotStack implements Serializable
         frameToRemove.setParentStack(null);
 
         notifyListenersNewBackFrame();
+        return this;
     }
 
     /**
@@ -128,7 +132,7 @@ public class PilotStack implements Serializable
      * @param  {@Link PopType#INCLUSIVE} if should pop the passed frame also, {@Link PopType#EXCLUSIVE} if this frame should become the new top
      * @param notifyListeners true if should notify registered listeners for frame changes
      */
-    public void popStackAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
+    public PilotStack popStackAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
     {
         for(int i = 0; i < mStack.size(); i++)
         {
@@ -141,10 +145,10 @@ public class PilotStack implements Serializable
 
                 //notify listeners
                 if(!notifyListeners)
-                    return;
+                    return this;
 
                 if(!removedVisibleFrames) //no Visible frame change
-                    return;
+                    return this;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
                 if(topVisibleFrame == null && mStackEmptyListener != null)
@@ -153,7 +157,7 @@ public class PilotStack implements Serializable
                     mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
-                return;
+                return this;
             }
         }
 

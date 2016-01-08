@@ -29,11 +29,6 @@ public abstract class PilotFrameBackedFrameLayout<P> extends FrameLayout impleme
         super(context);
     }
 
-    public PilotFrameBackedFrameLayout(Context context, AttributeSet attrs)
-    {
-        super(context, attrs);
-    }
-
     public PilotFrameBackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
