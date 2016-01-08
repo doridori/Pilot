@@ -4,8 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
-import com.kodroid.pilot.lib.android.presenter.PresenterUtils;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedFrameLayout;
+import com.kodroid.pilot.lib.android.frameBacking.BackedByFrameUtils;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class UIViewTypeHandler implements UITypeHandler
 {
     private final Displayer mDisplayer;
-    private Map<Class<? extends PilotFrame>, Class<? extends PresenterBackedFrameLayout>> mFrameToViewMappings = new HashMap<>();
+    private Map<Class<? extends PilotFrame>, Class<? extends PilotFrameBackedFrameLayout>> mFrameToViewMappings = new HashMap<>();
 
     //==================================================================//
     // Constructor
@@ -26,10 +26,10 @@ public class UIViewTypeHandler implements UITypeHandler
      *                  handle showing your views. You can use the provided
      *                  {@link UIViewTypeHandler.SimpleDisplayer} here if needed.
      */
-    public UIViewTypeHandler(Class<? extends PresenterBackedFrameLayout>[] topLevelViews, Displayer displayer)
+    public UIViewTypeHandler(Class<? extends PilotFrameBackedFrameLayout>[] topLevelViews, Displayer displayer)
     {
         mDisplayer = displayer;
-        setupRootViewAndPresenterMappings(topLevelViews);
+        setupRootViewAndPilotFrameMappings(topLevelViews);
     }
 
     //==================================================================//
@@ -43,13 +43,13 @@ public class UIViewTypeHandler implements UITypeHandler
         Class<? extends PilotFrame> frameClass = frame.getClass();
         if(mFrameToViewMappings.containsKey(frameClass)) //does handle this frame type
         {
-            if(mDisplayer.isViewVisibleForFrame(frameClass)) //view will always have a Presenter set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
+            if(mDisplayer.isViewVisibleForFrame(frameClass)) //view will always have a BackedByFrame set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
                 return true;
             else
             {
-                Class<? extends PresenterBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
-                PresenterBackedFrameLayout newView = createView(viewClass);
-                newView.setPresenter(frame);
+                Class<? extends PilotFrameBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
+                PilotFrameBackedFrameLayout newView = createView(viewClass);
+                newView.setBackingPilotFrame(frame);
                 mDisplayer.makeVisible(newView);
                 return true;
             }
@@ -62,19 +62,19 @@ public class UIViewTypeHandler implements UITypeHandler
     // Private
     //==================================================================//
 
-    private void setupRootViewAndPresenterMappings(Class<? extends PresenterBackedFrameLayout>[] rootViews)
+    private void setupRootViewAndPilotFrameMappings(Class<? extends PilotFrameBackedFrameLayout>[] rootViews)
     {
         //get view classes that make up the root level of the app
-        for(Class<? extends PresenterBackedFrameLayout> viewClass : rootViews)
+        for(Class<? extends PilotFrameBackedFrameLayout> viewClass : rootViews)
         {
-            if(!PresenterBackedFrameLayout.class.isAssignableFrom(viewClass))
-                throw new RuntimeException("Passed class does not extend PresenterBasedFrameLayout:"+viewClass.getCanonicalName());
-            Class<? extends PilotFrame> presenterClass = PresenterUtils.getPresenterClass(viewClass);
-            mFrameToViewMappings.put(presenterClass, viewClass);
+            if(!PilotFrameBackedFrameLayout.class.isAssignableFrom(viewClass))
+                throw new RuntimeException("Passed class does not extend PilotFrameBackedFrameLayout:"+viewClass.getCanonicalName());
+            Class<? extends PilotFrame> pilotFrameClass = BackedByFrameUtils.getPilotFrameClass(viewClass);
+            mFrameToViewMappings.put(pilotFrameClass, viewClass);
         }
     }
 
-    private <T extends PresenterBackedFrameLayout> T createView(Class<T> viewClass)
+    private <T extends PilotFrameBackedFrameLayout> T createView(Class<T> viewClass)
     {
         try
         {
@@ -129,8 +129,8 @@ public class UIViewTypeHandler implements UITypeHandler
         public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
         {
             if(getCurrentView() == null) return false;
-            final PresenterBackedFrameLayout currentView = (PresenterBackedFrameLayout) getCurrentView();
-            return PresenterUtils.getPresenterClass(currentView.getClass()).equals(frameClass);
+            final PilotFrameBackedFrameLayout currentView = (PilotFrameBackedFrameLayout) getCurrentView();
+            return BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frameClass);
         }
 
         @Override
