@@ -8,14 +8,14 @@ Check the github releases for this at present. Jcenter coming soon :)
 
 Each main view/screen of the application will be represented by a `PilotFrame` subclass, which will hold that screens ViewState and communicate with any asynchronous code. Each of these `PilotState`s need to have a corresponding `View` class that will represent it. In this documentation I am referring to these as _Top Level Views_ (TLV). These can to be declared as so: 
 
-	static final Class<? extends PresenterBackedFrameLayout>[] TOP_LEVEL_VIEWS = new Class[]
+	static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = new Class[]
     {
         FirstView.class,
         SecondInSessionView.class
         ...
     };
 
-Each of these TLVs are matched to a `PilotFrame` subclass via a `@Presenter` annotation declared in the TLV - more on this in a bit.
+Each of these TLVs are matched to a `PilotFrame` subclass via a `@BackedByFrame` annotation declared in the TLV - more on this in a bit.
 
 ##Declare a `PilotSyncer` for these TLVs
  
@@ -86,7 +86,7 @@ As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes
 
 ##`View` should reflect state of corresponding `PilotFrame`
 
-When a `PresenterBackedFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getPresenter()`) and attach any state-change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
+When a `PilotFrameBackedFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getBackingPilotFrame()`) and attach any state-change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
 
 ##Launch your app
 
