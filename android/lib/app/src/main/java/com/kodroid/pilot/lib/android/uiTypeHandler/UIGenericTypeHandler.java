@@ -1,6 +1,7 @@
 package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
+import com.kodroid.pilot.lib.sync.UITypeHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;

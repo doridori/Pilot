@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedFrameLayout;
 import com.kodroid.pilot.lib.android.frameBacking.BackedByFrameUtils;
 import com.kodroid.pilot.lib.stack.PilotFrame;
+import com.kodroid.pilot.lib.sync.UITypeHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,22 @@ public class UIViewTypeHandler implements UITypeHandler
             return false;
     }
 
+    /**
+     * Will return true for all views by default. Subclasses should override and return false for any non-opaque, non-fullscreen views.
+     *
+     * @param frame
+     * @return
+     */
+    @Override
+    public boolean isFrameOpaque(PilotFrame frame) {
+        return true;
+    }
+
+    @Override
+    public void clearAllUI() {
+        mDisplayer.clearAllUI();
+    }
+
     //==================================================================//
     // Private
     //==================================================================//
@@ -99,6 +116,7 @@ public class UIViewTypeHandler implements UITypeHandler
         boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass);
         void makeVisible(View newView);
         Context getViewContext();
+        void clearAllUI();
     }
 
     /**
@@ -144,6 +162,11 @@ public class UIViewTypeHandler implements UITypeHandler
         public Context getViewContext()
         {
             return mRootViewGroup.getContext();
+        }
+
+        @Override
+        public void clearAllUI() {
+            mRootViewGroup.removeAllViews();
         }
 
         //============================//
