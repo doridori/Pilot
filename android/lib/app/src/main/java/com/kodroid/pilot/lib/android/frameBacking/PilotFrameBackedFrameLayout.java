@@ -55,4 +55,9 @@ public abstract class PilotFrameBackedFrameLayout<P> extends FrameLayout impleme
     {
         return mBackingPilotFrame;
     }
+
+    @Override
+    public void backingFrameSet(P backingPilotFrame) {
+        //do nothing - subclasses can override
+    }
 }
