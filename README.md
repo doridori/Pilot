@@ -1,7 +1,7 @@
 [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot)
 #Pilot
 
-An abstract application stack which facilitates:
+An `android.*` decoupled application stack which facilitates:
 
 - Presenter -> Presenter control flow
 - Stack-based Presenter lifecycle management
