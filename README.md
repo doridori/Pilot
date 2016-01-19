@@ -8,6 +8,8 @@ An `android.*` decoupled application stack which facilitates:
 - A `View` based architecture 
 - Fine grained data scope management
 
+As with most decoupled SRP solutions to architectural issues, especially around UI, this greatly facilitates **speedy JVM based UI and app navigation** testing and clean test code.
+
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
 
 **_18/01/16 Note:_ this is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet. Should be production ready over the next month or two so watch this space!**
