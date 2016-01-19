@@ -110,4 +110,10 @@ This relationship will be preserved on Deserialization! This however does requir
 
 Some times you want your apps state to survive process death. This happens for free inside the `PilotManager` class via the `Activity` lifecycle delegation methods.
 
-Some may complain that serialization is slow and is not ideal. You are right! A pending improvement is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
+Some may complain that serialization is slow and is not ideal. You are right! A possible tweak is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
+
+##Opaqueness 
+
+WIP (knock on effect for dialogs / nav drawer / master detail etc)
+
+
