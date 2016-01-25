@@ -8,7 +8,10 @@ An `android.*` decoupled application stack which facilitates:
 - A `View` based architecture 
 - Fine grained data scope management
 
-As with most decoupled SRP solutions to architectural issues, especially around UI, this greatly facilitates **speedy JVM based UI and app navigation** testing and clean test code.
+What the practical benefit of the above?
+
+- As with most decoupled SRP solutions to architectural issues, especially around UI, this greatly facilitates **speedy JVM based UI and app navigation** testing and clean test code.
+- Not having to think about asynchronous operations in your UI code
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
 
