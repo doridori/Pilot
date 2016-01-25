@@ -68,6 +68,10 @@ The rest of this README is split across a few doc files:
 
 No one has asked me any questions about this as yet but if they do I will create an F.A.Q. :)
 
+#Download
+
+As this is a WIP I have not uploaded to bintray / sonatype as yet but if you do want a play with it just perform a `git clone` and then consume locally via your local `.m2` maven repo via `gw pTML` and then import via gradle as normal.
+
 #License
 
     Copyright 2015 Dorian Cussen
