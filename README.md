@@ -66,10 +66,7 @@ The rest of this README is split across a few doc files:
 - [Quick Start](https://github.com/doridori/Pilot/blob/master/docs/quick_start.md)
 - [One approach to a View backing `PilotFrame` design](#) **WIP**
 - [General Concepts](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md) **WIP**
-
-#F.A.Q.
-
-No one has asked me any questions about this as yet but if they do I will create an F.A.Q. :)
+- [F.A.Q.]
 
 #Download
 
