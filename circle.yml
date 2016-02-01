@@ -1,0 +1,11 @@
+machine:
+  java:
+    version: oraclejdk7
+
+dependencies:
+  cache_directories:
+    - ~/.android
+
+test:
+  override:    
+    - (cd ./android/lib/ && ./gradlew test)
