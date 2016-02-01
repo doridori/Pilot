@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot)
 #Pilot
 
 An `android.*` decoupled application stack which facilitates:
