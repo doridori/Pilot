@@ -27,8 +27,7 @@ public class PilotSyncer implements PilotStack.TopFrameChangedListener
     //==================================================================//
     // PilotStack.EventListener
     //==================================================================//
-
-    @Override
+    
     public void topVisibleFrameUpdated(PilotFrame topVisibleFrame, Direction direction)
     {
         UITypeHandler handlingTypeHandler = null;
