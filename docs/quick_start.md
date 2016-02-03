@@ -2,7 +2,7 @@
 
 ##Import .aar
 
-Check the github releases for this at present. Jcenter coming soon :)
+See README for gradle
     
 ##Declare what _Top Level Views_ exist in the application
 
