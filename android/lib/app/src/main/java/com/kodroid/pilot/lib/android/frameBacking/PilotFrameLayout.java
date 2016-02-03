@@ -29,6 +29,11 @@ public abstract class PilotFrameLayout<P> extends FrameLayout implements PilotFr
         super(context);
     }
 
+    public PilotFrameLayout(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+    }
+
     public PilotFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
