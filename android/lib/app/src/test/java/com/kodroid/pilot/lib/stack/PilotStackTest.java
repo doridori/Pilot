@@ -418,7 +418,7 @@ public class PilotStackTest extends TestCase
     public static class TestUIFrame3 extends NoArgsPilotFrame
     {}
 
-    @ScopedDataFrame
+    @InvisibleFrame
     public static class TestInvisibleDataFrame extends NoArgsPilotFrame
     {}
 
