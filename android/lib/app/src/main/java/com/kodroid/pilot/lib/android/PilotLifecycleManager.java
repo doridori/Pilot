@@ -17,18 +17,19 @@ import com.kodroid.pilot.lib.sync.PilotSyncer;
 public class PilotLifecycleManager
 {
     private final Class<? extends PilotFrame> launchFrameClass;
-
-    private PilotStack mPilotStack;
+    private PilotStack pilotStack;
 
     //==================================================================//
     // Constructor
     //==================================================================//
 
     /**
+     * @param pilotStack the PilotStack instance to be managed by this class.
      * @param launchFrameClass The launch frame for the handled PilotStack. Will only be created on first creation of the stack.
      */
-    public PilotLifecycleManager(Class<? extends PilotFrame> launchFrameClass)
+    public PilotLifecycleManager(PilotStack pilotStack, Class<? extends PilotFrame> launchFrameClass)
     {
+        this.pilotStack = pilotStack;
         this.launchFrameClass = launchFrameClass;
     }
 
@@ -51,19 +52,16 @@ public class PilotLifecycleManager
             PilotSyncer pilotSyncer,
             PilotStack.StackEmptyListener stackEmptyListener)
     {
-        //This PilotLifecycleManager instance is designed to be held statically which means the
-        //PilotStack should only be null when the Activity is first created or when its been recreated
-        //with saved state after process death
-        if(mPilotStack == null)
+        if(pilotStack.isEmpty())
             initializePilotStack(savedInstanceState, launchFrameClass);
 
         //re-hookup event listener for view mngr
-        mPilotStack.setTopFrameChangedListener(pilotSyncer);
-        mPilotStack.setStackEmptyListener(stackEmptyListener);
+        pilotStack.setTopFrameChangedListener(pilotSyncer);
+        pilotStack.setStackEmptyListener(stackEmptyListener);
 
         //TODO need to delegate to the Rebuilder at this point https://github.com/doridori/Pilot/issues/5
         //get the top frame of the stack and visit it - this will ensure that the view displayed matches the top frame.
-        final PilotFrame topFrame = mPilotStack.getTopVisibleFrame();
+        final PilotFrame topFrame = pilotStack.getTopVisibleFrame();
         //manually call the stack listener
         pilotSyncer.topVisibleFrameUpdated(topFrame, PilotStack.TopFrameChangedListener.Direction.FORWARD);
     }
@@ -76,13 +74,13 @@ public class PilotLifecycleManager
     public void onDestroyDelegate(Activity activity)
     {
         //remove listener so callbacks are not triggered when Activity in destroy state
-        mPilotStack.deleteListeners();
+        pilotStack.deleteListeners();
 
         //Get rid of the stack if activity is finishing for good. This will not be true if something temp killed in the backstack https://github.com/doridori/Pilot/issues/8
         if(activity.isFinishing())
         {
             //TODO call clear on stack to allow any explicit data cleanup inside frame callbacks if don't want to wait for JVM
-            mPilotStack = null;
+            pilotStack = null;
         }
     }
 
@@ -91,7 +89,7 @@ public class PilotLifecycleManager
      */
     public void onSaveInstanceStateDelegate(Bundle outState)
     {
-        outState.putSerializable(getStateSaveBundleKey(), mPilotStack);
+        outState.putSerializable(getStateSaveBundleKey(), pilotStack);
     }
 
     /**
@@ -99,7 +97,7 @@ public class PilotLifecycleManager
      */
     public void onBackPressedDelegate()
     {
-        mPilotStack.popTopVisibleFrame();
+        pilotStack.popTopVisibleFrame();
     }
 
     //==================================================================//
@@ -124,25 +122,25 @@ public class PilotLifecycleManager
      */
     private void initializePilotStack(Bundle savedInstanceState, final Class<? extends PilotFrame> launchFrameClass)
     {
-        if(mPilotStack != null)
+        if(!pilotStack.isEmpty())
             throw new IllegalStateException("PilotStack already exists!");
 
         //check if we need to restore any saves state
         if(savedInstanceState != null && savedInstanceState.containsKey(getStateSaveBundleKey()))
         {
-            Log.d(getClass().getCanonicalName(), "Restoring PilotStack!");
-            mPilotStack = (PilotStack) savedInstanceState.getSerializable(getStateSaveBundleKey());
+            throw new IllegalStateException("Not impl!");
+            //Log.d(getClass().getCanonicalName(), "Restoring PilotStack!");
+            //pilotStack = (PilotStack) savedInstanceState.getSerializable(getStateSaveBundleKey());
         }
         else
         {
             Log.d(getClass().getCanonicalName(), "Creating new PilotStack!");
-            mPilotStack = new PilotStack();
 
             //set launch frame
             try
             {
                 PilotFrame launchFrame = launchFrameClass.getConstructor().newInstance();
-                mPilotStack.pushFrame(launchFrame);
+                pilotStack.pushFrame(launchFrame);
             }
             catch (Exception e)
             {

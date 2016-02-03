@@ -185,6 +185,11 @@ public class PilotStack implements Serializable
         return null;
     }
 
+    public boolean isEmpty()
+    {
+        return mStack.isEmpty();
+    }
+
     //==================================================================//
     // Private methods
     //==================================================================//
