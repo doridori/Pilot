@@ -86,7 +86,7 @@ As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes
 
 ##`View` should reflect state of corresponding `PilotFrame`
 
-When a `PilotFrameBackedFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getBackingPilotFrame()`) and attach any state-change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
+When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getBackingPilotFrame()`) and attach any state-change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
 
 ##Launch your app
 
