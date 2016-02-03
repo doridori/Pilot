@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.kodroid.pilot.lib.stack.PilotFrame;
+
 /**
  * Convenience FrameLayout base for BackedByFrame backed views. Custom views do not have to use this as
  * long as they conform to the {@link PilotFrameBackedUI} interface.
@@ -12,8 +14,7 @@ import android.widget.FrameLayout;
  * @param <P> The BackedByFrame (controller / whatever) you want to use for this view. Support for thin
  *           views but easily usable with fragments.
  */
-public abstract class PilotFrameLayout<P> extends FrameLayout implements PilotFrameBackedUI<P>
-{
+public abstract class PilotFrameLayout<P extends PilotFrame> extends FrameLayout implements PilotFrameBackedUI<P>,PilotFrame.Observer {
     //==================================================================//
     // Fields
     //==================================================================//
@@ -65,4 +66,27 @@ public abstract class PilotFrameLayout<P> extends FrameLayout implements PilotFr
     public void backingFrameSet(P backingPilotFrame) {
         //do nothing - subclasses can override
     }
+
+    //==================================================================//
+    // View lifecycle
+    //==================================================================//
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        getBackingPilotFrame().addObserver(this, true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        getBackingPilotFrame().removeObserver(this);
+    }
+
+    //==================================================================//
+    // Observer updated()
+    //==================================================================//
+
+    @Override
+    public abstract void updated();
 }
