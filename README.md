@@ -68,9 +68,13 @@ The rest of this README is split across a few doc files:
 - [General Concepts](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md) **WIP**
 - [F.A.Q.](https://github.com/doridori/Pilot/blob/master/docs/faq.md)
 
-#Download
+#Usage
 
-As this is a WIP I have not uploaded to bintray / sonatype as yet but if you do want a play with it just perform a `git clone` and then consume locally via your local `.m2` maven repo via `gw pTML` and then import via gradle as normal.
+```
+dependencies {
+    compile 'com.kodroid:pilot:0.6.2'
+}
+```
 
 #License
 
