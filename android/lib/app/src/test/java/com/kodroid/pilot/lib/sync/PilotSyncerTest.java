@@ -63,9 +63,17 @@ public class PilotSyncerTest
     // Test frames
     //==================================================================//
 
-    public static class TestUIFrame1 extends PilotFrame
+    public static class NoArgsPilotFrame extends PilotFrame
+    {
+        public NoArgsPilotFrame()
+        {
+            super(null);
+        }
+    }
+
+    public static class TestUIFrame1 extends NoArgsPilotFrame
     {}
 
-    public static class TestUIFrame2 extends PilotFrame
+    public static class TestUIFrame2 extends NoArgsPilotFrame
     {}
 }

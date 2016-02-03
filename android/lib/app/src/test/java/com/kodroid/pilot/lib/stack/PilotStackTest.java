@@ -397,27 +397,35 @@ public class PilotStackTest extends TestCase
     // Test Frames
     //==================================================================//
 
+    public static class NoArgsPilotFrame extends PilotFrame
+    {
+        public NoArgsPilotFrame()
+        {
+            super(null);
+        }
+    }
+
     //to test causing trouble
-    public static class TestFrameNoType extends PilotFrame
+    public static class TestFrameNoType extends NoArgsPilotFrame
     {}
 
-    public static class TestUIFrame1 extends PilotFrame
+    public static class TestUIFrame1 extends NoArgsPilotFrame
     {}
 
-    public static class TestUIFrame2 extends PilotFrame
+    public static class TestUIFrame2 extends NoArgsPilotFrame
     {}
 
-    public static class TestUIFrame3 extends PilotFrame
+    public static class TestUIFrame3 extends NoArgsPilotFrame
     {}
 
     @InvisibleFrame
-    public static class TestInvisibleDataFrame extends PilotFrame
+    public static class TestInvisibleDataFrame extends NoArgsPilotFrame
     {}
 
     /**
      * Used in {@link #serializingStack_callbacksPreservedOnDeserialization_callbackOperationCompleted}
      */
-    public static class TestUIFrameThatSetsCallback extends PilotFrame
+    public static class TestUIFrameThatSetsCallback extends NoArgsPilotFrame
     {
         void addNextFrameWithCallback()
         {
@@ -438,7 +446,7 @@ public class PilotStackTest extends TestCase
     /**
      * Used in {@link #serializingStack_callbacksPreservedOnDeserialization_callbackOperationCompleted}
      */
-    public static class TestUIFrameWithCallback extends PilotFrame
+    public static class TestUIFrameWithCallback extends NoArgsPilotFrame
     {
         private Callback callback;
 

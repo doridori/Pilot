@@ -14,7 +14,30 @@ public abstract class PilotFrame implements Serializable
     // Fields
     //==================================================================//
 
-    private PilotStack mParentStack;
+    private PilotStack parentStack;
+    private Args args;
+
+    //==================================================================//
+    // Constructor
+    //==================================================================//
+
+    /**
+     * No arg constructor used to catch when subclasses forget to call super
+     */
+    protected PilotFrame()
+    {
+        throw new RuntimeException("Subclasses need to call super(Args)");
+    }
+
+    /**
+     * Subclasses must call super(args) while providing their own single `Args` constructor
+     *
+     * @param args can be null.
+     */
+    protected PilotFrame(Args args)
+    {
+        this.args = args;
+    }
 
     //==================================================================//
     // Setters
@@ -22,7 +45,7 @@ public abstract class PilotFrame implements Serializable
 
     /* package */ void setParentStack(PilotStack parentStack)
     {
-        mParentStack = parentStack;
+        this.parentStack = parentStack;
     }
 
     //==================================================================//
@@ -31,7 +54,17 @@ public abstract class PilotFrame implements Serializable
 
     public PilotStack getParentStack()
     {
-        return mParentStack;
+        return parentStack;
+    }
+
+    /**
+     * Used when persisting stack state
+     *
+     * @return
+     */
+    protected final Args getArgs()
+    {
+        return args;
     }
 
     //==================================================================//
