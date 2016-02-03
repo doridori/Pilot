@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedFrameLayout;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameLayout;
 import com.kodroid.pilot.lib.android.frameBacking.BackedByFrameUtils;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.sync.UITypeHandler;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class UIViewTypeHandler implements UITypeHandler
 {
     private final Displayer mDisplayer;
-    private Map<Class<? extends PilotFrame>, Class<? extends PilotFrameBackedFrameLayout>> mFrameToViewMappings = new HashMap<>();
+    private Map<Class<? extends PilotFrame>, Class<? extends PilotFrameLayout>> mFrameToViewMappings = new HashMap<>();
 
     //==================================================================//
     // Constructor
@@ -27,7 +27,7 @@ public class UIViewTypeHandler implements UITypeHandler
      *                  handle showing your views. You can use the provided
      *                  {@link UIViewTypeHandler.SimpleDisplayer} here if needed.
      */
-    public UIViewTypeHandler(Class<? extends PilotFrameBackedFrameLayout>[] topLevelViews, Displayer displayer)
+    public UIViewTypeHandler(Class<? extends PilotFrameLayout>[] topLevelViews, Displayer displayer)
     {
         mDisplayer = displayer;
         setupRootViewAndPilotFrameMappings(topLevelViews);
@@ -48,8 +48,8 @@ public class UIViewTypeHandler implements UITypeHandler
                 return true;
             else
             {
-                Class<? extends PilotFrameBackedFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
-                PilotFrameBackedFrameLayout newView = createView(viewClass);
+                Class<? extends PilotFrameLayout> viewClass = mFrameToViewMappings.get(frameClass);
+                PilotFrameLayout newView = createView(viewClass);
                 newView.setBackingPilotFrame(frame);
                 newView.backingFrameSet(frame);
                 mDisplayer.makeVisible(newView);
@@ -80,19 +80,19 @@ public class UIViewTypeHandler implements UITypeHandler
     // Private
     //==================================================================//
 
-    private void setupRootViewAndPilotFrameMappings(Class<? extends PilotFrameBackedFrameLayout>[] rootViews)
+    private void setupRootViewAndPilotFrameMappings(Class<? extends PilotFrameLayout>[] rootViews)
     {
         //get view classes that make up the root level of the app
-        for(Class<? extends PilotFrameBackedFrameLayout> viewClass : rootViews)
+        for(Class<? extends PilotFrameLayout> viewClass : rootViews)
         {
-            if(!PilotFrameBackedFrameLayout.class.isAssignableFrom(viewClass))
+            if(!PilotFrameLayout.class.isAssignableFrom(viewClass))
                 throw new RuntimeException("Passed class does not extend PilotFrameBackedFrameLayout:"+viewClass.getCanonicalName());
             Class<? extends PilotFrame> pilotFrameClass = BackedByFrameUtils.getPilotFrameClass(viewClass);
             mFrameToViewMappings.put(pilotFrameClass, viewClass);
         }
     }
 
-    private <T extends PilotFrameBackedFrameLayout> T createView(Class<T> viewClass)
+    private <T extends PilotFrameLayout> T createView(Class<T> viewClass)
     {
         try
         {
@@ -148,7 +148,7 @@ public class UIViewTypeHandler implements UITypeHandler
         public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
         {
             if(getCurrentView() == null) return false;
-            final PilotFrameBackedFrameLayout currentView = (PilotFrameBackedFrameLayout) getCurrentView();
+            final PilotFrameLayout currentView = (PilotFrameLayout) getCurrentView();
             return BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frameClass);
         }
 
