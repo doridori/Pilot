@@ -27,7 +27,7 @@ The below example uses a single `UIViewTypeHandler` which will create the TLV vi
 
     private PilotSyncer buildPilotSyncer(FrameLayout rootView)
     {        
-        return new PilotSyncer(new UIViewTypeHandler(topLevelViews, new UIViewTypeHandler.SimpleDisplayer(rootView)));     
+        return new PilotSyncer(new UIViewTypeHandler(TOP_LEVEL_VIEWS, new UIViewTypeHandler.SimpleDisplayer(rootView)));     
     }
  
 ##Integrate `PilotLifecycleManager` into your `Activity`
