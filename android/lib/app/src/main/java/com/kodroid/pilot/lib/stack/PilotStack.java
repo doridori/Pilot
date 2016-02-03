@@ -7,7 +7,7 @@ import java.util.Stack;
  * A simple abstraction of a stack of objects which have:
  *
  * - stack-lifecycle event callbacks inside frames
- * - support for frames that are marked as VISIBLE (default) or {@link InvisibleFrame} (useful for scoped data)
+ * - support for frames that are marked as VISIBLE (default) or {@link ScopedDataFrame} (useful for scoped data)
  * - support for slightly more complex stack operations when adding or removing frames
  *
  * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link TopFrameChangedListener}.
@@ -31,7 +31,7 @@ public class PilotStack implements Serializable
     //==================================================================//
 
     /**
-     * @return top frame of the stack ignoring {@link InvisibleFrame}
+     * @return top frame of the stack ignoring {@link ScopedDataFrame}
      */
     public PilotFrame getTopVisibleFrame()
     {
@@ -58,10 +58,10 @@ public class PilotStack implements Serializable
     }
 
     /**
-     * Pops the top (non {@link InvisibleFrame}) frame in the stack and will also remove any frame above
+     * Pops the top (non {@link ScopedDataFrame}) frame in the stack and will also remove any frame above
      * this index in the stack.
      *
-     * If no non {@link InvisibleFrame} frames exist nothing will happen.
+     * If no non {@link ScopedDataFrame} frames exist nothing will happen.
      */
     public PilotStack popTopVisibleFrame()
     {
@@ -200,7 +200,7 @@ public class PilotStack implements Serializable
 
     /**
      * @param index
-     * @return true if any of the frames removed were not marked with {@link InvisibleFrame}
+     * @return true if any of the frames removed were not marked with {@link ScopedDataFrame}
      * (therefore a visible frame change took place).
      */
     private boolean removeAllFramesAboveIndex(int index)
@@ -237,7 +237,7 @@ public class PilotStack implements Serializable
 
     private boolean isInvisibleFrame(Class<? extends PilotFrame> clazz)
     {
-        return clazz.isAnnotationPresent(InvisibleFrame.class);
+        return clazz.isAnnotationPresent(ScopedDataFrame.class);
     }
 
     //==================================================================//
