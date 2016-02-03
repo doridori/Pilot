@@ -2,6 +2,8 @@ package com.kodroid.pilot.lib.stack;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Frame that lives in a {@link PilotStack}. Has simple stack lifecycle methods and supports an optional
@@ -80,4 +82,33 @@ public abstract class PilotFrame implements Serializable
      * Frame lifecycle callback. {@link #getParentStack()} will contain a ref until this method returns
      */
     public void popped(){}
+
+    //==================================================================//
+    // Observable
+    //==================================================================//
+
+    private Set<Observer> mObservers = new HashSet<>();
+
+    public void addObserver(Observer observer, boolean notifyOnAdd)
+    {
+        mObservers.add(observer);
+        if(notifyOnAdd)
+            observer.updated();
+    }
+
+    public void removeObserver(Observer observer)
+    {
+        mObservers.remove(observer);
+    }
+
+    protected void notifyObservers()
+    {
+        for(Observer observer : mObservers)
+            observer.updated();
+    }
+
+    public interface Observer
+    {
+        void updated();
+    }
 }
