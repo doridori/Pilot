@@ -71,8 +71,12 @@ The rest of this README is split across a few doc files:
 #Usage
 
 ```
+maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots"
+}
+
 dependencies {
-    compile 'com.kodroid:pilot:0.6.2'
+    compile 'com.kodroid:pilot:0.7.0-SNAPSHOT'
 }
 ```
 
