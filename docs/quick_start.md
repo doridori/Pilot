@@ -26,10 +26,14 @@ This is declared by creating a new instance with one or more `UITypeHandler`s. T
 The below example uses a single `UIViewTypeHandler` which will create the TLV view and place it inside the passed `rootView` using the supplied `UIViewTypeHandler.Displayer` class. 
 
 ```java
-    private PilotSyncer buildPilotSyncer(FrameLayout rootView)
-    {        
-        return new PilotSyncer(new UIViewTypeHandler(TOP_LEVEL_VIEWS, new UIViewTypeHandler.SimpleDisplayer(rootView)));     
-    }
+private PilotSyncer buildPilotSyncer(FrameLayout rootView)
+{        
+    UITypeHandler allViewsUiTypeHandler = new UIViewTypeHandler(
+            TOP_LEVEL_VIEWS, 
+            new UIViewTypeHandler.SimpleDisplayer(rootView));
+        
+    return new PilotSyncer(allViewsUiTypeHandler);
+}
 ```
  
 ##Integrate `PilotLifecycleManager` into your `Activity`
