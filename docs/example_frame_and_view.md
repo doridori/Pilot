@@ -21,7 +21,7 @@ public class ExamplePresenter extends PilotFrame
     
     public void userDidSomething...()
     {
-       ...//do something i.e. perform an ansync call that changes the ViewState object
+       ...//do something i.e. perform an async call that changes the ViewState object
        notifyObservers();
     }
     
