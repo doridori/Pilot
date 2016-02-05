@@ -9,7 +9,7 @@ public class ExamplePresenter extends PilotFrame
     // Constructor
     //=============//
 
-    public EnterCardPresenter(Args args)
+    public ExamplePresenter(Args args)
     {
         super(args); 
         ...//pull something out of args
