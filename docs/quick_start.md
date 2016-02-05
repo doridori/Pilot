@@ -1,8 +1,6 @@
 #Quick Start
 
-##Import .aar
-
-See README for gradle
+Have a quick look at [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md) and then see below for how to implement with Pilot.
     
 ##Declare what _Top Level Views_ exist in the application
 
