@@ -40,10 +40,6 @@ private PilotSyncer buildPilotSyncer(FrameLayout rootView)
 
 `PilotLifecycleManager` will ensure there is always a valid `PilotStack` instance available.  This also allows us a simple mechanism of retaining the `PilotStack` on config-change and will handle saving / restoring the `PilotStack` on process death.
 
-The root `Activity` of the application should hold a static reference to a `PilotLifecycleManager` instance. 
-
-    private static PilotLifecycleManager sPilotLifecycleManager = new PilotLifecycleManager(YourLaunchFrame.class);
-
 Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
 
 ```java
@@ -54,28 +50,31 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-	    //...
-        sPilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
+	//...
+	
+	//The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
+	pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
+        pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        sPilotLifecycleManager.onDestroyDelegate(this);
+        pilotLifecycleManager.onDestroyDelegate(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        sPilotLifecycleManager.onSaveInstanceStateDelegate(outState);
+        pilotLifecycleManager.onSaveInstanceStateDelegate(outState);
     }
 
     @Override
     public void onBackPressed()
     {
-        sPilotLifecycleManager.onBackPressedDelegate();
+        pilotLifecycleManager.onBackPressedDelegate();
     }
 ```
 
