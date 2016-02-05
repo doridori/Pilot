@@ -82,11 +82,15 @@ A `PilotFrame` with the `@InvisibleFrame` annotation represents the `data-scope`
 
 All other `PilotFrames` represent an `app state` and are the ones which will have a `UITypeHandler` which handles this `PilotFrame` subclass via the `PilotSyncer` discussed above.
 
-As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes should be structured as everyone has their own approach to controller / presenter / view-model logic and I do not want to force anyone down a particular route. If you want to see my approach [have a look here](#) WIP
+As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes should be structured as everyone has their own approach to controller / presenter / view-model logic and I do not want to force anyone down a particular route. 
+
+For an example check out [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md).
 
 ##`View` should reflect state of corresponding `PilotFrame`
 
-When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. This method may be called more than once but is a good candidate for where we should sync the UI to the backing `PilotFrame` (via `getBackingPilotFrame()`) and attach any state-change listeners (as it has a corresponding `View.onDetachedFromWindow()` we can use to remove listeners).
+When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called.  State-change listeners are added inside `PilotFrames` `View.onAttached` and `View.onDetached` methods and will result in `PilotFrame.updated()` being called, which is where you should sync up the UI state with the PilotFrame state.
+
+For an example check out [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md).
 
 ##Launch your app
 
