@@ -43,3 +43,30 @@ public class ExamplePresenter extends PilotFrame
 ```
     
 #Example View
+
+```java
+@BackedByFrame(ExamplePresenter.class)
+public class ExampleView extends PilotFrameLayout<ExamplePresenter>
+{
+    //=============//
+    // Constructor
+    //=============//
+
+    public ExampleView(Context context)
+    {
+        super(context);
+        LayoutInflater.from(getContext()).inflate(R.layout.view_example, this, true);
+    }
+
+    //===================//
+    // Presenter Updates
+    //===================//
+                
+    @Override
+    public void updated()
+    {
+        ExamplePresenter.ViewState viewState = getBackingPilotFrame().getViewState();
+        ...//use ViewState to change visible UI state
+    }
+}
+```
