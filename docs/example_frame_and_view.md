@@ -25,6 +25,12 @@ public class ExamplePresenter extends PilotFrame
        notifyObservers();
     }
     
+    public void userDone()
+    {
+        //push another PilotFrame on the stack. This will trigger a new View to be rendered.
+        getParentStack().pushFrame(new AnotherExamplePresenter());
+    }
+    
     //=======================//
     // Current State of View
     //=======================//
