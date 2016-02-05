@@ -1,5 +1,6 @@
 #ExampleFrame
 
+```java
 public class ExamplePresenter extends PilotFrame
 {
     private ViewState viewState = new ViewState();
@@ -39,5 +40,6 @@ public class ExamplePresenter extends PilotFrame
         public String someMessage = "Oh Hai!";
     }
 }
+```
     
 #Example View
