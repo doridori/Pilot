@@ -82,11 +82,11 @@ Note inside `onCreate` we pass the `PilotSyncer` we declared earlier.
 
 ##Create some `PilotFrame` subclasses
 
-These represent the `app states` (think _LoginScreen_ or _ContentScreen_) and the `data-scopes` (think _session_ or _domain-driven-process_)  of your application and are the things that will live on the stack.
+These represent the **app states** (think _LoginScreen_ or _ContentScreen_) and the **data-scopes** (think _session_ or _domain-driven-process_)  of your application and are the things that will live on the stack.
 
-A `PilotFrame` with the `@InvisibleFrame` annotation represents the `data-scope` frame mentioned above and will not trigger `PilotStack` listener callbacks. These are useful to make stuff available (and un-available) on a DI object graph, or alternatively for classes to pull data out from directly.
+A `PilotFrame` with the `@InvisibleFrame` annotation represents the **data-scope** frame mentioned above and will not trigger `PilotStack` listener callbacks. These are useful to make stuff available (and un-available) on a DI object graph, or alternatively for classes to pull data out from directly.
 
-All other `PilotFrames` represent an `app state` and are the ones which will have a `UITypeHandler` which handles this `PilotFrame` subclass via the `PilotSyncer` discussed above.
+All other `PilotFrames` represent an **app state** and are the ones which will have a `UITypeHandler` which handles this `PilotFrame` subclass via the `PilotSyncer` discussed above.
 
 As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes should be structured as everyone has their own approach to controller / presenter / view-model logic and I do not want to force anyone down a particular route. 
 
