@@ -8,12 +8,14 @@ See README for gradle
 
 Each main view/screen of the application will be represented by a `PilotFrame` subclass, which will hold that screens ViewState and communicate with any asynchronous code. Each of these `PilotState`s need to have a corresponding `View` class that will represent it. In this documentation I am referring to these as _Top Level Views_ (TLV). These can to be declared as so: 
 
-	static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = new Class[]
+```java
+static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = new Class[]
     {
         FirstView.class,
         SecondInSessionView.class
         ...
     };
+```
 
 Each of these TLVs are matched to a `PilotFrame` subclass via a `@BackedByFrame` annotation declared in the TLV - more on this in a bit.
 
@@ -25,10 +27,12 @@ This is declared by creating a new instance with one or more `UITypeHandler`s. T
 
 The below example uses a single `UIViewTypeHandler` which will create the TLV view and place it inside the passed `rootView` using the supplied `UIViewTypeHandler.Displayer` class. 
 
+```java
     private PilotSyncer buildPilotSyncer(FrameLayout rootView)
     {        
         return new PilotSyncer(new UIViewTypeHandler(TOP_LEVEL_VIEWS, new UIViewTypeHandler.SimpleDisplayer(rootView)));     
     }
+```
  
 ##Integrate `PilotLifecycleManager` into your `Activity`
 
@@ -40,6 +44,7 @@ The root `Activity` of the application should hold a static reference to a `Pilo
 
 Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
 
+```java
     //==================================================================//
     // Lifecycle
     //==================================================================//
@@ -70,6 +75,7 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
     {
         sPilotLifecycleManager.onBackPressedDelegate();
     }
+```
 
 Note inside `onCreate` we pass the `PilotSyncer` we declared earlier.
 
