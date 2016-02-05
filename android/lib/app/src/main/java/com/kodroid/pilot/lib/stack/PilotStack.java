@@ -96,7 +96,7 @@ public class PilotStack implements Serializable
      *
      * @param frameToRemove if this does not exist in the stack this will throw a {@link RuntimeException}
      */
-    public PilotStack removeThisFrame(PilotFrame frameToRemove)
+    public PilotStack removeFrame(PilotFrame frameToRemove)
     {
         if(!mStack.remove(frameToRemove))
             throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");

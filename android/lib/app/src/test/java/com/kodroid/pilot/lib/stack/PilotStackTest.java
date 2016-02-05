@@ -212,7 +212,7 @@ public class PilotStackTest extends TestCase
         pilotStack.setTopFrameChangedListener(mockedListener);
 
         //perform pop
-        pilotStack.removeThisFrame(testUIFrame2);
+        pilotStack.removeFrame(testUIFrame2);
 
         //verify listener method called
         Mockito.verify(mockedListener).topVisibleFrameUpdated(testUIFrame3, PilotStack.TopFrameChangedListener.Direction.BACK);
