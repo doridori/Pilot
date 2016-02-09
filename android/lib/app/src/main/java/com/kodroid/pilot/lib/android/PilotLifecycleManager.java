@@ -139,8 +139,7 @@ public class PilotLifecycleManager
             //set launch frame
             try
             {
-                PilotFrame launchFrame = launchFrameClass.getConstructor().newInstance();
-                pilotStack.pushFrame(launchFrame);
+                pilotStack.pushFrame(launchFrameClass);
             }
             catch (Exception e)
             {

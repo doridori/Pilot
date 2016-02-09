@@ -1,6 +1,7 @@
 package com.kodroid.pilot.lib.stack;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Stack;
 
 /**
@@ -45,8 +46,30 @@ public class PilotStack implements Serializable
         return null;
     }
 
-    public PilotStack pushFrame(PilotFrame frameToPush)
+    /**
+     * Calls {@link #pushFrame(Class, Args)} with null args.
+     *
+     * @param frameClassToPush
+     * @return
+     */
+    public PilotStack pushFrame(Class<? extends PilotFrame> frameClassToPush)
     {
+        return pushFrame(frameClassToPush, null);
+    }
+
+    /**
+     * If passing args then the PilotFrame class passed need to have a one-arg (Args) constructor.
+     * If null is passed then PilotFrame class needs to have one-arg constructor.
+     *
+     * @param frameClassToPush
+     * @param args
+     * @return
+     */
+    public PilotStack pushFrame(Class<? extends PilotFrame> frameClassToPush, Args args)
+    {
+        PilotFrame frameToPush = createFrame(frameClassToPush, args);
+
+        //put on stack
         frameToPush.setParentStack(this);
         mStack.push(frameToPush);
         frameToPush.pushed();
@@ -124,7 +147,7 @@ public class PilotStack implements Serializable
     }
 
     /**
-     * Pops everything in the stack above (and including) the passed in class. Will look from the bottom
+     * Pops everything in the stack above (and including) the passed in class. Will look from the TOP
      * of the stack and perform operation for the first matching {@link PilotFrame} found.
      *
      * @param clazz
@@ -134,7 +157,7 @@ public class PilotStack implements Serializable
      */
     public PilotStack popStackAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
     {
-        for(int i = 0; i < mStack.size(); i++)
+        for(int i = mStack.size()-1; i >= 0; i--)
         {
             //find the index in the stack that is the class type requested
             if(mStack.get(i).getClass() == clazz)
@@ -193,6 +216,39 @@ public class PilotStack implements Serializable
     //==================================================================//
     // Private methods
     //==================================================================//
+
+    private PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+        try
+        {
+            if(args == null)
+                return frameClassToPush.getConstructor().newInstance();
+            else
+                return frameClassToPush.getConstructor(Args.class).newInstance(args);
+        }
+        catch (InstantiationException e)
+        {
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+        }
+    }
+
+    private String getInovcationExceptionMsg(Class<? extends PilotFrame> frameClassToPush, Args args) throws RuntimeException
+    {
+        return args == null ?
+                frameClassToPush.getName()+" needs to have a no-arg constructor ()" :
+                frameClassToPush.getName()+" needs to have a one-arg constructor (Args)";
+    }
 
     private void notifyListenersNewBackFrame()
     {
