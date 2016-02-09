@@ -21,7 +21,7 @@ What the practical benefit of the above?
 
 **Pilot** is an effort to abstract a simple Android Application-Navigation-Stack. 
 
-Android development blurs the line between UI declaration and application flow. Activity and Fragment Lifecycle methods coupled with asynchronous operations can be a headache. These problems are well known and have various solutions represented by various projects on GitHub.
+Android development blurs the line between UI declaration and application flow. `Activity` and `Fragment` Lifecycle methods coupled with asynchronous operations can be a headache. These problems are well known and have various solutions represented by various projects on GitHub.
 
 A popular approach is to use an MV* based architecture to separate some form of Controller / Presenter variant from the UI. This is great and has many benefits. However, there are not many projects out there that facilitate UI-less controller -> controller flow. This is the hole that Pilot is aiming to fill.
 
