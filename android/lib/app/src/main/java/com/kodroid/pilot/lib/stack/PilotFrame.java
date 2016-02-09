@@ -45,7 +45,12 @@ public abstract class PilotFrame implements Serializable
     // Setters
     //==================================================================//
 
-    /* package */ void setParentStack(PilotStack parentStack)
+    /**
+     * This is called by the parent PilotStack so no need to call yourself. Useful for testing.
+     *
+     * @param parentStack
+     */
+    public void setParentStack(PilotStack parentStack)
     {
         this.parentStack = parentStack;
     }
