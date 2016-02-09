@@ -33,7 +33,7 @@ To make usage of this project as flexible as possible, the following decisions h
 
 - **Not** to tie any consumers to a specific controller type. The reason for this is that all projects have their own approaches in terms of what a Presenter/Controller should be and this is really an orthogonal concern to how the lifecycle and navigation between these controllers is handled. You may prefer to use MVP (Passive View, Supervising Controller, Presentation Model), MVVM or some other variant, this should not impact how the controller layer is managed.
 
-- **Not** to require any 3rd party dependencies (e.g. Dagger or RxJava). These (and other) libraries can be used with Pilot but are not essential. 
+- **Not** to _require_ any 3rd party dependencies (e.g. Dagger or RxJava). These (and other) libraries can be used with Pilot but are not essential. 
 
 #`View` only?
 
