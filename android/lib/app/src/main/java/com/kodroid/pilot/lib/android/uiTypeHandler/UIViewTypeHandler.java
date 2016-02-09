@@ -86,7 +86,7 @@ public class UIViewTypeHandler implements UITypeHandler
         for(Class<? extends PilotFrameLayout> viewClass : rootViews)
         {
             if(!PilotFrameLayout.class.isAssignableFrom(viewClass))
-                throw new RuntimeException("Passed class does not extend PilotFrameBackedFrameLayout:"+viewClass.getCanonicalName());
+                throw new RuntimeException("Passed class does not extend PilotFrameLayout:"+viewClass.getCanonicalName());
             Class<? extends PilotFrame> pilotFrameClass = BackedByFrameUtils.getPilotFrameClass(viewClass);
             mFrameToViewMappings.put(pilotFrameClass, viewClass);
         }
