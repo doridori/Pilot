@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot) [![Maven Central](https://img.shields.io/maven-central/0.7.0-SNAPSHOT/org.apache.maven/apache-maven.svg)]()
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot) [![Maven Central](https://img.shields.io/maven-central/v0.7.0-SNAPSHOT/org.apache.maven/apache-maven.svg)]()
 
 #Pilot
 
