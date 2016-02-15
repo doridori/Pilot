@@ -31,12 +31,22 @@ public class PilotStack implements Serializable
     // Stack Operations (public)
     //==================================================================//
 
-    public void clearStack(boolean notifyListeners)
+    /**
+     * Clears whole stack. If the caller wants to perform any more stack operations after this point
+     * then they will need to use the returned PilotStack as the calling
+     * {@link PilotFrame#getParentStack()} will be null after this call.
+     *
+     * @param notifyListeners
+     * @return
+     */
+    public PilotStack clearStack(boolean notifyListeners)
     {
         popAllFramesAboveIndex(0);
 
         if(notifyListeners && mStackEmptyListener != null)
             mStackEmptyListener.noVisibleFramesLeft();
+
+        return this;
     }
 
     /**
