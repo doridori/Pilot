@@ -216,6 +216,19 @@ public class PilotStackTest extends TestCase
         Assert.assertEquals(2, pilotStack.getFrameSize());
     }
 
+    @Test
+    public void clearStack_shouldPop()
+    {
+        PilotStack pilotStack = new PilotStack();
+        pilotStack.pushFrame(TestUIFramePop.class);
+        pilotStack.pushFrame(TestUIFramePop.class);
+        TestUIFramePop middleFrame = (TestUIFramePop) pilotStack.getTopVisibleFrame();
+        pilotStack.pushFrame(TestUIFramePop.class);
+        pilotStack.clearStack(false);
+
+        Assert.assertTrue(middleFrame.popped);
+    }
+
     //==================================================================//
     // Listener Tests
     //==================================================================//
@@ -444,6 +457,16 @@ public class PilotStackTest extends TestCase
 
     public static class TestUIFrame3 extends NoArgsPilotFrame
     {}
+
+    public static class TestUIFramePop extends NoArgsPilotFrame
+    {
+        private boolean popped;
+
+        @Override
+        public void popped() {
+            popped = true;
+        }
+    }
 
     @InvisibleFrame
     public static class TestInvisibleDataFrame extends NoArgsPilotFrame

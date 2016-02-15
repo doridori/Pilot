@@ -31,6 +31,14 @@ public class PilotStack implements Serializable
     // Stack Operations (public)
     //==================================================================//
 
+    public void clearStack(boolean notifyListeners)
+    {
+        popAllFramesAboveIndex(0);
+
+        if(notifyListeners && mStackEmptyListener != null)
+            mStackEmptyListener.noVisibleFramesLeft();
+    }
+
     /**
      * @return top frame of the stack ignoring {@link InvisibleFrame}
      */
@@ -164,7 +172,7 @@ public class PilotStack implements Serializable
             {
                 //account for INCLUSIVE or EXCLUSIVE removal
                 int removeFrom = (popType == PopType.INCLUSIVE ? i : i+1);
-                boolean removedVisibleFrames = removeAllFramesAboveIndex(removeFrom);
+                boolean removedVisibleFrames = popAllFramesAboveIndex(removeFrom);
 
                 //notify listeners
                 if(!notifyListeners)
@@ -264,12 +272,17 @@ public class PilotStack implements Serializable
      * @return true if any of the frames removed were not marked with {@link InvisibleFrame}
      * (therefore a visible frame change took place).
      */
-    private boolean removeAllFramesAboveIndex(int index)
+    private boolean popAllFramesAboveIndex(int index)
     {
         boolean visibleFrameRemoved = false;
 
         while(mStack.size() > index)
-            visibleFrameRemoved |= !isInvisibleFrame(mStack.pop()); //remove from end as less internal element movement
+        {
+            PilotFrame poppedFrame = mStack.pop();
+            poppedFrame.popped();
+            poppedFrame.setParentStack(null);
+            visibleFrameRemoved |= !isInvisibleFrame(poppedFrame); //remove from end as less internal element movement
+        }
 
         return visibleFrameRemoved;
     }
