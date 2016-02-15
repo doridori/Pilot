@@ -95,7 +95,7 @@ For an example check out [Example Frame & View](https://github.com/doridori/Pilo
 
 ##`View` should reflect state of corresponding `PilotFrame`
 
-When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called.  
+When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. View subclasses can override `backingFrameSet(ShowPadPresenter backingPilotFrame)` to do any post-backing frame set initialisation.
 
 State-change listeners are added inside the `PilotFrame` `View.onAttached` and `View.onDetached` methods and will result in `PilotFrame.updated()` being called, which is where you should sync up the UI state with the PilotFrame state.
 
