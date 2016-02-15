@@ -1,4 +1,5 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot) ![latest on maven central](https://img.shields.io/badge/maven%20central-0.7.0-SNAPSHOT-blue.svg)](http://search.maven.org/#artifactdetails|com.kodroid|pilot|1.10.19|)
+
 #Pilot
 
 An `android.*` decoupled application stack which facilitates:
