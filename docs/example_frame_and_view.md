@@ -5,9 +5,9 @@ public class ExamplePresenter extends PilotFrame
 {
     private ViewState viewState = new ViewState();
     
-    //=============//
+    //==================================================================//
     // Constructor
-    //=============//
+    //==================================================================//
 
     public ExamplePresenter(Args args)
     {
@@ -15,9 +15,9 @@ public class ExamplePresenter extends PilotFrame
         ...//pull something out of args
     }
     
-    //=======================//
+    //==================================================================//
     // Inputs / User Actions
-    //=======================//
+    //==================================================================//
     
     public void userDidSomething...()
     {
@@ -31,9 +31,9 @@ public class ExamplePresenter extends PilotFrame
         getParentStack().pushFrame(new AnotherExamplePresenter());
     }
     
-    //=======================//
+    //==================================================================//
     // Current State of View
-    //=======================//
+    //==================================================================//
 
     public ViewState getViewState()
     {
@@ -54,9 +54,9 @@ public class ExamplePresenter extends PilotFrame
 @BackedByFrame(ExamplePresenter.class)
 public class ExampleView extends PilotFrameLayout<ExamplePresenter>
 {
-    //=============//
+    //==================================================================//
     // Constructor
-    //=============//
+    //==================================================================//
 
     public ExampleView(Context context)
     {
@@ -64,9 +64,9 @@ public class ExampleView extends PilotFrameLayout<ExamplePresenter>
         LayoutInflater.from(getContext()).inflate(R.layout.view_example, this, true);
     }
 
-    //===================//
+    //==================================================================//
     // Presenter Updates
-    //===================//
+    //==================================================================//
                 
     @Override
     public void updated()
