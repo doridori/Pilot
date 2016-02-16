@@ -12,6 +12,13 @@ public class Args implements Serializable
 {
     Map<String, Serializable> serializableMap = new HashMap<>();
 
+    public static Args with(String key, Serializable value)
+    {
+        Args args = new Args();
+        args.put(key, value);
+        return args;
+    }
+
     public void put(String key, Serializable value)
     {
         serializableMap.put(key, value);
