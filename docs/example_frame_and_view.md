@@ -27,6 +27,11 @@ public class ExamplePresenter extends PilotFrame
     
     public void userDone()
     {
+        //in case this frame has been removed from the stack i.e. the forwarding view may 
+        //be animating out and still have an active 'done' button
+        if(getParentStack() == null) 
+            return;
+    
         //push another PilotFrame on the stack. This will trigger a new View to be rendered.
         getParentStack().pushFrame(new AnotherExamplePresenter());
     }
