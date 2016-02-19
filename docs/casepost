@@ -1,0 +1,10 @@
+the Case for absBS
+
+* Heart of the application
+* UI lifecycle tertiary to app lifecycle and app states lifecycle (3rd level, UI relflecting app states lifecycle). UI is just a mirror of application. Application should not exist in mirror!
+* trying to implement this heart distributed accross activity backstack (intents) and Fragments (FM) leads to messy disjointed code.
+* abstracting lifecycle allows the shift of power to a way that makes sense
+* has practical benifits | queryable stack | pluggable UI logic for display | easy controller mgmt | android.* less app flow | data layers for easy scoping | async etc
+* application can almost be written without an UI client in mind - could replace with terminal etc by just plugging in a differnt UI layer - is your app this decoupled? 
+* thought process in reddit post of what leads to abstracted stack and Views make sense for working with.
+* libs Pilot - new Flow
