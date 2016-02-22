@@ -54,6 +54,8 @@ public class PilotLifecycleManager
     {
         if(pilotStack.isEmpty())
             initializePilotStack(savedInstanceState, launchFrameClass);
+        else if(!pilotStack.doesContainVisibleFrame())
+            throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
         //re-hookup event listener for view mngr
         pilotStack.setTopFrameChangedListener(pilotSyncer);
@@ -97,7 +99,7 @@ public class PilotLifecycleManager
      */
     public void onBackPressedDelegate()
     {
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popToNextVisibleFrame();
     }
 
     //==================================================================//

@@ -1,9 +1,9 @@
 package com.kodroid.pilot.lib.stack;
 
+import com.kodroid.pilot.lib.sync.PilotSyncerTest;
+
 import junit.framework.TestCase;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,16 +11,10 @@ import org.junit.runners.JUnit4;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-import java.io.Serializable;
-
 @RunWith(JUnit4.class)
 public class PilotStackTest extends TestCase
 {
     //[UnitOfWork_StateUnderTest_ExpectedBehavior]
-
-    //==================================================================//
-    // Instance method tests
-    //==================================================================//
 
     @Test
     public void classComparison()
@@ -28,7 +22,12 @@ public class PilotStackTest extends TestCase
         Assert.assertTrue(Object.class == Object.class);
     }
 
-    public void getTopFrame_empty_shouldThrow()
+    //==========================================================//
+    // getTopFrame()
+    //==========================================================//
+
+    @Test
+    public void getTopFrame_empty_shouldReturnNull()
     {
         Assert.assertNull(new PilotStack().getTopVisibleFrame());
     }
@@ -61,30 +60,64 @@ public class PilotStackTest extends TestCase
         Assert.assertNull(returnedFrame);
     }
 
+    //==========================================================//
+    // pop...()
+    //==========================================================//
+
     @Test
-    public void popTopFrame_oneFrameSameInstance_shouldReturn()
+    public void popToNextVisibleFrame_oneFrameSameInstance_shouldReturn()
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(TestUIFrame1.class);
-        pilotStack.popTopVisibleFrame();
-        Assert.assertEquals(0, pilotStack.getFrameSize());
+        pilotStack.popToNextVisibleFrame();
+        Assert.assertEquals(0, pilotStack.getSize());
     }
 
     @Test(expected= IllegalStateException.class)
-    public void popTopFrame_oneFrameDiffInstance_shouldThrow()
+    public void popTopFrameInstance_oneFrameDiffInstance_shouldThrow()
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(TestUIFrame1.class);
-        pilotStack.popTopVisibleFrame(new TestUIFrame1());
+        pilotStack.popTopFrameInstance(new PilotSyncerTest.TestUIFrame1());
     }
 
     @Test(expected= IllegalStateException.class)
-    public void popTopFrame_oneFrameDiffClass_shouldThrow()
+    public void popStackAtFrameType_oneFrameDiffClass_shouldThrow()
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(TestUIFrame1.class);
-        pilotStack.popTopVisibleFrame(new TestUIFrame2());
+        pilotStack.popAtFrameType(TestUIFrame2.class, PilotStack.PopType.INCLUSIVE, false);
     }
+
+    //==========================================================//
+    // popToNextVisibleFrame()
+    //==========================================================//
+
+    @Test
+    public void popToNextVisibleFrame_aboveSingleInivisibleFrame_invisibleFrameShouldPopAlso()
+    {
+        PilotStack pilotStack = new PilotStack();
+        pilotStack.pushFrame(TestInvisibleDataFrame.class);
+        pilotStack.pushFrame(TestUIFrame1.class);
+        pilotStack.popToNextVisibleFrame();
+        Assert.assertTrue(pilotStack.isEmpty());
+    }
+
+    @Test
+    public void popToNextVisibleFrame_aboveDataAndInvisFrame_shouldPopToVisibleFrame()
+    {
+        PilotStack pilotStack = new PilotStack();
+        pilotStack.pushFrame(TestUIFrame1.class);
+        pilotStack.pushFrame(TestInvisibleDataFrame.class);
+        pilotStack.pushFrame(TestUIFrame2.class);
+        pilotStack.popToNextVisibleFrame();
+        Assert.assertTrue(pilotStack.getTopVisibleFrame().getClass() == TestUIFrame1.class);
+        Assert.assertEquals(pilotStack.getSize(), 1);
+    }
+
+    //==========================================================//
+    // getScopedDataFrame()
+    //==========================================================//
 
     @Test
     public void getScopedDateFrame_noDataFramesOnStack_shouldReturnNull()
@@ -104,6 +137,10 @@ public class PilotStackTest extends TestCase
         Assert.assertNotNull(returnedFrame);
     }
 
+    //==========================================================//
+    // popAtFrameType()
+    //==========================================================//
+
     @Test
     public void popStackAtFrameType_threeFramesSameTypePopMiddleInclusive_listenerCalledWithFirstFrame()
     {
@@ -117,7 +154,7 @@ public class PilotStackTest extends TestCase
         pilotStack.setTopFrameChangedListener(mockedListener);
 
         //perform pop
-        pilotStack.popStackAtFrameType(TestUIFrame2.class, PilotStack.PopType.INCLUSIVE, true);
+        pilotStack.popAtFrameType(TestUIFrame2.class, PilotStack.PopType.INCLUSIVE, true);
 
         //verify listener method called
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
@@ -125,7 +162,7 @@ public class PilotStackTest extends TestCase
                 Matchers.eq(PilotStack.TopFrameChangedListener.Direction.BACK));
 
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(1, pilotStack.getFrameSize());
+        Assert.assertEquals(1, pilotStack.getSize());
     }
 
     @Test
@@ -141,12 +178,12 @@ public class PilotStackTest extends TestCase
         pilotStack.setStackEmptyListener(mockedListener);
 
         //perform pop
-        pilotStack.popStackAtFrameType(TestUIFrame1.class, PilotStack.PopType.INCLUSIVE, true);
+        pilotStack.popAtFrameType(TestUIFrame1.class, PilotStack.PopType.INCLUSIVE, true);
 
         //verify listener method called
         Mockito.verify(mockedListener).noVisibleFramesLeft();
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(0, pilotStack.getFrameSize());
+        Assert.assertEquals(0, pilotStack.getSize());
     }
 
     @Test
@@ -162,7 +199,7 @@ public class PilotStackTest extends TestCase
         pilotStack.setTopFrameChangedListener(mockedListener);
 
         //perform pop
-        pilotStack.popStackAtFrameType(TestUIFrame2.class, PilotStack.PopType.EXCLUSIVE, true);
+        pilotStack.popAtFrameType(TestUIFrame2.class, PilotStack.PopType.EXCLUSIVE, true);
 
         //verify listener method called
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
@@ -170,7 +207,7 @@ public class PilotStackTest extends TestCase
                 Matchers.eq(PilotStack.TopFrameChangedListener.Direction.BACK));
 
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(2, pilotStack.getFrameSize());
+        Assert.assertEquals(2, pilotStack.getSize());
     }
 
     @Test
@@ -186,12 +223,16 @@ public class PilotStackTest extends TestCase
         pilotStack.setTopFrameChangedListener(mockedListener);
 
         //perform pop
-        pilotStack.popStackAtFrameType(TestUIFrame3.class, PilotStack.PopType.EXCLUSIVE, true);
+        pilotStack.popAtFrameType(TestUIFrame3.class, PilotStack.PopType.EXCLUSIVE, true);
 
         //verify listener method called
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(3, pilotStack.getFrameSize());
+        Assert.assertEquals(3, pilotStack.getSize());
     }
+
+    //==========================================================//
+    // removeThisFrame()
+    //==========================================================//
 
     @Test
     public void removeThisFrame_threeFramesRemoveMiddle_listenerShouldBeRecalledWithTopFrame()
@@ -213,8 +254,12 @@ public class PilotStackTest extends TestCase
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
                 Matchers.isA(TestUIFrame3.class),
                 Matchers.eq(PilotStack.TopFrameChangedListener.Direction.BACK));
-        Assert.assertEquals(2, pilotStack.getFrameSize());
+        Assert.assertEquals(2, pilotStack.getSize());
     }
+
+    //==========================================================//
+    // ClearStack
+    //==========================================================//
 
     @Test
     public void clearStack_shouldPop()
@@ -268,7 +313,7 @@ public class PilotStackTest extends TestCase
         //add listener after push
         PilotStack.StackEmptyListener mockedListener = Mockito.mock(PilotStack.StackEmptyListener.class);
         pilotStack.setStackEmptyListener(mockedListener);
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popToNextVisibleFrame();
         //verify
         Mockito.verify(mockedListener).noVisibleFramesLeft();
         Mockito.verifyNoMoreInteractions(mockedListener);
@@ -283,7 +328,7 @@ public class PilotStackTest extends TestCase
         //add listener after push
         PilotStack.StackEmptyListener mockedListener = Mockito.mock(PilotStack.StackEmptyListener.class);
         pilotStack.setStackEmptyListener(mockedListener);
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popToNextVisibleFrame();
         //verify
         Mockito.verify(mockedListener).noVisibleFramesLeft();
         Mockito.verifyNoMoreInteractions(mockedListener);
@@ -301,7 +346,7 @@ public class PilotStackTest extends TestCase
         //add listener after push
         PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
         pilotStack.setTopFrameChangedListener(mockedListener);
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popToNextVisibleFrame();
 
         //verify
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
@@ -321,7 +366,7 @@ public class PilotStackTest extends TestCase
         //add listener after push
         PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
         pilotStack.setTopFrameChangedListener(mockedListener);
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popToNextVisibleFrame();
 
         //verify
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
@@ -332,7 +377,7 @@ public class PilotStackTest extends TestCase
     }
 
     @Test
-    public void popTopFrameOfCategory_UiDataUiDataStackPoppingTopUi_topTwoFramesRemovedListenerShouldBeCalledWithBottomUiFrame()
+    public void popStackAtFrameType_UiDataUiDataStackPoppingTopUi_topTwoFramesRemovedListenerShouldBeCalledWithBottomUiFrame()
     {
         PilotStack pilotStack = new PilotStack();
 
@@ -340,19 +385,19 @@ public class PilotStackTest extends TestCase
         pilotStack.pushFrame(TestInvisibleDataFrame.class);
         pilotStack.pushFrame(TestUIFrame2.class);
         pilotStack.pushFrame(TestInvisibleDataFrame.class);
-        Assert.assertEquals(4, pilotStack.getFrameSize());
+        Assert.assertEquals(4, pilotStack.getSize());
 
         //add listener after push
         PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
         pilotStack.setTopFrameChangedListener(mockedListener);
-        pilotStack.popTopVisibleFrame();
+        pilotStack.popAtFrameType(TestUIFrame2.class, PilotStack.PopType.INCLUSIVE, true);
         //verify
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
                 Matchers.isA(TestUIFrame1.class),
                 Matchers.eq(PilotStack.TopFrameChangedListener.Direction.BACK));
 
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(2, pilotStack.getFrameSize());
+        Assert.assertEquals(2, pilotStack.getSize());
     }
 
     @Test
@@ -363,19 +408,19 @@ public class PilotStackTest extends TestCase
         pilotStack.pushFrame(TestUIFrame1.class);
         pilotStack.pushFrame(TestInvisibleDataFrame.class);
         pilotStack.pushFrame(TestUIFrame2.class);
-        Assert.assertEquals(3, pilotStack.getFrameSize());
+        Assert.assertEquals(3, pilotStack.getSize());
 
         //add listener after push
         PilotStack.TopFrameChangedListener mockedListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
         pilotStack.setTopFrameChangedListener(mockedListener);
-        pilotStack.popStackAtFrameType(TestInvisibleDataFrame.class, PilotStack.PopType.INCLUSIVE, true);
+        pilotStack.popAtFrameType(TestInvisibleDataFrame.class, PilotStack.PopType.INCLUSIVE, true);
         //verify
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
                 Matchers.isA(TestUIFrame1.class),
                 Matchers.eq(PilotStack.TopFrameChangedListener.Direction.BACK));
 
         Mockito.verifyNoMoreInteractions(mockedListener);
-        Assert.assertEquals(1, pilotStack.getFrameSize());
+        Assert.assertEquals(1, pilotStack.getSize());
     }
 
     //==================================================================//

@@ -14,8 +14,6 @@ import java.util.Stack;
  * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link TopFrameChangedListener}.
  *
  * Not thread safe.
- *
- * //todo test serializing and deserialize
  */
 public class PilotStack implements Serializable
 {
@@ -50,18 +48,11 @@ public class PilotStack implements Serializable
     }
 
     /**
-     * @return top frame of the stack ignoring {@link InvisibleFrame}
+     * @return top frame of the stack ignoring {@link InvisibleFrame} or null
      */
     public PilotFrame getTopVisibleFrame()
     {
-        final int stackSize = mStack.size();
-        for(int i = stackSize-1; i >= 0; i--)
-        {
-            PilotFrame currentFrame = mStack.elementAt(i);
-            if(!isInvisibleFrame(currentFrame))
-                return currentFrame;
-        }
-        return null;
+        return getVisibleFrameFromTopDown(1);
     }
 
     /**
@@ -99,15 +90,18 @@ public class PilotStack implements Serializable
     }
 
     /**
-     * Pops the top (non {@link InvisibleFrame}) frame in the stack and will also remove any frame above
-     * this index in the stack.
-     *
-     * If no non {@link InvisibleFrame} frames exist nothing will happen.
+     * Removes all frames (inc {@link InvisibleFrame} above the 2nd highest visible frame. If only
+     * one visible frame exists in the stack the whole stack will be cleared. This is useful to
+     * simulate back behaviour.
      */
-    public PilotStack popTopVisibleFrame()
+    public PilotStack popToNextVisibleFrame()
     {
-        Class<? extends PilotFrame> frameClazz = getTopVisibleFrame().getClass();
-        popStackAtFrameType(frameClazz, PopType.INCLUSIVE, true);
+        PilotFrame nextVisibleFrame = getVisibleFrameFromTopDown(2);
+        if(nextVisibleFrame == null)
+            clearStack(true);
+        else
+            popAtFrameInstance(nextVisibleFrame, PopType.EXCLUSIVE, true);
+
         return this;
     }
 
@@ -117,7 +111,7 @@ public class PilotStack implements Serializable
      *
      * @param frameToPop not null
      */
-    public PilotStack popTopVisibleFrame(PilotFrame frameToPop)
+    public PilotStack popTopFrameInstance(PilotFrame frameToPop)
     {
         PilotFrame poppedFrame = mStack.pop();
         if(poppedFrame != frameToPop)
@@ -164,6 +158,38 @@ public class PilotStack implements Serializable
         EXCLUSIVE;
     }
 
+    public PilotStack popAtFrameInstance(PilotFrame pilotFrame, PopType popType, boolean notifyListeners)
+    {
+        for(int i = mStack.size()-1; i >= 0; i--)
+        {
+            //find the index in the stack that is the class type requested
+            if(mStack.get(i) == pilotFrame)
+            {
+                //account for INCLUSIVE or EXCLUSIVE removal
+                int removeFrom = (popType == PopType.INCLUSIVE ? i : i+1);
+                boolean removedVisibleFrames = popAllFramesAboveIndex(removeFrom);
+
+                //notify listeners
+                if(!notifyListeners)
+                    return this;
+
+                if(!removedVisibleFrames) //no Visible frame change
+                    return this;
+
+                PilotFrame topVisibleFrame = getTopVisibleFrame();
+                if(topVisibleFrame == null && mStackEmptyListener != null)
+                    mStackEmptyListener.noVisibleFramesLeft();
+                else if(mTopFrameChangedListener != null)
+                    mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+
+                //have found and popped at this point so now return
+                return this;
+            }
+        }
+
+        throw new IllegalStateException("Attempted to pop stack at "+pilotFrame.getClass().getCanonicalName()+" instance but was not found in stack");
+    }
+
     /**
      * Pops everything in the stack above (and including) the passed in class. Will look from the TOP
      * of the stack and perform operation for the first matching {@link PilotFrame} found.
@@ -173,7 +199,7 @@ public class PilotStack implements Serializable
      * @param  {@Link PopType#INCLUSIVE} if should pop the passed frame also, {@Link PopType#EXCLUSIVE} if this frame should become the new top
      * @param notifyListeners true if should notify registered listeners for frame changes
      */
-    public PilotStack popStackAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
+    public PilotStack popAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
     {
         for(int i = mStack.size()-1; i >= 0; i--)
         {
@@ -226,14 +252,54 @@ public class PilotStack implements Serializable
         return null;
     }
 
+    /**
+     * Sanity check
+     *
+     * @return
+     */
+    public boolean doesContainVisibleFrame()
+    {
+        for(PilotFrame pilotFrame : mStack)
+        {
+            if(!isInvisibleFrame(pilotFrame))
+                return true;
+        }
+
+        return false;
+    }
+
     public boolean isEmpty()
     {
         return mStack.isEmpty();
     }
 
+    public int getSize()
+    {
+        return mStack.size();
+    }
+
     //==================================================================//
     // Private methods
     //==================================================================//
+
+    /**
+     * Returns the x vis frame from the top of the stack. I.e. 1 = top vis, 2 = 2nd top vis etc
+     *
+     * @param positionFromTop > 0
+     * @return PilotFrame or null is positionFromTop does not exist
+     */
+    public PilotFrame getVisibleFrameFromTopDown(int positionFromTop)
+    {
+        final int stackSize = mStack.size();
+        int topDownVisCount = 0;
+        for(int i = stackSize-1; i >= 0; i--)
+        {
+            PilotFrame currentFrame = mStack.elementAt(i);
+            if(!isInvisibleFrame(currentFrame) && ++topDownVisCount == positionFromTop)
+                return currentFrame;
+        }
+        return null;
+    }
 
     private PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
         try
@@ -295,11 +361,6 @@ public class PilotStack implements Serializable
         }
 
         return visibleFrameRemoved;
-    }
-
-    int getFrameSize()
-    {
-        return mStack.size();
     }
 
     private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, TopFrameChangedListener.Direction direction)
