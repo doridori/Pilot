@@ -91,7 +91,7 @@ public class PilotLifecycleManager
      */
     public void onSaveInstanceStateDelegate(Bundle outState)
     {
-        outState.putSerializable(getStateSaveBundleKey(), pilotStack);
+        //TODO #26
     }
 
     /**

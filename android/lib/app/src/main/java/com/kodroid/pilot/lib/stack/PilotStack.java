@@ -15,7 +15,7 @@ import java.util.Stack;
  *
  * Not thread safe.
  */
-public class PilotStack implements Serializable
+public class PilotStack
 {
     private Stack<PilotFrame> mStack = new Stack<>();
 
