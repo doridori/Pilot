@@ -46,6 +46,8 @@ You may end up with a single-`Activity` application with nothing but simple `Vie
 
 Of course I am not the first to think in the way. The guys at Square were talking about [very similar things](https://corner.squareup.com/2014/10/advocating-against-android-fragments.html) (simple Views and abstract backstack management) years ago - this is a slightly different approach for how to realise those concepts.
 
+Nor am I the last! [Conductor](https://github.com/bluelinelabs/Conductor) is a very similar library which has appeared with the same concepts (and better documentation). Good to see others are thinking along the same lines. I will continue with Pilot however as sure we will have slightly differnt take on things.
+
 #Doc Contents
 
 The rest of this README is split across a few doc files:
