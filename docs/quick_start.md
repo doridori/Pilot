@@ -52,7 +52,7 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
     {
 	//...
 	
-	//The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
+        //The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
         pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
         pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
     }
