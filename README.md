@@ -11,6 +11,8 @@ An `android.*` decoupled application stack which facilitates:
 - Stack-based data scoping
 - Use of any kind of MV* approach
 
+![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
+
 ##Why?
 
 - Cleaner, decoupled code
@@ -19,7 +21,17 @@ An `android.*` decoupled application stack which facilitates:
 - Easy testing
 - As facilitates MV* approaches this means not having to think about asynchronous operations in your UI code (i.e. you can ignore `Loaders`, RxLifecycle handling or whatever other approach being used to work around the android lifecycle)
 
-![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
+##How?
+
+Type                 | SRP 
+---------------------|------------------------------
+PilotStack           |A `Stack` of `PilotFrame` objects
+PilotFrame           |Frame that lives in a `PilotStack`. May represent a Screen or scoped-data
+PilotSyncer          |Holds the `UITypeHandler` collection that is queried upon `PilotStack` change events
+UITypeHandler        |Interface for an object that can compose a UI for a given set of `PilotFrame` classes
+PilotLifecycleManager|Bridge between the hosting Activities lifecycle events and a `PilotStack` instance
+PilotFrameLayout     |Convenience `FrameLayout` base for `BackedByFrame` backed views
+@BackedByFrame       |Annotation to link a `PilotFrameLayout` to a `PilotFrame` instance
 
 **_27/05/16 Note:_ this is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.**
 
