@@ -33,8 +33,6 @@ PilotLifecycleManager|Bridge between the hosting Activities lifecycle events and
 PilotFrameLayout     |Convenience `FrameLayout` base for `BackedByFrame` backed views
 @BackedByFrame       |Annotation to link a `PilotFrameLayout` to a `PilotFrame` instance
 
-**_27/05/16 Note:_ this is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.**
-
 #Intro
 
 **Pilot** is an effort to abstract a simple Android Application-Navigation-Stack. 
@@ -44,6 +42,8 @@ Android development blurs the line between UI declaration and application flow. 
 A popular approach is to use an MV* based architecture to separate some form of Controller / Presenter variant from the UI. This is great and has many benefits. However, there are not many projects out there that facilitate UI-less controller -> controller flow. This is the hole that Pilot is aiming to fill.
 
 There are multiple benefits of allowing such a flow. If you have not already I recommend you read the [Motivations post](http://doridori.github.io/Android-Architecture-Pilot/).
+
+**_27/05/16 Note:_ this is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.**
 
 #Supplementary Aims
 
