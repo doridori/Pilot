@@ -4,10 +4,12 @@
 
 An `android.*` decoupled application stack which facilitates:
 
-- Presenter -> Presenter control flow
-- Stack-based Presenter lifecycle management
+- Single `Activity` applications
 - A `View` based architecture 
-- Fine grained data scope management
+- `android.*`-less app navigation (i.e. controller -> controller)
+- An abstract backstack
+- Stack-based data scoping
+- Use of any kind of MV* approach
 
 What the practical benefit of the above?
 
