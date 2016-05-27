@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Frame that lives in a {@link PilotStack}. Has simple stack lifecycle methods and supports an optional
- * Visitor used to expose frame specific interfaces. Also supports Categorization via annotations for
- * category specific operations and listeners on the holding {@link PilotStack}
+ * Frame that lives in a {@link PilotStack}. 
  */
 public abstract class PilotFrame implements Serializable
 {
