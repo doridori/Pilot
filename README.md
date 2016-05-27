@@ -16,7 +16,7 @@ An `android.*` decoupled application stack which facilitates:
 - Cleaner, decoupled code
 - Avoiding `Fragments` is desired for many reasons, not limited to flexibility of how the backstack is used
 - Flexibity of what lives in the backstack enables easy data-scoping for session / screen data as it lives in the stack rather than being passed around or statically based
-- Greatly facilitates **speedy JVM based UI and app navigation** testing as more code is decoupled from the `android.*` namespace
+- Easy testing
 - As facilitates MV* approaches this means not having to think about asynchronous operations in your UI code (i.e. you can ignore `Loaders`, RxLifecycle handling or whatever other approach being used to work around the android lifecycle)
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
