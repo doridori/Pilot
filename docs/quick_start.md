@@ -2,58 +2,6 @@
 
 Have a quick look at [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md) and then see below for how to implement with Pilot.
     
-
- 
-##Integrate `PilotLifecycleManager` into your `Activity`
-
-`PilotLifecycleManager` will ensure there is always a valid `PilotStack` instance available.  This also allows us a simple mechanism of retaining the `PilotStack` on config-change and will handle saving / restoring the `PilotStack` on process death.
-
-Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
-
-```java
-    //static so will live as long as the process lives
-    public static PilotStack sPilotStack;
-    
-    public PilotLifecycleManager pilotLifecycleManager;
-
-    //==================================================================//
-    // Lifecycle
-    //==================================================================//
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-	//...
-	
-        //The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
-        pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
-        pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        pilotLifecycleManager.onDestroyDelegate(this);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        pilotLifecycleManager.onSaveInstanceStateDelegate(outState);
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        pilotLifecycleManager.onBackPressedDelegate();
-    }
-```
-
-Note inside `onCreate` we pass the `PilotSyncer` we declared earlier.
-
-
 ##Create some `PilotFrame` subclasses
 
 These represent the **app states** (think _LoginScreen_ or _ContentScreen_) and the **data-scopes** (think _session_ or _domain-driven-process_)  of your application and are the things that will live on the stack.
@@ -107,6 +55,55 @@ private PilotSyncer buildPilotSyncer(FrameLayout rootView)
     return new PilotSyncer(allViewsUiTypeHandler);
 }
 ```
+
+##Integrate `PilotLifecycleManager` into your `Activity`
+
+`PilotLifecycleManager` will ensure there is always a valid `PilotStack` instance available.  This also allows us a simple mechanism of retaining the `PilotStack` on config-change and will handle saving / restoring the `PilotStack` on process death.
+
+Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
+
+```java
+    //static so will live as long as the process lives
+    public static PilotStack sPilotStack;
+    
+    public PilotLifecycleManager pilotLifecycleManager;
+
+    //==================================================================//
+    // Lifecycle
+    //==================================================================//
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+	//...
+	
+        //The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
+        pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
+        pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        pilotLifecycleManager.onDestroyDelegate(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        pilotLifecycleManager.onSaveInstanceStateDelegate(outState);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        pilotLifecycleManager.onBackPressedDelegate();
+    }
+```
+
+Note inside `onCreate` we pass the `PilotSyncer` we declared earlier.
 
 ##Launch your app
 
