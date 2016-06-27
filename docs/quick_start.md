@@ -27,6 +27,7 @@ For an example check out [Example Frame & View](https://github.com/doridori/Pilo
 Each main view/screen of the application will be represented by a `PilotFrame` subclass, which will hold that screens ViewState and communicate with any asynchronous code. Each of these `PilotState`s need to have a corresponding `View` class that will represent it. In this documentation I am referring to these as _Top Level Views_ (TLV). These can to be declared as so: 
 
 ```java
+@SuppressWarnings("unchecked")
 static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = new Class[]
     {
         FirstView.class,
