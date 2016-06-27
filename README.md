@@ -77,8 +77,10 @@ The rest of this README is split across a few doc files:
 #Usage
 
 ```gradle
-maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots"
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
