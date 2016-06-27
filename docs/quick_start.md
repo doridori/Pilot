@@ -11,6 +11,11 @@ Have a quick look at [Example Frame & View](https://github.com/doridori/Pilot/bl
 Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
 
 ```java
+    //static so will live as long as the process lives
+    public static PilotStack sPilotStack;
+    
+    public PilotLifecycleManager pilotLifecycleManager;
+
     //==================================================================//
     // Lifecycle
     //==================================================================//
