@@ -19,9 +19,10 @@ public class Args implements Serializable
         return args;
     }
 
-    public void put(String key, Serializable value)
+    public Args put(String key, Serializable value)
     {
         serializableMap.put(key, value);
+        return this;
     }
 
     @SuppressWarnings("unchecked")
