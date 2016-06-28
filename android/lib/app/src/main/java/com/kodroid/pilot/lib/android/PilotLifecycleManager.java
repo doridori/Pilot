@@ -145,7 +145,7 @@ public class PilotLifecycleManager
             }
             catch (Exception e)
             {
-                throw new RuntimeException("Launch frame cant be instantiated, check this frame has a no-arg constructor: "+launchFrameClass.getCanonicalName(), e);
+                throw new RuntimeException("Launch frame cant be instantiated, check this frame has a no-arg constructor which calls super(null): "+launchFrameClass.getCanonicalName(), e);
             }
         }
     }
