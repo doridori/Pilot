@@ -26,7 +26,7 @@ public abstract class PilotFrame implements Serializable
      */
     protected PilotFrame()
     {
-        throw new RuntimeException("Subclasses need to call super(Args)");
+        throw new RuntimeException("Subclass Frames need to call super(Args)");
     }
 
     /**
