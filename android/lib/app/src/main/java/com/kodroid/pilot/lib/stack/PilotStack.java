@@ -311,19 +311,19 @@ public class PilotStack
         }
         catch (InstantiationException e)
         {
-            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args), e);
         }
         catch (IllegalAccessException e)
         {
-            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args), e);
         }
         catch (InvocationTargetException e)
         {
-            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args), e);
         }
         catch (NoSuchMethodException e)
         {
-            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args));
+            throw new RuntimeException(getInovcationExceptionMsg(frameClassToPush, args), e);
         }
     }
 
