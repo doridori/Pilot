@@ -16,6 +16,16 @@ public class ExamplePresenter extends PilotFrame
     }
     
     //==================================================================//
+    // Lifecycle
+    //==================================================================//
+    
+    @Override
+    public void pushed()
+    {
+        //perform some actions here that may interact with getParentStack() i.e. check something and maybe transition app state
+    }
+    
+    //==================================================================//
     // Inputs / User Actions
     //==================================================================//
     
