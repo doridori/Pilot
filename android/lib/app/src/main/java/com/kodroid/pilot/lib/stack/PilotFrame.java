@@ -77,12 +77,12 @@ public abstract class PilotFrame implements Serializable
     //==================================================================//
 
     /**
-     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref at this point.
+     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref at this point. Only called once.
      */
     public void pushed(){}
 
     /**
-     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref until this method returns
+     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref until this method returns. Only called once.
      */
     public void popped(){}
 
