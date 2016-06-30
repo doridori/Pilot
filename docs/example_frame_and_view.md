@@ -78,6 +78,16 @@ public class ExampleView extends PilotFrameLayout<ExamplePresenter>
         super(context);
         LayoutInflater.from(getContext()).inflate(R.layout.view_example, this, true);
     }
+    
+    //==================================================================//
+    // Lifecycle
+    //==================================================================//
+    
+    @Override
+    public void backingFrameSet(PinFrame backingPilotFrame)
+    {
+        //do something that may interact with the backing frame
+    }
 
     //==================================================================//
     // Presenter Updates
