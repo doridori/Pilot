@@ -61,12 +61,8 @@ public class PilotLifecycleManager
         pilotStack.setTopFrameChangedListener(pilotUISyncer);
         pilotStack.setStackEmptyListener(stackEmptyListener);
 
-        need to delegate to the Rebuilder at this point https://github.com/doridori/Pilot/issues/5
-        //get the top frame of the stack and visit it - this will ensure that the view displayed matches the top frame.
-        final PilotFrame topFrame = pilotStack.getTopVisibleFrame();
-        //manually call the stack listener
-        should replace with a render stack method
-        pilotUISyncer.topVisibleFrameUpdated(topFrame, PilotStack.TopFrameChangedListener.Direction.FORWARD);
+        //render everything that should be currently seen on screen
+        pilotUISyncer.renderAllCurrentlyVisibleFrames(pilotStack);
     }
 
     /**

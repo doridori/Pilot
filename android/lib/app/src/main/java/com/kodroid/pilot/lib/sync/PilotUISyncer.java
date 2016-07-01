@@ -61,6 +61,8 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
      * Views that are currently being drawn to screen (Views behind not full screen opaque view are
      * treated as visible in this context).
      *
+     * Top frame index 0
+     *
      * @param pilotStack
      * @return
      */
@@ -99,7 +101,15 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     // Frame Rendering
     //==================================================================//
 
-    render all vis
+    /**
+     * Will render all passed frames, bottom up. Should be used after a config change.
+     */
+    public void renderAllCurrentlyVisibleFrames(PilotStack pilotStack)
+    {
+        List<PilotFrame> framesToRender = getCurrentlyVisibleFrames(pilotStack);
+        for(int i = framesToRender.size() - 1; i >= 0; i--)
+            topVisibleFrameUpdated(framesToRender.get(i), Direction.FORWARD);
+    }
 
     @Override
     public void topVisibleFrameUpdated(PilotFrame topVisibleFrame, Direction direction)
