@@ -93,6 +93,6 @@ WIP see [Issue](https://github.com/doridori/Pilot/issues/7) representing this ta
 
 ##Opaqueness 
 
-WIP (knock on effect for dialogs / nav drawer / master detail etc)
+A frame can represent a View that is opaque or partially transparent. This infomation is stored obtained via a `UITypeHandlers.isOpaque()` method (see [#20](https://github.com/doridori/Pilot/issues/20)). This also affects the Frames visibility lifecycle callbacks i.e. only an opaque frame will result in a lower frame getting a lost top visible frame callback. 
 
 
