@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot) [![Maven Central](https://img.shields.io/badge/Maven%20Central%20SNAPSHOT-v0.7.0-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/kodroid/pilot/0.7.0-SNAPSHOT/)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot) [![Stories in Ready](https://badge.waffle.io/doridori/Pilot.png?label=ready&title=Ready)](https://waffle.io/doridori/Pilot) [![Maven Central](https://img.shields.io/badge/Maven%20Central%20SNAPSHOT-v0.9.0-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/kodroid/pilot/0.9.0-SNAPSHOT/)
 
 #Pilot
 
@@ -84,7 +84,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.kodroid:pilot:0.7.0-SNAPSHOT'
+    compile 'com.kodroid:pilot:0.9.0-SNAPSHOT'
 }
 ```
 
