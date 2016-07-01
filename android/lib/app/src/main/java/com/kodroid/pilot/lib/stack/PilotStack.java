@@ -311,7 +311,7 @@ public class PilotStack
         for(int i = stackSize-1; i >= 0; i--)
         {
             PilotFrame currentFrame = stack.elementAt(i);
-            if(!isInvisibleFrame(currentFrame) && ++topDownVisCount == positionFromTop)
+            if(!isInvisibleFrame(currentFrame) && topDownVisCount++ == positionFromTop)
                 return currentFrame;
         }
         return null;

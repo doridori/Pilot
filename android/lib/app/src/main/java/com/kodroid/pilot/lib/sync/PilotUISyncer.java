@@ -34,7 +34,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     // Hosting Activity Visibility Events
     //==================================================================//
 
-    test
+    //TODO test
     public void hostActivityOnStarted()
     {
         hostActivityStarted = true;
@@ -43,7 +43,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
             frame.frameViewVisible(true);
     }
 
-    test
+    //TODO test
     public void hostActivityOnStopped()
     {
         hostActivityStarted= false;
@@ -70,9 +70,9 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     {
         List<PilotFrame> currentlyVisibleFrames = new LinkedList<>();
 
+        int count = 0;
         while(true)
         {
-            int count = 0;
             PilotFrame frame = pilotStack.getVisibleFrameFromTopDown(count);
             if(frame == null) //EOL
                 return currentlyVisibleFrames;
