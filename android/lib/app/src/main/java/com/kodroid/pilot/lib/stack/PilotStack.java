@@ -18,10 +18,9 @@ public class PilotStack
 {
     private Stack<PilotFrame> stack = new Stack<>();
 
-    private TopFrameChangedListener topFrameChangedListener;
     private StackEmptyListener stackEmptyListener;
+    private TopFrameChangedListener topFrameChangedListener;
     private PilotFrameFactory pilotFrameFactory;
-    private boolean stackVisible;
 
     //==================================================================//
     // Constructor
@@ -101,10 +100,7 @@ public class PilotStack
         frameToPush.pushed();
 
         if(!isInvisibleFrame(frameToPush))
-        {
             notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
-            frameToPush.onVisibleFrameStatusChange(stackVisible);
-        }
 
         return this;
     }
@@ -161,14 +157,6 @@ public class PilotStack
 
         notifyListenersNewBackFrame();
         return this;
-    }
-
-    public void setStackVisible(boolean stackVisible) {
-        this.stackVisible = stackVisible;
-
-        PilotFrame top = getTopVisibleFrame();
-        if(top != null)
-            top.onVisibleFrameStatusChange(stackVisible);
     }
 
     /**

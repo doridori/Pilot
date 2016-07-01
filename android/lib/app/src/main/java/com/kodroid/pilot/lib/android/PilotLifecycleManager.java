@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
-import com.kodroid.pilot.lib.sync.PilotSyncer;
+import com.kodroid.pilot.lib.sync.PilotUISyncer;
 
 /**
  * This classes SRP is to bridge between the hosting Activities lifecycle events (and death / recreation) and a constant PilotStack instance.
@@ -44,12 +44,12 @@ public class PilotLifecycleManager
      * Pilot will not have had a chance to be recreated and therefore will be duplicated.
      *
      * @param savedInstanceState forward the activity's save state bundle here for auto pilot stack state restoration on process death (only)
-     * @param pilotSyncer will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
+     * @param pilotUISyncer will be added to the backing PilotStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      */
     public void onCreateDelegate(
             Bundle savedInstanceState,
-            PilotSyncer pilotSyncer,
+            PilotUISyncer pilotUISyncer,
             PilotStack.StackEmptyListener stackEmptyListener)
     {
         if(pilotStack.isEmpty())
@@ -57,15 +57,16 @@ public class PilotLifecycleManager
         else if(!pilotStack.doesContainVisibleFrame())
             throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
-        //re-hookup event listener for view mngr
-        pilotStack.setTopFrameChangedListener(pilotSyncer);
+        //hookup all event listeners to stack
+        pilotStack.setTopFrameChangedListener(pilotUISyncer);
         pilotStack.setStackEmptyListener(stackEmptyListener);
 
-        //TODO need to delegate to the Rebuilder at this point https://github.com/doridori/Pilot/issues/5
+        need to delegate to the Rebuilder at this point https://github.com/doridori/Pilot/issues/5
         //get the top frame of the stack and visit it - this will ensure that the view displayed matches the top frame.
         final PilotFrame topFrame = pilotStack.getTopVisibleFrame();
         //manually call the stack listener
-        pilotSyncer.topVisibleFrameUpdated(topFrame, PilotStack.TopFrameChangedListener.Direction.FORWARD);
+        should replace with a render stack method
+        pilotUISyncer.topVisibleFrameUpdated(topFrame, PilotStack.TopFrameChangedListener.Direction.FORWARD);
     }
 
     /**
@@ -75,15 +76,8 @@ public class PilotLifecycleManager
      */
     public void onDestroyDelegate(Activity activity)
     {
-        //remove listener so callbacks are not triggered when Activity in destroy state
+        //remove listeners so callbacks are not triggered when Activity in destroy state
         pilotStack.deleteListeners();
-
-        //Get rid of the stack if activity is finishing for good. This will not be true if something temp killed in the backstack https://github.com/doridori/Pilot/issues/8
-        if(activity.isFinishing())
-        {
-            //TODO call clear on stack to allow any explicit data cleanup inside frame callbacks if don't want to wait for JVM
-            pilotStack = null;
-        }
     }
 
     /**

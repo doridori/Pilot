@@ -1,6 +1,6 @@
 package com.kodroid.pilot.lib.stack;
 
-import com.kodroid.pilot.lib.sync.PilotSyncerTest;
+import com.kodroid.pilot.lib.sync.PilotUISyncerTest;
 
 import junit.framework.TestCase;
 
@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.InOrder;
 import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
@@ -79,7 +79,7 @@ public class PilotStackTest extends TestCase
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(TestUIFrame1.class);
-        pilotStack.popTopFrameInstance(new PilotSyncerTest.TestUIFrame1());
+        pilotStack.popTopFrameInstance(new PilotUISyncerTest.TestUIFrame1());
     }
 
     @Test(expected= IllegalStateException.class)
@@ -463,10 +463,8 @@ public class PilotStackTest extends TestCase
     // Visibility Lifecycle Tests
     //==================================================================//
 
-
-
     @Test
-    public void onVisibleFrameStatusChange_variousStackOps_shouldGetVisibleCallbacks()
+    public void onVisibleFrameStatusChange_addingToTopOfStackAndChangingStackVis_shouldGetVisibleCallbacks()
     {
         final PilotFrame[] mock = new PilotFrame[1];
 
@@ -498,7 +496,38 @@ public class PilotStackTest extends TestCase
         //should ignore visibility changes now
         pilotStack.setStackVisible(false);
         //todo check ignored
+    }
 
+    @Test
+    public void onVisibleFrameStatusChange_moveBetweenTopAndBottomOfVisibleStack_shouldReceiveLifecycleCallbacks()
+    {
+        final PilotFrame[] mock = new PilotFrame[1];
+
+        //create with spying factory
+        PilotStack pilotStack = new PilotStack(new PilotFrameFactory() {
+            @Override
+            public PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+                //only mock first frame
+                if(mock[0] != null) return new PilotStack.InternalPilotFrameFactory().createFrame(frameClassToPush, args);
+                mock[0] = Mockito.mock(frameClassToPush);
+                return mock[0];
+            }
+        });
+        pilotStack.setStackVisible(true);
+
+        //check initial vis state called
+        pilotStack.pushFrame(NoArgsPilotFrame.class);
+        InOrder inOrder = Mockito.inOrder(mock[0]);
+        inOrder.verify(mock[0]).pushed();
+        inOrder.verify(mock[0]).onVisibleFrameStatusChange(true);
+
+        //push another frame on top - mock should get invis callback
+        pilotStack.pushFrame(NoArgsPilotFrame.class);
+        inOrder.verify(mock[0]).onVisibleFrameStatusChange(false);
+
+        //remove top frame
+        pilotStack.popToNextVisibleFrame();
+        inOrder.verify(mock[0]).onVisibleFrameStatusChange(true);
     }
 
     //==================================================================//

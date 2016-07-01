@@ -9,7 +9,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
-public class PilotSyncerTest
+public class PilotUISyncerTest
 {
     //==================================================================//
     // Opaque frame tests
@@ -53,8 +53,8 @@ public class PilotSyncerTest
         };
 
         UITypeHandler spyHandler = Mockito.spy(stubHandler);
-        PilotSyncer pilotSyncer = new PilotSyncer(spyHandler, opaqueUiTypeHandler);
-        pilotSyncer.topVisibleFrameUpdated(new TestUIFrame1(), PilotStack.TopFrameChangedListener.Direction.FORWARD);
+        PilotUISyncer pilotUISyncer = new PilotUISyncer(spyHandler, opaqueUiTypeHandler);
+        pilotUISyncer.topVisibleFrameUpdated(new TestUIFrame1(), PilotStack.TopFrameChangedListener.Direction.FORWARD);
 
         Mockito.verify(spyHandler).clearAllUI();
     }

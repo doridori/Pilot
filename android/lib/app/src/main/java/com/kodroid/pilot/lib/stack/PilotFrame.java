@@ -87,10 +87,11 @@ public abstract class PilotFrame implements Serializable
     public void popped(){}
 
     /**
-     * Can be called between {@link #pushed()} and {@link #popped()}. Will be called directly after
-     * {@link #pushed()} with stack visibility state and then once for each stack visibility state change until {@link #popped()}.
+     * Received between {@link #pushed()} and {@link #popped()}.
+     *
+     * @param frameViewVisible true if a view is visible on screen thats backed by this frame
      */
-    public void onVisibleFrameStatusChange(boolean frameTopVisibleFrameOfVisibleStack){};
+    public void frameViewVisible(boolean frameViewVisible){};
 
     //==================================================================//
     // Observable
