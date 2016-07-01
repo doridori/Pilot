@@ -1,5 +1,3 @@
-#WIP - Out of date - needs updating 
-
 #General Concepts
 
 ##Single-Activity Application
@@ -8,12 +6,12 @@ I find a lot of the applications I have build in the last couple of years sit in
 
 Advantage: Simple
 
-##Presenter-to-Presenter control flow
+##Frame-to-Frame control flow
 
 As mentioned in the `Motivations` post above this kind of control flow (which bypasses `android.*` classes completly has its advantages) and is made very simple with Pilot. An example below
 
 ```java
-public class FirstViewPresenter extends PilotFrame
+public class FirstViewFrame extends PilotFrame
 {
     ...
     public void somethingHappened()
@@ -35,9 +33,7 @@ This may seem overly simple - but in my mind thats a good thing! There are many 
 
 ##How Presenters are attached to Views and displayed.
 
-This is probably most easily illustrated with a Sequence diagram, see below.
-
-![Main sequence](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/init_sequence.png)
+//todo
 
 ###What about after a config-change?
 
@@ -85,32 +81,15 @@ This has benefits of scoped data being able to handle its own lifecycle and also
 
 ##Controller Lifecycle Events
 
-WIP see [Issue](https://github.com/doridori/Pilot/issues/2) representing this task.
+WIP see [Issue](https://github.com/doridori/Pilot/issues/7) representing this task.
 
-##Callbacks
+##onFrameResult
 
-One advantage of using presenter-to-presenter comms is that we can just pass operation callbacks directly. This is a lot simpler that using things like `startActivityForResult()` and having to convert your operations to ints and bundles. You can just pass a callback class / anon class / closure (if using retroLambda) directly to the instantianted Presenter.
-
-"But what about PilotStack state persistence and callbacks?" I hear you ask. Yes this is a common issue when passing callback objects to `Fragment` and `View` implementations as on rotation these view objects are reinflated and your callbacks are lost resulting in a fun NPE. As the PilotStack is persisted on config change we dont have to worry about this. Regardless callbacks being retained on process death, this is quite interesting. If we are Serializing the stack (as talked about elsewhere in this readme) and we have a callback like
-
-```java
-	getParentStack().pushFrame(new SecondViewPresenter(new SomeCallback
-	{
-		public void doSomething()
-		{
-			//doing something!
-	    }
-	}
-	}));
-```
-
-This relationship will be preserved on Deserialization! This however does require callbacks are Serializable. Alpternativly you could fall back to using a version of result codes and just pass primitives around to trigger callback behaviour.
+//todo
 
 ##Handling Process Death
 
-Some times you want your apps state to survive process death. This happens for free inside the `PilotManager` class via the `Activity` lifecycle delegation methods.
-
-Some may complain that serialization is slow and is not ideal. You are right! A possible tweak is to use Parcelable or @AutoParcel in place of Serialization. See [related issue](https://github.com/doridori/Pilot/issues/7).
+//todo
 
 ##Opaqueness 
 

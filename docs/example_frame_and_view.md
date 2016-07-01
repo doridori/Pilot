@@ -16,6 +16,16 @@ public class ExamplePresenter extends PilotFrame
     }
     
     //==================================================================//
+    // Lifecycle
+    //==================================================================//
+    
+    @Override
+    public void pushed()
+    {
+        //perform some actions here that may interact with getParentStack() i.e. check something and maybe transition app state
+    }
+    
+    //==================================================================//
     // Inputs / User Actions
     //==================================================================//
     
@@ -67,6 +77,16 @@ public class ExampleView extends PilotFrameLayout<ExamplePresenter>
     {
         super(context);
         LayoutInflater.from(getContext()).inflate(R.layout.view_example, this, true);
+    }
+    
+    //==================================================================//
+    // Lifecycle
+    //==================================================================//
+    
+    @Override
+    public void backingFrameSet(PinFrame backingPilotFrame)
+    {
+        //do something that may interact with the backing frame
     }
 
     //==================================================================//
