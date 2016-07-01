@@ -89,7 +89,8 @@ public abstract class PilotFrame implements Serializable
     /**
      * Received between {@link #pushed()} and {@link #popped()}.
      *
-     * @param frameViewVisible true if a view is visible on screen thats backed by this frame
+     * @param frameViewVisible true if a view is visible-on-screen that's backed by this frame.
+     *                         False if a previously visible-on-screen view is no longer visible but still on the stack.
      */
     public void frameViewVisible(boolean frameViewVisible){};
 
