@@ -1,6 +1,5 @@
 package com.kodroid.pilot.lib.stack;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Stack;
 
@@ -17,13 +16,31 @@ import java.util.Stack;
  */
 public class PilotStack
 {
-    private Stack<PilotFrame> mStack = new Stack<>();
+    private Stack<PilotFrame> stack = new Stack<>();
+
+    private TopFrameChangedListener topFrameChangedListener;
+    private StackEmptyListener stackEmptyListener;
+    private PilotFrameFactory pilotFrameFactory;
+    private boolean stackVisible;
+
+    //==================================================================//
+    // Constructor
+    //==================================================================//
+
+    public PilotStack()
+    {
+        this(new InternalPilotFrameFactory());
+    }
 
     /**
-     * stack event listener
+     * Ease of testing
+     *
+     * @param pilotFrameFactory
      */
-    private transient TopFrameChangedListener mTopFrameChangedListener;
-    private transient StackEmptyListener mStackEmptyListener;
+    PilotStack(PilotFrameFactory pilotFrameFactory)
+    {
+        this.pilotFrameFactory = pilotFrameFactory;
+    }
 
     //==================================================================//
     // Stack Operations (public)
@@ -41,8 +58,8 @@ public class PilotStack
     {
         popAllFramesAboveIndex(0);
 
-        if(notifyListeners && mStackEmptyListener != null)
-            mStackEmptyListener.noVisibleFramesLeft();
+        if(notifyListeners && stackEmptyListener != null)
+            stackEmptyListener.noVisibleFramesLeft();
 
         return this;
     }
@@ -76,15 +93,18 @@ public class PilotStack
      */
     public PilotStack pushFrame(Class<? extends PilotFrame> frameClassToPush, Args args)
     {
-        PilotFrame frameToPush = createFrame(frameClassToPush, args);
+        PilotFrame frameToPush = pilotFrameFactory.createFrame(frameClassToPush, args);
 
         //put on stack
         frameToPush.setParentStack(this);
-        mStack.push(frameToPush);
+        stack.push(frameToPush);
         frameToPush.pushed();
 
         if(!isInvisibleFrame(frameToPush))
+        {
             notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
+            frameToPush.onVisibleFrameStatusChange(stackVisible);
+        }
 
         return this;
     }
@@ -113,7 +133,7 @@ public class PilotStack
      */
     public PilotStack popTopFrameInstance(PilotFrame frameToPop)
     {
-        PilotFrame poppedFrame = mStack.pop();
+        PilotFrame poppedFrame = stack.pop();
         if(poppedFrame != frameToPop)
             throw new IllegalStateException(frameToPop.getClass().getName()+" instance was not the top of the stack");
 
@@ -133,7 +153,7 @@ public class PilotStack
      */
     public PilotStack removeFrame(PilotFrame frameToRemove)
     {
-        if(!mStack.remove(frameToRemove))
+        if(!stack.remove(frameToRemove))
             throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");
 
         frameToRemove.popped();
@@ -141,6 +161,11 @@ public class PilotStack
 
         notifyListenersNewBackFrame();
         return this;
+    }
+
+    public void setStackVisible(boolean stackVisible) {
+        this.stackVisible = stackVisible;
+        //todo notify top frame of visibility change + test
     }
 
     /**
@@ -160,10 +185,10 @@ public class PilotStack
 
     public PilotStack popAtFrameInstance(PilotFrame pilotFrame, PopType popType, boolean notifyListeners)
     {
-        for(int i = mStack.size()-1; i >= 0; i--)
+        for(int i = stack.size()-1; i >= 0; i--)
         {
             //find the index in the stack that is the class type requested
-            if(mStack.get(i) == pilotFrame)
+            if(stack.get(i) == pilotFrame)
             {
                 //account for INCLUSIVE or EXCLUSIVE removal
                 int removeFrom = (popType == PopType.INCLUSIVE ? i : i+1);
@@ -177,10 +202,10 @@ public class PilotStack
                     return this;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(topVisibleFrame == null && mStackEmptyListener != null)
-                    mStackEmptyListener.noVisibleFramesLeft();
-                else if(mTopFrameChangedListener != null)
-                    mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+                if(topVisibleFrame == null && stackEmptyListener != null)
+                    stackEmptyListener.noVisibleFramesLeft();
+                else if(topFrameChangedListener != null)
+                    topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
                 return this;
@@ -201,10 +226,10 @@ public class PilotStack
      */
     public PilotStack popAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
     {
-        for(int i = mStack.size()-1; i >= 0; i--)
+        for(int i = stack.size()-1; i >= 0; i--)
         {
             //find the index in the stack that is the class type requested
-            if(mStack.get(i).getClass() == clazz)
+            if(stack.get(i).getClass() == clazz)
             {
                 //account for INCLUSIVE or EXCLUSIVE removal
                 int removeFrom = (popType == PopType.INCLUSIVE ? i : i+1);
@@ -218,10 +243,10 @@ public class PilotStack
                     return this;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(topVisibleFrame == null && mStackEmptyListener != null)
-                    mStackEmptyListener.noVisibleFramesLeft();
-                else if(mTopFrameChangedListener != null)
-                    mTopFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+                if(topVisibleFrame == null && stackEmptyListener != null)
+                    stackEmptyListener.noVisibleFramesLeft();
+                else if(topFrameChangedListener != null)
+                    topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
                 return this;
@@ -243,7 +268,7 @@ public class PilotStack
      */
     public <T extends PilotFrame> T getFrameOfType(Class<T> clazz)
     {
-        for(PilotFrame pilotFrame : mStack)
+        for(PilotFrame pilotFrame : stack)
         {
             if(pilotFrame.getClass() == clazz)
                 return (T) pilotFrame;
@@ -259,7 +284,7 @@ public class PilotStack
      */
     public boolean doesContainVisibleFrame()
     {
-        for(PilotFrame pilotFrame : mStack)
+        for(PilotFrame pilotFrame : stack)
         {
             if(!isInvisibleFrame(pilotFrame))
                 return true;
@@ -270,12 +295,12 @@ public class PilotStack
 
     public boolean isEmpty()
     {
-        return mStack.isEmpty();
+        return stack.isEmpty();
     }
 
     public int getSize()
     {
-        return mStack.size();
+        return stack.size();
     }
 
     //==================================================================//
@@ -290,41 +315,15 @@ public class PilotStack
      */
     public PilotFrame getVisibleFrameFromTopDown(int positionFromTop)
     {
-        final int stackSize = mStack.size();
+        final int stackSize = stack.size();
         int topDownVisCount = 0;
         for(int i = stackSize-1; i >= 0; i--)
         {
-            PilotFrame currentFrame = mStack.elementAt(i);
+            PilotFrame currentFrame = stack.elementAt(i);
             if(!isInvisibleFrame(currentFrame) && ++topDownVisCount == positionFromTop)
                 return currentFrame;
         }
         return null;
-    }
-
-    private PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
-        try
-        {
-            if(args == null)
-                return frameClassToPush.getConstructor().newInstance();
-            else
-                return frameClassToPush.getConstructor(Args.class).newInstance(args);
-        }
-        catch (InstantiationException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new RuntimeException(e);
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     private void notifyListenersNewBackFrame()
@@ -345,9 +344,9 @@ public class PilotStack
     {
         boolean visibleFrameRemoved = false;
 
-        while(mStack.size() > index)
+        while(stack.size() > index)
         {
-            PilotFrame poppedFrame = mStack.pop();
+            PilotFrame poppedFrame = stack.pop();
             poppedFrame.popped();
             poppedFrame.setParentStack(null);
             visibleFrameRemoved |= !isInvisibleFrame(poppedFrame); //remove from end as less internal element movement
@@ -358,14 +357,14 @@ public class PilotStack
 
     private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, TopFrameChangedListener.Direction direction)
     {
-        if(mTopFrameChangedListener != null)
-            mTopFrameChangedListener.topVisibleFrameUpdated(pilotFrame, direction);
+        if(topFrameChangedListener != null)
+            topFrameChangedListener.topVisibleFrameUpdated(pilotFrame, direction);
     }
 
     private void notifyListenersNoVisibleFrames()
     {
-        if (mStackEmptyListener != null)
-            mStackEmptyListener.noVisibleFramesLeft();
+        if (stackEmptyListener != null)
+            stackEmptyListener.noVisibleFramesLeft();
     }
 
     private boolean isInvisibleFrame(PilotFrame pilotFrame)
@@ -384,18 +383,18 @@ public class PilotStack
 
     public void setTopFrameChangedListener(TopFrameChangedListener topFrameChangedListener)
     {
-        mTopFrameChangedListener = topFrameChangedListener;
+        this.topFrameChangedListener = topFrameChangedListener;
     }
 
     public void setStackEmptyListener(StackEmptyListener stackEmptyListener)
     {
-        mStackEmptyListener = stackEmptyListener;
+        this.stackEmptyListener = stackEmptyListener;
     }
 
     public void deleteListeners()
     {
-        mTopFrameChangedListener = null;
-        mStackEmptyListener = null;
+        topFrameChangedListener = null;
+        stackEmptyListener = null;
     }
 
     /**
@@ -416,6 +415,39 @@ public class PilotStack
         void noVisibleFramesLeft();
     }
 
+    //==================================================================//
+    // PilotFrameFactory
+    //==================================================================//
+
+    static class InternalPilotFrameFactory implements PilotFrameFactory
+    {
+        @Override
+        public PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+            try
+            {
+                if(args == null)
+                    return frameClassToPush.getConstructor().newInstance();
+                else
+                    return frameClassToPush.getConstructor(Args.class).newInstance(args);
+            }
+            catch (InstantiationException e)
+            {
+                throw new RuntimeException(e);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new RuntimeException(e);
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new RuntimeException(e);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 
 }

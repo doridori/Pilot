@@ -265,10 +265,10 @@ public class PilotStackTest extends TestCase
     public void clearStack_shouldPop()
     {
         PilotStack pilotStack = new PilotStack();
-        pilotStack.pushFrame(TestUIFramePop.class);
-        pilotStack.pushFrame(TestUIFramePop.class);
-        TestUIFramePop middleFrame = (TestUIFramePop) pilotStack.getTopVisibleFrame();
-        pilotStack.pushFrame(TestUIFramePop.class);
+        pilotStack.pushFrame(TestUIFrameLifecycleStub.class);
+        pilotStack.pushFrame(TestUIFrameLifecycleStub.class);
+        TestUIFrameLifecycleStub middleFrame = (TestUIFrameLifecycleStub) pilotStack.getTopVisibleFrame();
+        pilotStack.pushFrame(TestUIFrameLifecycleStub.class);
         pilotStack.clearStack(false);
 
         Assert.assertTrue(middleFrame.popped);
@@ -459,6 +459,34 @@ public class PilotStackTest extends TestCase
     }
 
     //==================================================================//
+    // Visibility Lifecycle Tests
+    //==================================================================//
+
+
+
+    @Test
+    public void onVisibleFrameStatusChange_pushToTopOfVisibleStack_shouldGetVisibleCallback()
+    {
+        final PilotFrame[] mock = new PilotFrame[1];
+
+        //create with spying factory
+        PilotStack pilotStack = new PilotStack(new PilotFrameFactory() {
+            @Override
+            public PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+                mock[0] = Mockito.mock(frameClassToPush);
+                return mock[0];
+            }
+        });
+        pilotStack.setStackVisible(true);
+
+        pilotStack.pushFrame(NoArgsPilotFrame.class);
+        Mockito.verify(mock[0]).pushed();
+        Mockito.verify(mock[0]).onVisibleFrameStatusChange(true);
+    }
+
+    //todo set visible change call
+
+    //==================================================================//
     // Serializing Tests
     //==================================================================//
 
@@ -503,7 +531,9 @@ public class PilotStackTest extends TestCase
     public static class TestUIFrame3 extends NoArgsPilotFrame
     {}
 
-    public static class TestUIFramePop extends NoArgsPilotFrame
+    //todo spy instead with factory
+    //cant use spy as need to pass frame class to pilotStack and cant spy before callbacks are made on the object
+    public static class TestUIFrameLifecycleStub extends NoArgsPilotFrame
     {
         private boolean popped;
 
@@ -511,6 +541,8 @@ public class PilotStackTest extends TestCase
         public void popped() {
             popped = true;
         }
+
+
     }
 
     @InvisibleFrame

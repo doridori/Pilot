@@ -82,9 +82,15 @@ public abstract class PilotFrame implements Serializable
     public void pushed(){}
 
     /**
-     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref until this method returns. Only called once.
+     * Frame lifecycle callback. {@link #getParentStack()} will contain a ref until this method returns. Only called once7
      */
     public void popped(){}
+
+    /**
+     * Can be called between {@link #pushed()} and {@link #popped()}. Will be called directly after
+     * {@link #pushed()} with stack visibility state and then once for each stack visibility state change until {@link #popped()}.
+     */
+    public void onVisibleFrameStatusChange(boolean frameTopVisibleFrameOfVisibleStack){};
 
     //==================================================================//
     // Observable
