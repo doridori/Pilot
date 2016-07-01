@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
@@ -465,7 +466,7 @@ public class PilotStackTest extends TestCase
 
 
     @Test
-    public void onVisibleFrameStatusChange_pushToTopOfVisibleStack_shouldGetVisibleCallback()
+    public void onVisibleFrameStatusChange_variousStackOps_shouldGetVisibleCallbacks()
     {
         final PilotFrame[] mock = new PilotFrame[1];
 
@@ -479,12 +480,26 @@ public class PilotStackTest extends TestCase
         });
         pilotStack.setStackVisible(true);
 
+        //check initial vis state called
         pilotStack.pushFrame(NoArgsPilotFrame.class);
         Mockito.verify(mock[0]).pushed();
         Mockito.verify(mock[0]).onVisibleFrameStatusChange(true);
-    }
 
-    //todo set visible change call
+        //check change to false called
+        Mockito.verify(mock[0], Mockito.never()).onVisibleFrameStatusChange(false);
+        pilotStack.setStackVisible(false);
+        Mockito.verify(mock[0]).onVisibleFrameStatusChange(false);
+
+        //check popped
+        Mockito.verify(mock[0], Mockito.never()).popped();
+        pilotStack.clearStack(false);
+        Mockito.verify(mock[0]).popped();
+
+        //should ignore visibility changes now
+        pilotStack.setStackVisible(false);
+        //todo check ignored
+
+    }
 
     //==================================================================//
     // Serializing Tests
@@ -531,8 +546,7 @@ public class PilotStackTest extends TestCase
     public static class TestUIFrame3 extends NoArgsPilotFrame
     {}
 
-    //todo spy instead with factory
-    //cant use spy as need to pass frame class to pilotStack and cant spy before callbacks are made on the object
+    //todo spy instead with frame factory
     public static class TestUIFrameLifecycleStub extends NoArgsPilotFrame
     {
         private boolean popped;
@@ -541,8 +555,6 @@ public class PilotStackTest extends TestCase
         public void popped() {
             popped = true;
         }
-
-
     }
 
     @InvisibleFrame

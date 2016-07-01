@@ -165,7 +165,10 @@ public class PilotStack
 
     public void setStackVisible(boolean stackVisible) {
         this.stackVisible = stackVisible;
-        //todo notify top frame of visibility change + test
+
+        PilotFrame top = getTopVisibleFrame();
+        if(top != null)
+            top.onVisibleFrameStatusChange(stackVisible);
     }
 
     /**
