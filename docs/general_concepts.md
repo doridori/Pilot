@@ -93,6 +93,6 @@ WIP see [Issue](https://github.com/doridori/Pilot/issues/7) representing this ta
 
 ##Opaqueness 
 
-A frame can represent a View that is opaque or partially transparent. This infomation is stored obtained via a `UITypeHandlers.isOpaque()` method (see [#20](https://github.com/doridori/Pilot/issues/20)).
+A frame can represent a View that is opaque or partially transparent. This infomation is stored obtained via a `UITypeHandlers.isOpaque()` method (see [#20](https://github.com/doridori/Pilot/issues/20)). This information is important as it allows UITypeHanders to rebuild the entire visible UI at any point.
 
 
