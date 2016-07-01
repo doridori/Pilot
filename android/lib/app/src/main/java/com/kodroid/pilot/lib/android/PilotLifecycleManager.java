@@ -18,6 +18,7 @@ public class PilotLifecycleManager
 {
     private final Class<? extends PilotFrame> launchFrameClass;
     private PilotStack pilotStack;
+    private PilotUISyncer pilotUISyncer;
 
     //==================================================================//
     // Constructor
@@ -52,6 +53,7 @@ public class PilotLifecycleManager
             PilotUISyncer pilotUISyncer,
             PilotStack.StackEmptyListener stackEmptyListener)
     {
+        this.pilotUISyncer = pilotUISyncer;
         if(pilotStack.isEmpty())
             initializePilotStack(savedInstanceState, launchFrameClass);
         else if(!pilotStack.doesContainVisibleFrame())
@@ -63,6 +65,22 @@ public class PilotLifecycleManager
 
         //render everything that should be currently seen on screen
         pilotUISyncer.renderAllCurrentlyVisibleFrames(pilotStack);
+    }
+
+    /**
+     * Activity must call
+     */
+    public void onStartDelegate()
+    {
+        pilotUISyncer.hostActivityOnStarted();
+    }
+
+    /**
+     * Activity must call
+     */
+    public void onStopDelegate()
+    {
+        pilotUISyncer.hostActivityOnStopped();
     }
 
     /**

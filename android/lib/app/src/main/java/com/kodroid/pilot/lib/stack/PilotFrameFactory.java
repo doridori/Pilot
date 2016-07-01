@@ -1,9 +1,9 @@
 package com.kodroid.pilot.lib.stack;
 
 /**
- * Factory for creating PilotFrames. Ease of testing.
+ * Factory for creating PilotFrames. Ease of testing. Normally just use the auto default.
  */
-interface PilotFrameFactory
+public interface PilotFrameFactory
 {
     PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args);
 }

@@ -32,11 +32,11 @@ public class PilotStack
     }
 
     /**
-     * Ease of testing
+     * Ease of testing. Using the no-arg contructor will init with default factory.
      *
      * @param pilotFrameFactory
      */
-    PilotStack(PilotFrameFactory pilotFrameFactory)
+    public PilotStack(PilotFrameFactory pilotFrameFactory)
     {
         this.pilotFrameFactory = pilotFrameFactory;
     }
@@ -193,10 +193,15 @@ public class PilotStack
                     return this;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(topVisibleFrame == null && stackEmptyListener != null)
-                    stackEmptyListener.noVisibleFramesLeft();
+                if(topVisibleFrame == null)
+                {
+                    if(stackEmptyListener != null)
+                        stackEmptyListener.noVisibleFramesLeft();
+                }
                 else if(topFrameChangedListener != null)
+                {
                     topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+                }
 
                 //have found and popped at this point so now return
                 return this;
@@ -311,8 +316,12 @@ public class PilotStack
         for(int i = stackSize-1; i >= 0; i--)
         {
             PilotFrame currentFrame = stack.elementAt(i);
-            if(!isInvisibleFrame(currentFrame) && topDownVisCount++ == positionFromTop)
-                return currentFrame;
+            if(!isInvisibleFrame(currentFrame))
+            {
+                topDownVisCount++;
+                if(topDownVisCount == positionFromTop)
+                    return currentFrame;
+            }
         }
         return null;
     }

@@ -34,21 +34,19 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     // Hosting Activity Visibility Events
     //==================================================================//
 
-    //TODO test
     public void hostActivityOnStarted()
     {
         hostActivityStarted = true;
         //notify all frames represented by views being drawn to the screen
-        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack))
+        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
             frame.frameViewVisible(true);
     }
 
-    //TODO test
     public void hostActivityOnStopped()
     {
         hostActivityStarted= false;
         //notify all frames represented by views being drawn to the screen
-        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack))
+        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
             frame.frameViewVisible(false);
     }
 
@@ -66,11 +64,13 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
      * @param pilotStack
      * @return
      */
-    private List<PilotFrame> getCurrentlyVisibleFrames(PilotStack pilotStack)
+    private List<PilotFrame> getCurrentlyVisibleFrames(PilotStack pilotStack, boolean ignoreTop)
     {
         List<PilotFrame> currentlyVisibleFrames = new LinkedList<>();
 
-        int count = 0;
+        int count = 1; //1 is top of stack for below method call
+        if(ignoreTop)
+            count++; //2 is second from top of stack for below method call
         while(true)
         {
             PilotFrame frame = pilotStack.getVisibleFrameFromTopDown(count);
@@ -106,7 +106,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
      */
     public void renderAllCurrentlyVisibleFrames(PilotStack pilotStack)
     {
-        List<PilotFrame> framesToRender = getCurrentlyVisibleFrames(pilotStack);
+        List<PilotFrame> framesToRender = getCurrentlyVisibleFrames(pilotStack, false);
         for(int i = framesToRender.size() - 1; i >= 0; i--)
             topVisibleFrameUpdated(framesToRender.get(i), Direction.FORWARD);
     }
@@ -139,6 +139,23 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
         }
 
         //View Frame visibility callbacks
-        topVisibleFrame.frameViewVisible(hostActivityStarted);
+        //first set all old visible frames to invis
+        if(direction == Direction.FORWARD)
+        {
+            if(!hostActivityStarted)
+                return; //i.e. don't bother calling false when added
+
+            //get all the vis frame stack ignoring the top frame and call false
+            for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, true))
+                frame.frameViewVisible(false);
+
+            //call started state on top frame
+            topVisibleFrame.frameViewVisible(hostActivityStarted);
+        }
+        else if(direction == Direction.BACK)
+        {
+            for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
+                frame.frameViewVisible(true);
+        }
     }
 }

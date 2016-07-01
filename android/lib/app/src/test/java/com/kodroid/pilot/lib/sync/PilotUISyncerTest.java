@@ -1,6 +1,8 @@
 package com.kodroid.pilot.lib.sync;
 
+import com.kodroid.pilot.lib.stack.Args;
 import com.kodroid.pilot.lib.stack.PilotFrame;
+import com.kodroid.pilot.lib.stack.PilotFrameFactory;
 import com.kodroid.pilot.lib.stack.PilotStack;
 import com.kodroid.pilot.lib.stack.PilotStackTest;
 
@@ -12,6 +14,9 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.matchers.InstanceOf;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(JUnit4.class)
 public class PilotUISyncerTest
@@ -109,8 +114,82 @@ public class PilotUISyncerTest
         inOrder.verify(spy, Mockito.never()).onFrame(Mockito.isA(PilotStackTest.TestUIFrame1.class));
     }
 
-    //todo test vis lifecycle callbacks for exiting frames
-    //todo test vis lifecycle callbacks for new frames
+    @Test
+    public void frameViewVisible_testingHostActivityCallbacks_shouldReceiveUntilFramePopped()
+    {
+        //create mock pilotframe so we can verify behaviour on it
+        final List<PilotFrame> mock = new ArrayList<>();
+
+        //create with spying factory
+        PilotStack pilotStack = new PilotStack(new PilotFrameFactory() {
+            @Override
+            public PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+                mock.add(Mockito.mock(frameClassToPush));
+                return mock.get(mock.size()-1);
+            }
+        });
+
+        //dummy syncer as the host activity events route through here
+        PilotUISyncer syncer = new PilotUISyncer(pilotStack, new UITypeHandler() {
+            @Override
+            public boolean onFrame(PilotFrame frame) {
+                return true;//builds all for this test
+            }
+
+            @Override
+            public boolean isFrameOpaque(PilotFrame frame) {
+                return mock.size() == 1 || !frame.equals(mock.get(1)); //only second mock non-opaque
+            }
+
+            @Override
+            public void clearAllUI() {
+
+            }
+        });
+
+        syncer.hostActivityOnStarted();
+        pilotStack.setTopFrameChangedListener(syncer);
+
+        //push first opaque frame
+        pilotStack.pushFrame(PilotStackTest.TestUIFrame1.class);
+        InOrder inOrder = Mockito.inOrder(mock.get(0));
+        inOrder.verify(mock.get(0), Mockito.times(1)).frameViewVisible(true);
+
+        //stopped state
+        syncer.hostActivityOnStopped();
+        //first frame one false call
+        inOrder.verify(mock.get(0), Mockito.times(1)).frameViewVisible(false);
+
+        //push second non-opaque frame
+        pilotStack.pushFrame(PilotStackTest.TestUIFrame2.class);
+        InOrder inOrder2 = Mockito.inOrder(mock.get(1));
+        //first frame not called again for true
+        inOrder.verify(mock.get(0), Mockito.times(0)).frameViewVisible(true);
+        //second frame not called as false when added
+        inOrder2.verify(mock.get(1), Mockito.times(0)).frameViewVisible(false);
+
+        //started state
+        syncer.hostActivityOnStarted();
+        //first frame now called again for true
+        inOrder.verify(mock.get(0), Mockito.times(1)).frameViewVisible(true);
+        //second frame now has new callback for true
+        inOrder2.verify(mock.get(1), Mockito.times(1)).frameViewVisible(true);
+
+        //push third opaque frame
+        //test that both vis frame below are notified hidden then vis again when top popped
+        inOrder.verify(mock.get(0), Mockito.times(0)).frameViewVisible(false);
+        inOrder2.verify(mock.get(1), Mockito.times(0)).frameViewVisible(false);
+        pilotStack.pushFrame(PilotStackTest.TestUIFrame3.class);
+        inOrder.verify(mock.get(0), Mockito.times(1)).frameViewVisible(false);
+        inOrder2.verify(mock.get(1), Mockito.times(1)).frameViewVisible(false);
+
+        //pop third frame
+        inOrder.verify(mock.get(0), Mockito.times(0)).frameViewVisible(true);
+        inOrder2.verify(mock.get(1), Mockito.times(0)).frameViewVisible(true);
+        pilotStack.popToNextVisibleFrame();
+        inOrder.verify(mock.get(0), Mockito.times(1)).frameViewVisible(true);
+        inOrder2.verify(mock.get(1), Mockito.times(1)).frameViewVisible(true);
+    }
 
     //==================================================================//
     // Visibility Lifecycle Tests
