@@ -82,6 +82,20 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
         pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
         pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
     }
+    
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        pilotLifecycleManager.onStartDelegate();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        pilotLifecycleManager.onStartDelegate();
+    }
 
     @Override
     protected void onDestroy()
