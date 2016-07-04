@@ -96,7 +96,7 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
     protected void onStop()
     {
         super.onStop();
-        pilotLifecycleManager.onStartDelegate();
+        pilotLifecycleManager.onStopDelegate();
     }
 
     @Override
