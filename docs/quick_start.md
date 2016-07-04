@@ -59,6 +59,8 @@ private PilotSyncer buildPilotSyncer(FrameLayout rootView)
 
 ##Integrate `PilotLifecycleManager` into your `Activity`
 
+//TODO Navi component
+
 `PilotLifecycleManager` will ensure there is always a valid `PilotStack` instance available.  This also allows us a simple mechanism of retaining the `PilotStack` on config-change and will handle saving / restoring the `PilotStack` on process death.
 
 Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
