@@ -1,5 +1,7 @@
 package com.kodroid.pilot.lib.stack;
 
+import android.util.Log;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Stack;
 
@@ -375,6 +377,22 @@ public class PilotStack
     private boolean isInvisibleFrame(Class<? extends PilotFrame> clazz)
     {
         return clazz.isAnnotationPresent(InvisibleFrame.class);
+    }
+
+    //==================================================================//
+    // Logging
+    //==================================================================//
+
+    public void printStack()
+    {
+        Log.i("Pilot", "\nPrinting Stack");
+
+        for(PilotFrame frame : stack)
+        {
+            Log.i("Pilot", frame.toString());
+        }
+
+        Log.i("Pilot", "\n");
     }
 
     //==================================================================//
