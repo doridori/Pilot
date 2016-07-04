@@ -59,6 +59,8 @@ private PilotSyncer buildPilotSyncer(FrameLayout rootView)
 
 ##Integrate `PilotLifecycleManager` into your `Activity`
 
+//TODO Navi component
+
 `PilotLifecycleManager` will ensure there is always a valid `PilotStack` instance available.  This also allows us a simple mechanism of retaining the `PilotStack` on config-change and will handle saving / restoring the `PilotStack` on process death.
 
 Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager`
@@ -81,6 +83,20 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
         //The PilotStack instance in use in this example lives in a Singleton. The manager will ensure this Activity won't leak.
         pilotLifecycleManager = new PilotLifecycleManager(PilotStackHolder.getInstance(), EnterCardPresenter.class);
         pilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
+    }
+    
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        pilotLifecycleManager.onStartDelegate();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        pilotLifecycleManager.onStopDelegate();
     }
 
     @Override

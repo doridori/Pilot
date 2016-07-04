@@ -81,7 +81,7 @@ This has benefits of scoped data being able to handle its own lifecycle and also
 
 ##Controller Lifecycle Events
 
-WIP see [Issue](https://github.com/doridori/Pilot/issues/7) representing this task.
+See [Issue](https://github.com/doridori/Pilot/issues/7) representing this task.
 
 ##onFrameResult
 
