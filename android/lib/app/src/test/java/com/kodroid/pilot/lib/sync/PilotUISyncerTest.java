@@ -10,10 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.InstanceOf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,26 +27,30 @@ public class PilotUISyncerTest
     {
         UITypeHandler stubHandler = new UITypeHandler() {
             @Override
-            public boolean onFrame(PilotFrame frame) {
+            public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
                 return false;
             }
 
             @Override
+            public void renderFrame(PilotFrame frame) {}
+
+            @Override
             public boolean isFrameOpaque(PilotFrame frame) {
                 return true;
             }
 
             @Override
-            public void clearAllUI() {
-
-            }
+            public void clearAllUI() {}
         };
 
         UITypeHandler opaqueUiTypeHandler = new UITypeHandler() {
             @Override
-            public boolean onFrame(PilotFrame frame) {
-                return frame instanceof PilotStackTest.TestUIFrame1;
+            public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+                return frameClass == PilotStackTest.TestUIFrame1.class;
             }
+
+            @Override
+            public void renderFrame(PilotFrame frame) {}
 
             @Override
             public boolean isFrameOpaque(PilotFrame frame) {
@@ -57,9 +58,7 @@ public class PilotUISyncerTest
             }
 
             @Override
-            public void clearAllUI() {
-
-            }
+            public void clearAllUI() {}
         };
 
         UITypeHandler spyHandler = Mockito.spy(stubHandler);
@@ -86,9 +85,12 @@ public class PilotUISyncerTest
         //handler
         UITypeHandler uiTypeHandler = new UITypeHandler() {
             @Override
-            public boolean onFrame(PilotFrame frame) {
-                return true; //supports all in test
+            public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+                return true;
             }
+
+            @Override
+            public void renderFrame(PilotFrame frame) {}
 
             @Override
             public boolean isFrameOpaque(PilotFrame frame) {
@@ -96,9 +98,7 @@ public class PilotUISyncerTest
             }
 
             @Override
-            public void clearAllUI() {
-
-            }
+            public void clearAllUI() {}
         };
 
         UITypeHandler spy = Mockito.spy(uiTypeHandler);
@@ -109,9 +109,9 @@ public class PilotUISyncerTest
 
         //verify
         InOrder inOrder = Mockito.inOrder(spy);
-        inOrder.verify(spy, Mockito.times(1)).onFrame(Mockito.isA(PilotStackTest.TestUIFrame2.class));
-        inOrder.verify(spy, Mockito.times(1)).onFrame(Mockito.isA(PilotStackTest.TestUIFrame3.class));
-        inOrder.verify(spy, Mockito.never()).onFrame(Mockito.isA(PilotStackTest.TestUIFrame1.class));
+        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(PilotStackTest.TestUIFrame2.class));
+        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(PilotStackTest.TestUIFrame3.class));
+        inOrder.verify(spy, Mockito.never()).renderFrame(Mockito.isA(PilotStackTest.TestUIFrame1.class));
     }
 
     @Test
@@ -132,9 +132,12 @@ public class PilotUISyncerTest
         //dummy syncer as the host activity events route through here
         PilotUISyncer syncer = new PilotUISyncer(pilotStack, new UITypeHandler() {
             @Override
-            public boolean onFrame(PilotFrame frame) {
-                return true;//builds all for this test
+            public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+                return true;
             }
+
+            @Override
+            public void renderFrame(PilotFrame frame) {}
 
             @Override
             public boolean isFrameOpaque(PilotFrame frame) {
@@ -142,9 +145,7 @@ public class PilotUISyncerTest
             }
 
             @Override
-            public void clearAllUI() {
-
-            }
+            public void clearAllUI() {}
         });
 
         syncer.hostActivityOnStarted();

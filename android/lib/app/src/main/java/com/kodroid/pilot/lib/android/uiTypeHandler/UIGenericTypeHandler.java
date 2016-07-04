@@ -22,15 +22,20 @@ public abstract class UIGenericTypeHandler implements UITypeHandler
     }
 
     @Override
-    public boolean onFrame(PilotFrame frame)
+    public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+        return mHandledFrames.contains(frameClass);
+    }
+
+    @Override
+    public void renderFrame(PilotFrame frame)
     {
         if(mHandledFrames.contains(frame.getClass()))
         {
             showUiForFrame(frame);
-            return true;
+            return;
         }
         else
-            return false;
+            throw new IllegalArgumentException("Frame type not supported. Use isFrameSupported() first!");
     }
 
     /**
@@ -42,7 +47,7 @@ public abstract class UIGenericTypeHandler implements UITypeHandler
      * If you do want to show a new Activity as a result of a frame change then make sure you check
      * if that activity is already shown before doing so.
      *
-     * If you want to show a Fragment use the forthcoming {@link UIFragmentTypeHandler}
+     * If you want to show a Fragment, see #17
      *
      * A good use case for something to show here is an old-school dialog as these are auto
      * dismissed on config-change by default, and this method will be called after a config-change

@@ -385,14 +385,12 @@ public class PilotStack
 
     public void printStack()
     {
-        Log.i("Pilot", "\nPrinting Stack");
+        Log.i("Pilot", "Printing Stack");
 
         for(PilotFrame frame : stack)
         {
-            Log.i("Pilot", frame.toString());
+            Log.i("Pilot", "-- "+frame.toString());
         }
-
-        Log.i("Pilot", "\n");
     }
 
     //==================================================================//

@@ -88,7 +88,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
         //find the typeHandler that handles this frame
         for(UITypeHandler uiTypeHandler : uiTypeHandlers)
         {
-            if (uiTypeHandler.onFrame(pilotFrame))
+            if (uiTypeHandler.isFrameSupported(pilotFrame.getClass()))
             {
                 return uiTypeHandler.isFrameOpaque(pilotFrame);
             }
@@ -118,7 +118,9 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
 
         //find the typeHandler that handles this frame
         for(UITypeHandler uiTypeHandler : uiTypeHandlers) {
-            if (uiTypeHandler.onFrame(topVisibleFrame)) {
+            if (uiTypeHandler.isFrameSupported(topVisibleFrame.getClass()))
+            {
+                uiTypeHandler.renderFrame(topVisibleFrame);
                 handlingTypeHandler = uiTypeHandler;
                 break;
             }

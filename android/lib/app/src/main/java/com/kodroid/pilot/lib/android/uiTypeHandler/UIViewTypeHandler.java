@@ -44,33 +44,39 @@ public class UIViewTypeHandler implements UITypeHandler
     // UITypeHandler Interface
     //==================================================================//
 
+
+    @Override
+    public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+        return frameToViewMappings.containsKey(frameClass);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public boolean onFrame(PilotFrame frame)
+    public void renderFrame(PilotFrame frame)
     {
-        log("UITypeViewHandler:onFrame(%s)", frame.toString());
+        log("UITypeViewHandler:renderFrame(%s)", frame.toString());
 
         Class<? extends PilotFrame> frameClass = frame.getClass();
-        if(frameToViewMappings.containsKey(frameClass)) //does handle this frame type
+        if(isFrameSupported(frameClass)) //does handle this frame type
         {
             if(displayer.isViewVisibleForFrame(frameClass)) //view will always have a BackedByFrame set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
             {
-                log("UITypeViewHandler:onFrame(%s) already visible", frame.toString());
-                return true;
+                log("UITypeViewHandler:renderFrame(%s) already visible", frame.toString());
+                return;
             }
             else
             {
-                log("UITypeViewHandler:onFrame(%s) not visible, adding new view", frame.toString());
+                log("UITypeViewHandler:renderFrame(%s) not visible, adding new view", frame.toString());
                 Class<? extends PilotFrameLayout> viewClass = frameToViewMappings.get(frameClass);
                 PilotFrameLayout newView = createView(viewClass);
                 newView.setBackingPilotFrame(frame);
                 newView.backingFrameSet(frame);
                 displayer.makeVisible(newView);
-                return true;
+                return;
             }
         }
         else
-            return false;
+            throw new IllegalArgumentException("Frame type not supported. Use isFrameSupported() first!");
     }
 
     /**

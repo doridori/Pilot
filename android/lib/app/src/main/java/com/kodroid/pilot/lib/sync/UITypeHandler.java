@@ -9,12 +9,19 @@ import com.kodroid.pilot.lib.stack.PilotFrame;
 public interface UITypeHandler
 {
     /**
-     * Handle the latest frame i.e. show it
      *
-     * @param frame
+     * @param frameClass
      * @return true if this handler can create a UI for that frame type. False if it does not handle this frame
      */
-    boolean onFrame(PilotFrame frame);
+    boolean isFrameSupported(Class<? extends PilotFrame> frameClass);
+
+    /**
+     * Handle the latest frame i.e. show it. Will throw a {@link IllegalArgumentException} if
+     * {@link #isFrameSupported(Class<? extends PilotFrame>)} is false
+     *
+     * @param frame
+     */
+    void renderFrame(PilotFrame frame);
 
     /**
      * Check for the passed in frame being non-opaque or non-fullscreen
