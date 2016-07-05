@@ -12,7 +12,7 @@ public class PilotLifecycleManagerTest
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(PilotStackTest.TestInvisibleDataFrame.class);
-        PilotLifecycleManager pilotLifecycleManager = new PilotLifecycleManager(pilotStack, null);
-        pilotLifecycleManager.onCreateDelegate(null, null, null);
+        PilotLifecycleManager pilotLifecycleManager = new PilotLifecycleManager(pilotStack, null, null, null, null);
+        pilotLifecycleManager.onCreateDelegate(null);
     }
 }
