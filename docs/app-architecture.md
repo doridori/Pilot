@@ -12,7 +12,7 @@ The below architecture embodies Clean Architecture principles, and is similar to
 
 Plain-Old-Android-Views! These forward input events to and render state from their corresponding Presenter `PilotFrames`.
 
-Interacts with Presenter layer by forwarding input-events, and rendering the Presenters `State` object when changes.
+Interacts with Presenter layer by forwarding input-events, and rendering the Presenters `State` object when changed.
 
 ##Presenter Layer
 
