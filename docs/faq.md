@@ -16,10 +16,7 @@ Pilot is also **Presenter-aware**, has plumbing to handle `View` creation and **
 
 ##Q. How can I use this as part of a wider architecture?
 
-Its pretty flexible as it only really concerns itself with the Presenter and UI layer of the app. That said it can be used easily with Clean Architecture approaches. 
-
-[Viper](http://mutualmobile.github.io/blog/2013/12/04/viper-introduction/) for iOS is an example of such an approach. Pilot would take the place of Vipers `Wireframe` construct in an architecture such as this.
-
+See [Example App Architecture](https://github.com/doridori/Pilot/blob/master/docs/app-architecture.md)
 
 
 ##Q. So where does one put context related android and google play services code in this architecture?
