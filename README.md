@@ -5,7 +5,7 @@
 An `android.*` decoupled application stack which facilitates:
 
 - Single `Activity` applications
-- A thin-`View` based architecture 
+- A (passive) thin-`View` based architecture 
 - `android.*`-less app navigation (i.e. controller -> controller)
 - An abstract backstack
 - Stack-based data scoping
