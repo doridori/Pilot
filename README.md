@@ -73,6 +73,7 @@ The rest of this README is split across a few doc files:
 - [Quick Start](https://github.com/doridori/Pilot/blob/master/docs/quick_start.md)
 - [General Concepts](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md) **WIP**
 - [F.A.Q.](https://github.com/doridori/Pilot/blob/master/docs/faq.md)
+- [Example App Architecture](https://github.com/doridori/Pilot/blob/master/docs/app-architecture.md)
 
 #Usage
 
