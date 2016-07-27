@@ -4,3 +4,4 @@ The below architecture embodies Clean Architecture principles, and is similar to
 
 #Overview
 
+![App Arch with Pilot](/gfx/app_arch.png)
