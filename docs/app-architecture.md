@@ -18,6 +18,7 @@ The below architecture embodies [Clean Architecture](http://fernandocejas.com/20
 ###Presenter Layer
 
 - The PilotStack, which holds mostly Presenter `PilotFrames` with some data only frames. 
+- Presentation Model styles Presenters
 - This layer interacts with the Use-Case layer mostly via asynchronous callbacks. This is preferred over `Observables` at this stage as the returned data may be complicated (i.e could be success with some data, or multiple errors with differnt meta data).
 - Use-case dependencies should be DI'd into the Presenter layer, as opposed to constructor passed, as the `PilotFrames` have fixed constructors.
 
