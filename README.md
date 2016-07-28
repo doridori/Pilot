@@ -2,11 +2,11 @@
 
 #Pilot
 
-An `android.*` decoupled application stack which facilitates:
+An `android.*` decoupled application navigation stack which facilitates:
 
 - Single `Activity` applications
 - A (passive) thin-`View` based architecture 
-- `android.*`-less app navigation (i.e. controller -> controller)
+- `android.*`-less app navigation (i.e. Presenter -> Presenter)
 - An abstract backstack
 - Stack-based data scoping
 - Use of any kind of MV* approach
