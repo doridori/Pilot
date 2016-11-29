@@ -65,7 +65,7 @@ Of course I am not the first to think in the way. The guys at Square were talkin
 
 Nor am I the last! [Conductor](https://github.com/bluelinelabs/Conductor) is a very similar library which has appeared with the same concepts (and better documentation). Good to see others are thinking along the same lines. I will continue with Pilot however as sure we will have slightly differnt take on things.
 
-EDIT: [Moxy](https://github.com/Arello-Mobile/Moxy) now looks very similar also.
+EDIT: [Moxy](https://github.com/Arello-Mobile/Moxy) and [Triad](https://github.com/nhaarman/Triad) are similar recent repos
 
 #Doc Contents
 
