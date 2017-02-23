@@ -80,8 +80,14 @@ The rest of this README is split across a few doc files:
 #Usage
 
 ```gradle
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
+
 dependencies {
-    compile 'com.kodroid:pilot:0.10.0'
+    compile 'com.kodroid:pilot:0.10.0-SNAPSHOT'
 }
 ```
 
