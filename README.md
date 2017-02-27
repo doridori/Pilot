@@ -27,7 +27,7 @@ Type                 | SRP
 ---------------------|------------------------------
 PilotStack           |A `Stack` of `PilotFrame` objects
 PilotFrame           |Frame that lives in a `PilotStack`. May represent a Screen or scoped-data
-PilotSyncer          |Holds the `UITypeHandler` collection that is queried upon `PilotStack` change events
+PilotUISyncer        |Holds the `UITypeHandler` collection that is queried upon `PilotStack` change events
 UITypeHandler        |Interface for an object that can compose a UI for a given set of `PilotFrame` classes
 PilotLifecycleManager|Bridge between the hosting Activities lifecycle events and a `PilotStack` instance
 PilotFrameLayout     |Convenience `FrameLayout` base for `BackedByFrame` backed views
