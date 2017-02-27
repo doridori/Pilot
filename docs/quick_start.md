@@ -78,8 +78,7 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-	//...
-	
+    	//...
         pilotLifecycleManager = new PilotLifecycleManager(
                 pilotStack,
                 buildPilotSyncer(rootView),
