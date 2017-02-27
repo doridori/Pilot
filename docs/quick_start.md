@@ -38,22 +38,22 @@ static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = ne
 
 Each of these TLVs are matched to a `PilotFrame` subclass via a `@BackedByFrame` annotation declared in the TLV - more on this in a bit.
 
-##Declare a `PilotSyncer` for these TLVs
+##Declare a `PilotUISyncer` for these TLVs
  
-A `PilotSyncer` is the class that is responsible for ensuring the UI matches the current `PilotStack` state. 
+A `PilotUISyncer` is the class that is responsible for ensuring the UI matches the current `PilotStack` state. 
 
-This is declared by creating a new instance with one or more `UITypeHandler`s. The `UITypeHandler` interface consists of one method, `boolean onFrame(PilotFrame frame);` which should return `true` if it handles a specific `PilotFrame` subclass. All that needs to be done is to create a `PilotSyncer` that can handle all possible visible `PilotFrames` that can exist in the stack.
+This is declared by creating a new instance with one or more `UITypeHandler`s. The `UITypeHandler` interface consists of one method, `boolean onFrame(PilotFrame frame);` which should return `true` if it handles a specific `PilotFrame` subclass. All that needs to be done is to create a `PilotUISyncer` that can handle all possible visible `PilotFrames` that can exist in the stack.
 
 The below example uses a single `UIViewTypeHandler` which will create the TLV view and place it inside the passed `rootView` using the supplied `UIViewTypeHandler.Displayer` class. 
 
 ```java
-private PilotSyncer buildPilotSyncer(FrameLayout rootView)
+private PilotUISyncer buildPilotSyncer(FrameLayout rootView)
 {        
     UITypeHandler allViewsUiTypeHandler = new UIViewTypeHandler(
             TOP_LEVEL_VIEWS, 
             new UIViewTypeHandler.SimpleDisplayer(rootView));
         
-    return new PilotSyncer(allViewsUiTypeHandler);
+    return new PilotUISyncer(allViewsUiTypeHandler);
 }
 ```
 
