@@ -88,5 +88,5 @@ public abstract class PilotFrameLayout<P extends PilotFrame> extends FrameLayout
     //==================================================================//
 
     @Override
-    public abstract void updated();
+    public void updated(){};
 }
