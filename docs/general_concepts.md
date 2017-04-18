@@ -1,12 +1,12 @@
-#General Concepts
+# General Concepts
 
-##Single-Activity Application
+## Single-Activity Application
 
 I find a lot of the applications I have build in the last couple of years sit inside a single `Activity` and just manipulate `Fragments` and/or `View`. You can use a single `Activity` which holds a single `PilotStack` for the simplest use case. This however does not mean you cant jump out to seperate activitys, for example when integrating with 3rd party libs which require this.
 
 Advantage: Simple
 
-##Frame-to-Frame control flow
+## Frame-to-Frame control flow
 
 As mentioned in the `Motivations` post above this kind of control flow (which bypasses `android.*` classes completly has its advantages) and is made very simple with Pilot. An example below
 
@@ -23,7 +23,7 @@ public class FirstViewFrame extends PilotFrame
 
 Advantage: This means for each and quick JVM testing and any interested renderer could just listen out for `PilotStack` changes and work out how to render them. You could imagine it would be trivial to replace the whole interface on an application with a command line and you would not have to change a line of controller logic (ok so you may never do this but it highlights a good degree of decoupling!).
 
-##Presenter lifecycle management
+## Presenter lifecycle management
 
 As is the root goal of most frameworks that interact with controller lifecycle management is an important point. Using the 'PilotStack' the 'PilotFrames' (and therefore any controllers they may be composed of and provide) live just as long as they need to without worrying about config-changes _or_ the lifecycle of any attached view/activity component. This happens for **free** as all app navigation happens via the `PilotStack` in the first place. For example see below
 
@@ -31,25 +31,25 @@ As is the root goal of most frameworks that interact with controller lifecycle m
 
 This may seem overly simple - but in my mind thats a good thing! There are many approaches to this singular issue that can easily get over-complicated when controllers and liveness are tied too much into an Activity or view components particular lifecycle.
 
-##How Presenters are attached to Views and displayed.
+## How Presenters are attached to Views and displayed.
 
 //todo
 
-###What about after a config-change?
+### What about after a config-change?
 
 After a config-change the PilotStack has been preserved via the Activity lifecycle delegate methods - which will auto show the view at the top of the PilotStack. 
 
-###What about re-inflated Views that are now presenter-less?
+### What about re-inflated Views that are now presenter-less?
 
 These will either have their Presenter pushed back to them or will be removed if they represent a PilotFrame that is not longer top of the PilotStack. You would probably only encounter this case in you were using a PilotStack inside a `Fragment` that had been re-infalted. Not the recommended use-case anyhow.
 
-###What about child views that also have Presenters?!
+### What about child views that also have Presenters?!
 
 There are many forms these can take but a simple way to handle these are to maintain a collection of child-Presenter objects inside the PilotFrame and push / pull them out depending on their own individual lifecycle. 
 
 For example you may have a RecyclerView which contains child Views which are each backed by their own Presenter. These could be pulled from the main PilotFrame backed Presenter by some meta data i.e. id.
 
-##Scoped Data
+## Scoped Data
 
 This is an interesting one. As mentioned in the `Motivations` post linked above, scoped data will make people think of differnt implementations depending on if any DI frameworks (think Dagger) are in use. I will restate here that this solution is not to replace Dagger (and also does not require it) but is a way of (optionally) handling data scopes (and the method by which the scoped data could be added and removed from any DI frameworks at runtime).
 
@@ -79,19 +79,19 @@ public class SecondPilotFrame extends PilotFrame
 
 This has benefits of scoped data being able to handle its own lifecycle and also being cleared by default when the stack is cleared but also if clearing the stack on `Activity.finish()` you get all your sensitive data cleaned up for free. Happy days.
 
-##Controller Lifecycle Events
+## Controller Lifecycle Events
 
 See [Issue](https://github.com/doridori/Pilot/issues/7) representing this task.
 
-##onFrameResult
+## onFrameResult
 
 //todo
 
-##Handling Process Death
+## Handling Process Death
 
 //todo
 
-##Opaqueness 
+## Opaqueness 
 
 A frame can represent a View that is opaque or partially transparent. This infomation is stored obtained via a `UITypeHandlers.isOpaque()` method (see [#20](https://github.com/doridori/Pilot/issues/20)). This information is important as it allows UITypeHanders to rebuild the entire visible UI at any point.
 

@@ -1,6 +1,6 @@
-#F.A.Q.
+# F.A.Q.
 
-##Q. Is this a `FragmentManager` for `Views?`
+## Q. Is this a `FragmentManager` for `Views?`
 
 At first glance this may look like a `FragmentManager` for `Views`, but this would be misleading.
 
@@ -14,12 +14,12 @@ This issue has led to an explosion of MVP libraries and approaches to try and mo
 
 Pilot is also **Presenter-aware**, has plumbing to handle `View` creation and **Presenter mapping** out of the box (which is optional and can be used to trigger Fragment/Activity/Dialog creation also), **survives config-changes and process-death** and has a **queryable** app stack **which can hold scoped data** as well as view-backing-presenters. 
 
-##Q. How can I use this as part of a wider architecture?
+## Q. How can I use this as part of a wider architecture?
 
 See [Example App Architecture](https://github.com/doridori/Pilot/blob/master/docs/app-architecture.md)
 
 
-##Q. So where does one put context related android and google play services code in this architecture?
+## Q. So where does one put context related android and google play services code in this architecture?
 
 If your interacting with any system service or something that requires an application context it would make sense to apply some form of DI to make this object available to your consumers anyway. If you had a frame in the stack that represented grabbing a location and doing something with it this could be done via your DId location obtainer.
 
