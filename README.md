@@ -51,9 +51,9 @@ Application State is generally concerned with:
 
 - What is the user currently doing? 
 - What was the user previously doing that can be returned to? 
-- What happens if the user decides to do something else 
-- What data is associated with what the user is currently doing
-- What operations are associated with what the user 
+- What happens if the user decides to do something else?
+- What data is associated with what the user is currently doing?
+- What operations are associated with what the user is currently doing?
 
 UI Rendering is generally concerned with:
 
