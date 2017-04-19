@@ -83,11 +83,11 @@ EDIT: [Moxy](https://github.com/Arello-Mobile/Moxy) and [Triad](https://github.c
 
 The rest of this README is split across a few doc files:
 
-- [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md)
-- [Quick Start](https://github.com/doridori/Pilot/blob/master/docs/quick_start.md)
-- [General Concepts](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md) **WIP**
-- [F.A.Q.](https://github.com/doridori/Pilot/blob/master/docs/faq.md)
-- [Example App Architecture](https://github.com/doridori/Pilot/blob/master/docs/app-architecture.md)
+- [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md) **Needs Update**
+- [Quick Start](https://github.com/doridori/Pilot/blob/master/docs/quick_start.md) **Needs Update**
+- [General Concepts](https://github.com/doridori/Pilot/blob/master/docs/general_concepts.md) **Needs Update**
+- [F.A.Q.](https://github.com/doridori/Pilot/blob/master/docs/faq.md) **Needs Update**
+- [Example App Architecture](https://github.com/doridori/Pilot/blob/master/docs/app-architecture.md) **Needs Update**
 
 # Usage
 
