@@ -43,7 +43,27 @@ A popular approach is to use an MV* based architecture to separate some form of 
 
 There are multiple benefits of allowing such a flow. If you have not already I recommend you read the [Motivations post](http://doridori.github.io/Android-Architecture-Pilot/).
 
-**_21/07/16 Note:_ this is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.**
+# Seperating Application State from UI Rendering
+
+It can be beneficial to separate the Applications State from the rendering of the UI as really these are separate concerns.
+
+Application State is generally concerned with: 
+
+- What is the user currently doing? 
+- What was the user previously doing that can be returned to? 
+- What happens if the user decides to do something else 
+- What data is associated with what the user is currently doing
+- What operations are associated with what the user 
+
+UI Rendering is generally concerned with:
+
+- How can the user visualise what they are currently doing?
+- How does the user return to what they were previously doing?
+- How does the user signify they want to do something else?
+
+Pilot is a way to model the Application State in a familiar `Stack` structure, and provides hooks for `View` based UI Rendering to take place. However, due to the decoupling of the above concepts, the Android rendering could be replaced with a terminal, or other type of client. 
+
+One design principle is that the Stack should not change regardless of the screen size or rotation. Any master/detail changes (or other size related rendering logic) should sit in the Rendering layer, which in Pilot is abstracted by the `UITypeHandler`.
 
 # Supplementary Aims
 
@@ -90,6 +110,10 @@ dependencies {
     compile 'com.kodroid:pilot:0.10.0-SNAPSHOT'
 }
 ```
+
+# WIP
+
+This is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.
 
 # License
 
