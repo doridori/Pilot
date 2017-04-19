@@ -47,7 +47,7 @@ There are multiple benefits of allowing such a flow. If you have not already I r
 
 It can be beneficial to separate the Applications State from the rendering of the UI as really these are separate concerns.
 
-Application State is generally concerned with: 
+**Application State** is generally concerned with: 
 
 - What is the user currently doing? 
 - What was the user previously doing that can be returned to? 
@@ -55,7 +55,7 @@ Application State is generally concerned with:
 - What data is associated with what the user is currently doing?
 - What operations are associated with what the user is currently doing?
 
-UI Rendering is generally concerned with:
+**UI Rendering** is generally concerned with:
 
 - How can the user visualise what they are currently doing?
 - How does the user return to what they were previously doing?
