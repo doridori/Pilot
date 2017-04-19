@@ -1,8 +1,8 @@
-#Quick Start
+# Quick Start
 
 Have a quick look at [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md) and then see below for how to implement with Pilot.
     
-##Create some `PilotFrame` subclasses
+## Create some `PilotFrame` subclasses
 
 These represent the **app states** (think _LoginScreen_ or _ContentScreen_) and the **data-scopes** (think _session_ or _domain-driven-process_)  of your application and are the things that will live on the stack.
 
@@ -14,7 +14,7 @@ As mentioned elsewhere there is no actual rule for how your `PilotFrame` classes
 
 For an example check out [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md).
 
-##`View` should reflect state of corresponding `PilotFrame`
+## `View` should reflect state of corresponding `PilotFrame`
 
 When a `PilotFrameLayout` extending `View` is created is will have the corresponding `PilotFrame` passed to it. This is availble by the time `View.onAttachedToWindow()` is called. View subclasses can override `backingFrameSet(ShowPadPresenter backingPilotFrame)` to do any post-backing frame set initialisation.
 
@@ -22,7 +22,7 @@ State-change listeners are added inside the `PilotFrame` `View.onAttached` and `
 
 For an example check out [Example Frame & View](https://github.com/doridori/Pilot/blob/master/docs%2Fexample_frame_and_view.md).
 
-##Declare what _Top Level Views_ exist in the application
+## Declare what _Top Level Views_ exist in the application
 
 Each main view/screen of the application will be represented by a `PilotFrame` subclass, which will hold that screens ViewState and communicate with any asynchronous code. Each of these `PilotState`s need to have a corresponding `View` class that will represent it. In this documentation I am referring to these as _Top Level Views_ (TLV). These can to be declared as so: 
 
@@ -38,7 +38,7 @@ static final Class<? extends PilotFrameBackedFrameLayout>[] TOP_LEVEL_VIEWS = ne
 
 Each of these TLVs are matched to a `PilotFrame` subclass via a `@BackedByFrame` annotation declared in the TLV - more on this in a bit.
 
-##Declare a `PilotUISyncer` for these TLVs
+## Declare a `PilotUISyncer` for these TLVs
  
 A `PilotUISyncer` is the class that is responsible for ensuring the UI matches the current `PilotStack` state. 
 
@@ -57,7 +57,7 @@ private PilotUISyncer buildPilotSyncer(FrameLayout rootView)
 }
 ```
 
-##Integrate `PilotLifecycleManager` into your `Activity`
+## Integrate `PilotLifecycleManager` into your `Activity`
 
 //TODO Navi component
 
@@ -124,6 +124,6 @@ Then **delegate** a few `Activity` lifecycle calls to the `PilotLifecycleManager
 
 Note inside `onCreate` we pass the `PilotSyncer` we declared earlier.
 
-##Launch your app
+## Launch your app
 
 Following the above on app launch your initial PilotFrame should be pushed on the `PilotStack` and your `PilotSyncer` registered `UIViewTypeHandler` should create and display the corresponding `View`, Voila!
