@@ -2,26 +2,26 @@
 
 # Pilot
 
-An `android.*` decoupled application navigation stack which facilitates:
+Pilot is a way to model the Application State in a familiar (`android.*` decoupled) `Stack` structure, and provides hooks for `View` based UI Rendering to take place. This facilitates:
 
 - Single `Activity` applications
 - A (passive) thin-`View` based architecture 
-- `android.*`-less app navigation (i.e. Presenter -> Presenter)
+- `android.*`-less app navigation (i.e. Controller -> Controller)
 - An abstract backstack
 - Stack-based data scoping
 - Use of any kind of MV* approach
 
 ![Pilot Mascot](https://raw.githubusercontent.com/doridori/Pilot/master/gfx/pilot_mascot.png)
 
-## Why?
+# Why
 
 - Cleaner, decoupled code
 - Avoiding `Fragments` is desired for many reasons, not limited to flexibility of how the backstack is used
 - Flexibity of what lives in the backstack enables easy data-scoping for session / screen data as it lives in the stack rather than being passed around or statically based
 - Easy testing
-- As facilitates MV* approaches this means not having to think about asynchronous operations in your UI code (i.e. you can ignore `Loaders`, RxLifecycle handling or whatever other approach being used to work around the android lifecycle)
+- As facilitates MV\* approaches this means not having to think about asynchronous operations in your UI code (i.e. you can ignore `Loaders`, RxLifecycle handling or whatever other approach being used to work around the android lifecycle)
 
-## How?
+# Components
 
 Type                 | SRP 
 ---------------------|------------------------------
@@ -32,16 +32,6 @@ UITypeHandler        |Interface for an object that can compose a UI for a given 
 PilotLifecycleManager|Bridge between the hosting Activities lifecycle events and a `PilotStack` instance
 PilotFrameLayout     |Convenience `FrameLayout` base for `BackedByFrame` backed views
 @BackedByFrame       |Annotation to link a `PilotFrameLayout` to a `PilotFrame` instance
-
-# Intro
-
-**Pilot** is an effort to abstract a simple Android Application-Navigation-Stack. 
-
-Android development blurs the line between UI declaration and application flow. `Activity` and `Fragment` Lifecycle methods coupled with asynchronous operations can be a headache. These problems are well known and have various solutions represented by various projects on GitHub.
-
-A popular approach is to use an MV* based architecture to separate some form of Controller / Presenter variant from the UI. This is great and has many benefits. However, there are not many projects out there that facilitate UI-less controller -> controller flow. This is the hole that Pilot is aiming to fill.
-
-There are multiple benefits of allowing such a flow. If you have not already I recommend you read the [Motivations post](http://doridori.github.io/Android-Architecture-Pilot/).
 
 # Seperating Application State from UI Rendering
 
@@ -61,9 +51,11 @@ It can be beneficial to separate the Applications State from the rendering of th
 - How does the user return to what they were previously doing?
 - How does the user signify they want to do something else?
 
-Pilot is a way to model the Application State in a familiar `Stack` structure, and provides hooks for `View` based UI Rendering to take place. However, due to the decoupling of the above concepts, the Android rendering could be replaced with a terminal, or other type of client. 
+The primary win when decoupling in this way is by seperating reponsilbilities testing and refactoring becomes much easier. A secondary advantage is that the Android rendering could be replaced with a terminal, or other type of client. 
 
 One design principle is that the Stack should not change regardless of the screen size or rotation. Any master/detail changes (or other size related rendering logic) should sit in the Rendering layer, which in Pilot is abstracted by the `UITypeHandler`.
+
+Another design priciple is that the Application State should be pure java, to facilitate JVM testing.
 
 # Supplementary Aims
 
