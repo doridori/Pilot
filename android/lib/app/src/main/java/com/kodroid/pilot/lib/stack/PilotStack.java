@@ -34,7 +34,7 @@ public class PilotStack
     }
 
     /**
-     * Ease of testing. Using the no-arg contructor will init with default factory.
+     * Can specify a custom frame factory
      *
      * @param pilotFrameFactory
      */

@@ -1,8 +1,5 @@
 package com.kodroid.pilot.lib.stack;
 
-import com.kodroid.pilot.lib.sync.PilotUISyncer;
-import com.kodroid.pilot.lib.sync.PilotUISyncerTest;
-
 import junit.framework.TestCase;
 
 import org.junit.Assert;
@@ -426,7 +423,7 @@ public class PilotStackTest extends TestCase
     }
 
     //==================================================================//
-    // Push Stack Constructor Invocation Tests
+    // Push Stack Constructor Arsg Invocation Tests
     //==================================================================//
 
     @Test
@@ -458,6 +455,41 @@ public class PilotStackTest extends TestCase
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(ArgsPilotFrame.class);
+    }
+
+    //==================================================================//
+    // Push chains and listener callback order
+    //==================================================================//
+    // See #40
+
+    @Test
+    public void pushFrame_firstFramePushesAnotherFrame_listenerShouldReceiveSameOrder()
+    {
+        final PilotStack pilotStack = new PilotStack();
+
+        //mock
+        PilotStack.TopFrameChangedListener mockListener = Mockito.mock(PilotStack.TopFrameChangedListener.class);
+        pilotStack.setTopFrameChangedListener(mockListener);
+        InOrder inOrder = Mockito.inOrder(mockListener);
+
+        //test
+        pilotStack.pushFrame(PushingFrame.class);
+        inOrder.verify(mockListener).topVisibleFrameUpdated(Matchers.isA(PushingFrame.class), Matchers.eq(PilotStack.TopFrameChangedListener.Direction.FORWARD));
+        inOrder.verify(mockListener).topVisibleFrameUpdated(Matchers.isA(TestUIFrame1.class), Matchers.eq(PilotStack.TopFrameChangedListener.Direction.FORWARD));
+    }
+
+    static class PushingFrame extends PilotFrame
+    {
+        public PushingFrame()
+        {
+            super(null);
+        }
+
+        @Override
+        public void pushed()
+        {
+            getParentStack().pushFrame(TestUIFrame1.class);
+        }
     }
 
     //==================================================================//
