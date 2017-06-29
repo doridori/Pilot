@@ -99,10 +99,12 @@ public class PilotStack
         //put on stack
         frameToPush.setParentStack(this);
         stack.push(frameToPush);
-        frameToPush.pushed();
 
+        //notify listeners before making the pushed() call below to avoid possible race-condition #40
         if(!isInvisibleFrame(frameToPush))
             notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
+
+        frameToPush.pushed();
 
         return this;
     }
