@@ -143,7 +143,7 @@ public class PilotLifecycleManager
     private void initializePilotStack(Bundle savedInstanceState, final Class<? extends PilotFrame> launchFrameClass, Args launchFrameArgs)
     {
         if(!pilotStack.isEmpty())
-            throw new IllegalStateException("PilotStack already exists!");
+            throw new IllegalStateException("PilotStack already initialized");
 
         //check if we need to restore any saves state
         if(savedInstanceState != null && savedInstanceState.containsKey(getStateSaveBundleKey()))
@@ -154,7 +154,7 @@ public class PilotLifecycleManager
         }
         else
         {
-            Log.d(getClass().getCanonicalName(), "Creating new PilotStack!");
+            Log.d(getClass().getCanonicalName(), "PilotStack is empty - push launch frame:"+launchFrameClass.getName());
 
             //set launch frame
             try
