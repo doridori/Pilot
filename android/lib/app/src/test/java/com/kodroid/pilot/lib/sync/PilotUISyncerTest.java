@@ -149,7 +149,7 @@ public class PilotUISyncerTest
         });
 
         syncer.hostActivityOnStarted();
-        pilotStack.setTopFrameChangedListener(syncer);
+        pilotStack.addTopFrameChangedListener(syncer);
 
         //push first opaque frame
         pilotStack.pushFrame(PilotStackTest.TestUIFrame1.class);

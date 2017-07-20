@@ -3,6 +3,8 @@ package com.kodroid.pilot.lib.stack;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -20,8 +22,8 @@ public class PilotStack
 {
     private Stack<PilotFrame> stack = new Stack<>();
 
-    private StackEmptyListener stackEmptyListener;
-    private TopFrameChangedListener topFrameChangedListener;
+    private List<StackEmptyListener> stackEmptyListeners = new ArrayList<>();
+    private List<TopFrameChangedListener> topFrameChangedListeners = new ArrayList<>();
     private PilotFrameFactory pilotFrameFactory;
 
     //==================================================================//
@@ -59,8 +61,10 @@ public class PilotStack
     {
         popAllFramesAboveIndex(0);
 
-        if(notifyListeners && stackEmptyListener != null)
-            stackEmptyListener.noVisibleFramesLeft();
+        if(!notifyListeners)
+            return this;
+
+        notifyListenersNoVisibleFramesLeft();
 
         return this;
     }
@@ -102,7 +106,7 @@ public class PilotStack
 
         //notify listeners before making the pushed() call below to avoid possible race-condition #40
         if(!isInvisibleFrame(frameToPush))
-            notifyListenerVisibleFrameChange(frameToPush, TopFrameChangedListener.Direction.FORWARD);
+            notifyListenersTopVisibleFrameUpdated(frameToPush, TopFrameChangedListener.Direction.FORWARD);
 
         frameToPush.pushed();
 
@@ -199,12 +203,11 @@ public class PilotStack
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
                 if(topVisibleFrame == null)
                 {
-                    if(stackEmptyListener != null)
-                        stackEmptyListener.noVisibleFramesLeft();
+                    notifyListenersNoVisibleFramesLeft();
                 }
-                else if(topFrameChangedListener != null)
+                else
                 {
-                    topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+                    notifyListenersTopVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
                 }
 
                 //have found and popped at this point so now return
@@ -243,10 +246,10 @@ public class PilotStack
                     return this;
 
                 PilotFrame topVisibleFrame = getTopVisibleFrame();
-                if(topVisibleFrame == null && stackEmptyListener != null)
-                    stackEmptyListener.noVisibleFramesLeft();
-                else if(topFrameChangedListener != null)
-                    topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
+                if(topVisibleFrame == null)
+                    notifyListenersNoVisibleFramesLeft();
+                else
+                    notifyListenersTopVisibleFrameUpdated(topVisibleFrame, TopFrameChangedListener.Direction.BACK);
 
                 //have found and popped at this point so now return
                 return this;
@@ -303,10 +306,6 @@ public class PilotStack
         return stack.size();
     }
 
-    //==================================================================//
-    // Private methods
-    //==================================================================//
-
     /**
      * Returns the x vis frame from the top of the stack. I.e. 1 = top vis, 2 = 2nd top vis etc
      *
@@ -330,13 +329,29 @@ public class PilotStack
         return null;
     }
 
+    //==================================================================//
+    // Private methods
+    //==================================================================//
+
+    private void notifyListenersTopVisibleFrameUpdated(PilotFrame topVisibleFrame, TopFrameChangedListener.Direction direction)
+    {
+        for(TopFrameChangedListener topFrameChangedListener : topFrameChangedListeners)
+            topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, direction);
+    }
+
+    private void notifyListenersNoVisibleFramesLeft()
+    {
+        for(StackEmptyListener stackEmptyListener : stackEmptyListeners)
+            stackEmptyListener.noVisibleFramesLeft();
+    }
+
     private void notifyListenersNewBackFrame()
     {
         PilotFrame nextTopFrame = getTopVisibleFrame();
         if(nextTopFrame != null)
-            notifyListenerVisibleFrameChange(nextTopFrame, TopFrameChangedListener.Direction.BACK);
+            notifyListenersTopVisibleFrameUpdated(nextTopFrame, TopFrameChangedListener.Direction.BACK);
         else
-            notifyListenersNoVisibleFrames();
+            notifyListenersNoVisibleFramesLeft();
     }
 
     /**
@@ -357,18 +372,6 @@ public class PilotStack
         }
 
         return visibleFrameRemoved;
-    }
-
-    private void notifyListenerVisibleFrameChange(PilotFrame pilotFrame, TopFrameChangedListener.Direction direction)
-    {
-        if(topFrameChangedListener != null)
-            topFrameChangedListener.topVisibleFrameUpdated(pilotFrame, direction);
-    }
-
-    private void notifyListenersNoVisibleFrames()
-    {
-        if (stackEmptyListener != null)
-            stackEmptyListener.noVisibleFramesLeft();
     }
 
     private boolean isInvisibleFrame(PilotFrame pilotFrame)
@@ -399,20 +402,20 @@ public class PilotStack
     // Event listener
     //==================================================================//
 
-    public void setTopFrameChangedListener(TopFrameChangedListener topFrameChangedListener)
+    public void addTopFrameChangedListener(TopFrameChangedListener topFrameChangedListener)
     {
-        this.topFrameChangedListener = topFrameChangedListener;
+        topFrameChangedListeners.add(topFrameChangedListener);
     }
 
     public void setStackEmptyListener(StackEmptyListener stackEmptyListener)
     {
-        this.stackEmptyListener = stackEmptyListener;
+        stackEmptyListeners.add(stackEmptyListener);
     }
 
-    public void deleteListeners()
+    public void deleteListeners(TopFrameChangedListener topFrameChangedListener, StackEmptyListener stackEmptyListener)
     {
-        topFrameChangedListener = null;
-        stackEmptyListener = null;
+        topFrameChangedListeners.remove(topFrameChangedListener);
+        stackEmptyListeners.remove(stackEmptyListener);
     }
 
     /**

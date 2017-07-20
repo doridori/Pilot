@@ -78,7 +78,7 @@ public class PilotActivityAdapter
             throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
         //hookup all event listeners to stack
-        pilotStack.setTopFrameChangedListener(pilotUISyncer);
+        pilotStack.addTopFrameChangedListener(pilotUISyncer);
         pilotStack.setStackEmptyListener(stackEmptyListener);
 
         //render everything that should be currently seen on screen
@@ -109,7 +109,7 @@ public class PilotActivityAdapter
     public void onDestroyDelegate(Activity activity)
     {
         //remove listeners so callbacks are not triggered when Activity in destroy state
-        pilotStack.deleteListeners();
+        pilotStack.deleteListeners(pilotUISyncer, stackEmptyListener);
     }
 
     /**
