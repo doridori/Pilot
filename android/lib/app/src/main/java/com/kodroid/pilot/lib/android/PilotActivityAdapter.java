@@ -10,12 +10,21 @@ import com.kodroid.pilot.lib.stack.PilotStack;
 import com.kodroid.pilot.lib.sync.PilotUISyncer;
 
 /**
- * This classes SRP is to bridge between the hosting Activities lifecycle events (and death / recreation) and a constant PilotStack instance.
+ * This classes SRP is to bridge between the hosting Activities lifecycle events (and death / recreation) and a longer-lived PilotStack instance.
+ *
+ * onCreate will instantiate the passed launch frame class if the stack is empty.
+ *
+ * onStart and onStop will route visibility events to the {@link PilotUISyncer}
+ *
+ * onDestroy will remove listeners attached by this instance
+ *
+ * Back-press will pop visible stack frames until the stack is empty, which would result in a call to
+ * {@link com.kodroid.pilot.lib.stack.PilotStack.StackEmptyListener}.
  *
  * All reactions to the contained {@link PilotStack} events (between the delegated onCreate() and onDestroy() lifecycle methods) are
  * handled by a passed {@link PilotStack.TopFrameChangedListener}.
  */
-public class PilotLifecycleManager
+public class PilotActivityAdapter
 {
     private PilotStack pilotStack;
     private PilotUISyncer pilotUISyncer;
@@ -34,7 +43,7 @@ public class PilotLifecycleManager
      * @param launchFrameArgs Args to be passed to the launch frame. Can be null.
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      */
-    public PilotLifecycleManager(
+    public PilotActivityAdapter(
             PilotStack pilotStack,
             PilotUISyncer pilotUISyncer,
             Class<? extends PilotFrame> launchFrameClass,

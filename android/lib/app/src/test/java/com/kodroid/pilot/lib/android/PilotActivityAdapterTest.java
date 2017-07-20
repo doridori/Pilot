@@ -5,14 +5,14 @@ import com.kodroid.pilot.lib.stack.PilotStackTest;
 
 import org.junit.Test;
 
-public class PilotLifecycleManagerTest
+public class PilotActivityAdapterTest
 {
     @Test(expected= IllegalStateException.class)
     public void onCreateDelegate_stackWithNoVisibleFrames_shouldThrow()
     {
         PilotStack pilotStack = new PilotStack();
         pilotStack.pushFrame(PilotStackTest.TestInvisibleDataFrame.class);
-        PilotLifecycleManager pilotLifecycleManager = new PilotLifecycleManager(pilotStack, null, null, null, null);
-        pilotLifecycleManager.onCreateDelegate(null);
+        PilotActivityAdapter pilotActivityAdapter = new PilotActivityAdapter(pilotStack, null, null, null, null);
+        pilotActivityAdapter.onCreateDelegate(null);
     }
 }
