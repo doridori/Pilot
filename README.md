@@ -103,6 +103,18 @@ dependencies {
 }
 ```
 
+# Proguard
+
+```
+-keepclassmembers class * extends com.kodroid.pilot.lib.android.frameBacking.PilotFrameLayout{
+ public <init>(android.content.Context);
+}
+
+-keepclassmembers class * extends com.kodroid.pilot.lib.stack.PilotFrame{
+ public <init>(com.kodroid.pilot.lib.stack.Args);
+}
+```
+
 # WIP
 
 This is a WIP and is currently in development. Some of the supplementary docs also need updating as the project is still undergoing some conceptual refactoring. I am welcome to any input via the Issues page to guide its development. This library is not in use in production yet.
