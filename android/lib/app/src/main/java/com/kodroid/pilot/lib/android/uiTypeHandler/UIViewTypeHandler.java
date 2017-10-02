@@ -59,7 +59,7 @@ public class UIViewTypeHandler implements UITypeHandler
         Class<? extends PilotFrame> frameClass = frame.getClass();
         if(isFrameSupported(frameClass)) //does handle this frame type
         {
-            if(displayer.isViewVisibleForFrame(frameClass)) //view will always have a BackedByFrame set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
+            if(displayer.isViewVisibleForFrameInstance(frame)) //view will always have a BackedByFrame set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
             {
                 log("UITypeViewHandler:renderFrame(%s) already visible", frame.toString());
                 return;
@@ -140,7 +140,7 @@ public class UIViewTypeHandler implements UITypeHandler
      */
     public interface Displayer
     {
-        boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass);
+        boolean isViewVisibleForFrameInstance(PilotFrame frame);
         void makeVisible(View newView);
         Context getViewContext();
         void clearAllUI();
@@ -172,11 +172,20 @@ public class UIViewTypeHandler implements UITypeHandler
         //============================//
 
         @Override
-        public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
+        public boolean isViewVisibleForFrameInstance(PilotFrame frame)
         {
             if(getCurrentView() == null) return false;
             final PilotFrameLayout currentView = (PilotFrameLayout) getCurrentView();
-            return BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frameClass);
+            if(BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frame.getClass()))
+            {
+                //defensive - at worst a new view would be created on rotation - needs testing
+                if(currentView.getBackingPilotFrame() == null)
+                    return false;
+
+                return currentView.getBackingPilotFrame().equals(frame);
+            }
+
+            return false;
         }
 
         @Override
@@ -300,11 +309,20 @@ public class UIViewTypeHandler implements UITypeHandler
         //==================================================================//
 
         @Override
-        public boolean isViewVisibleForFrame(Class<? extends PilotFrame> frameClass)
+        public boolean isViewVisibleForFrameInstance(PilotFrame frame)
         {
             if(getCurrentView() == null) return false;
             final PilotFrameLayout currentView = (PilotFrameLayout) getCurrentView();
-            return BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frameClass);
+            if(BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frame.getClass()))
+            {
+                //defensive - at worst a new view would be created on rotation - needs testing
+                if(currentView.getBackingPilotFrame() == null)
+                    return false;
+
+                return currentView.getBackingPilotFrame().equals(frame);
+            }
+
+            return false;
         }
 
         @Override

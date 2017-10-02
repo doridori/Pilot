@@ -57,7 +57,7 @@ public abstract class PilotFrameLayout<P extends PilotFrame> extends FrameLayout
         return this;
     }
 
-    protected P getBackingPilotFrame()
+    public P getBackingPilotFrame()
     {
         return mBackingPilotFrame;
     }
