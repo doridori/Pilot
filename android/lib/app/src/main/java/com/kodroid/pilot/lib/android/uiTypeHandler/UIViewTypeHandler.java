@@ -180,7 +180,7 @@ public class UIViewTypeHandler implements UITypeHandler
             {
                 //defensive - at worst a new view would be created on rotation - needs testing
                 if(currentView.getBackingPilotFrame() == null)
-                    return false;
+                    throw new IllegalStateException("Frame should never be null - views have frames attached on creation, and are not recreation on config-change unless a child view of a fragment");
 
                 return currentView.getBackingPilotFrame().equals(frame);
             }
@@ -317,7 +317,7 @@ public class UIViewTypeHandler implements UITypeHandler
             {
                 //defensive - at worst a new view would be created on rotation - needs testing
                 if(currentView.getBackingPilotFrame() == null)
-                    return false;
+                    throw new IllegalStateException("Frame should never be null - views have frames attached on creation, and are not recreation on config-change unless a child view of a fragment");
 
                 return currentView.getBackingPilotFrame().equals(frame);
             }
