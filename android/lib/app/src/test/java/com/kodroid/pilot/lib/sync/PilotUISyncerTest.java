@@ -1,5 +1,7 @@
 package com.kodroid.pilot.lib.sync;
 
+import com.kodroid.pilot.lib.android.PilotUISyncer;
+import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandler;
 import com.kodroid.pilot.lib.stack.Args;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotFrameFactory;

@@ -1,7 +1,6 @@
 package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
-import com.kodroid.pilot.lib.sync.UITypeHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,24 +11,24 @@ import java.util.Set;
  *
  * Just a simple non UI type specific handler which allows you to declare the handled {@link com.kodroid.pilot.lib.stack.PilotFrame} classes
  */
-public abstract class UIGenericTypeHandler implements UITypeHandler
+public abstract class UITypeHandlerGeneric implements UITypeHandler
 {
-    private Set<Class<? extends PilotFrame>> mHandledFrames = new HashSet<>();
+    private Set<Class<? extends PilotFrame>> handledFrames = new HashSet<>();
 
-    public UIGenericTypeHandler(Class<? extends PilotFrame>[] handledFrames)
+    public UITypeHandlerGeneric(Class<? extends PilotFrame>[] handledFrames)
     {
-        mHandledFrames.addAll(Arrays.asList(handledFrames));
+        this.handledFrames.addAll(Arrays.asList(handledFrames));
     }
 
     @Override
     public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
-        return mHandledFrames.contains(frameClass);
+        return handledFrames.contains(frameClass);
     }
 
     @Override
     public void renderFrame(PilotFrame frame)
     {
-        if(mHandledFrames.contains(frame.getClass()))
+        if(handledFrames.contains(frame.getClass()))
         {
             showUiForFrame(frame);
             return;

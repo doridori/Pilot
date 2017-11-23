@@ -7,37 +7,42 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.frameBacking.PilotFrameLayout;
-import com.kodroid.pilot.lib.android.frameBacking.BackedByFrameUtils;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilot.lib.stack.PilotFrame;
-import com.kodroid.pilot.lib.sync.UITypeHandler;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class UIViewTypeHandler implements UITypeHandler
+/**
+ * Code to create and display an {@link View} for a {@link PilotFrame} that is declared to be handled by this {@link UITypeHandlerView}
+ */
+public class UITypeHandlerView implements UITypeHandler
 {
+    private final ViewCreator viewCreator;
     private final Displayer displayer;
     private final boolean enableLogging;
-    private Map<Class<? extends PilotFrame>, Class<? extends PilotFrameLayout>> frameToViewMappings = new HashMap<>();
+    private Set<Class<? extends PilotFrame>> handledFrames = new HashSet<>();
 
     //==================================================================//
     // Constructor
     //==================================================================//
 
     /**
-     * @param topLevelViews An array of views that make up the main first level views of your app.
-     * @param displayer A {@link UIViewTypeHandler.Displayer} that will
+     * @param displayer A {@link UITypeHandlerView.Displayer} that will
      *                  handle showing your views. You can use the provided
-     *                  {@link UIViewTypeHandler.SimpleDisplayer} here if needed.
+     *                  {@link UITypeHandlerView.SimpleDisplayer} here if needed.
      */
-    public UIViewTypeHandler(Class<? extends PilotFrameLayout>[] topLevelViews, Displayer displayer, boolean enableLogging)
+    public UITypeHandlerView(
+            Class<? extends PilotFrame>[] handledFrames,
+            ViewCreator viewCreator,
+            Displayer displayer,
+            boolean enableLogging)
     {
+        this.viewCreator = viewCreator;
         this.displayer = displayer;
         this.enableLogging = enableLogging;
-        setupRootViewAndPilotFrameMappings(topLevelViews);
+        this.handledFrames.addAll(Arrays.asList(handledFrames));
     }
 
     //==================================================================//
@@ -47,7 +52,7 @@ public class UIViewTypeHandler implements UITypeHandler
 
     @Override
     public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
-        return frameToViewMappings.containsKey(frameClass);
+        return handledFrames.contains(frameClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,22 +62,16 @@ public class UIViewTypeHandler implements UITypeHandler
         log("UITypeViewHandler:renderFrame(%s)", frame.toString());
 
         Class<? extends PilotFrame> frameClass = frame.getClass();
-        if(isFrameSupported(frameClass)) //does handle this frame type
+        if(isFrameSupported(frameClass))
         {
-            if(displayer.isViewVisibleForFrameInstance(frame)) //view will always have a BackedByFrame set as set on creation and views not recreated unless inside a Fragment (not supporting PilotStack which is Fragment hosted atm)
+            if(displayer.isViewAddedForFrameInstance(frame, viewCreator))
             {
-                log("UITypeViewHandler:renderFrame(%s) already visible", frame.toString());
-                return;
+                log("UITypeViewHandler:renderFrame(%s) already added", frame.toString());
             }
-            else
+            else //view is not visible
             {
-                log("UITypeViewHandler:renderFrame(%s) not visible, adding new view", frame.toString());
-                Class<? extends PilotFrameLayout> viewClass = frameToViewMappings.get(frameClass);
-                PilotFrameLayout newView = createView(viewClass);
-                newView.setBackingPilotFrame(frame);
-                newView.backingFrameSet(frame);
-                displayer.makeVisible(newView);
-                return;
+                log("UITypeViewHandler:renderFrame(%s) not added, adding new view", frame.toString());
+                displayer.makeVisible(viewCreator.createViewForFrame(frame));
             }
         }
         else
@@ -82,8 +81,8 @@ public class UIViewTypeHandler implements UITypeHandler
     /**
      * Will return true for all views by default. Subclasses should override and return false for any non-opaque, non-fullscreen views.
      *
-     * @param frame
-     * @return
+     * @param frame the frame being queried
+     * @return true if the passed Frame is opaque
      */
     @Override
     public boolean isFrameOpaque(PilotFrame frame) {
@@ -96,7 +95,7 @@ public class UIViewTypeHandler implements UITypeHandler
     }
 
     //==================================================================//
-    // Private
+    // Logging
     //==================================================================//
 
     private void log(String format, String... args)
@@ -107,48 +106,45 @@ public class UIViewTypeHandler implements UITypeHandler
         }
     }
 
-    private void setupRootViewAndPilotFrameMappings(Class<? extends PilotFrameLayout>[] rootViews)
-    {
-        //get view classes that make up the root level of the app
-        for(Class<? extends PilotFrameLayout> viewClass : rootViews)
-        {
-            if(!PilotFrameLayout.class.isAssignableFrom(viewClass))
-                throw new RuntimeException("Passed class does not extend PilotFrameLayout:"+viewClass.getCanonicalName());
-            Class<? extends PilotFrame> pilotFrameClass = BackedByFrameUtils.getPilotFrameClass(viewClass);
-            frameToViewMappings.put(pilotFrameClass, viewClass);
-        }
-    }
-
-    private <T extends PilotFrameLayout> T createView(Class<T> viewClass)
-    {
-        try
-        {
-            return viewClass.getConstructor(Context.class).newInstance(displayer.getViewContext());
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
     //==================================================================//
     // Displayer Delegation
     //==================================================================//
 
     /**
-     * Integrators can supply their own Displayer or use/extend the suppled {@link UIViewTypeHandler.SimpleDisplayer}
+     * An implementation of this interface should be able to create a View for a given PilotFrame
+     */
+    public interface ViewCreator
+    {
+        /**
+         * @param pilotFrame the frame to get the View class for
+         * @return Should always return a ViewClass or else throw an Exception
+         */
+        Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame);
+        View createViewForFrame(PilotFrame pilotFrame);
+    }
+
+    /**
+     * Integrators can supply their own Displayer or use/extend the suppled {@link UITypeHandlerView.SimpleDisplayer}
      */
     public interface Displayer
     {
-        boolean isViewVisibleForFrameInstance(PilotFrame frame);
+        /**
+         * Checking if added is enough as opposed to checking if a Frame has been set, as a View
+         * should never have a null frame. Views have Frames attached on creation, and are not
+         * recreated on config-change *unless* a child view of a Fragment.
+         *
+         * @param frame
+         * @param viewCreator
+         * @return
+         */
+        boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator);
         void makeVisible(View newView);
         Context getViewContext();
         void clearAllUI();
     }
 
     /**
-     * A simple implementation of the {@link Displayer}
-     * interface that can be setup with a managed root
+     * A simple implementation of the {@link Displayer} interface that can be setup with a managed root
      * view.
      *
      * This can be overridden if animations and or display logic needs to be tweaked. You may want to do this if
@@ -157,6 +153,8 @@ public class UIViewTypeHandler implements UITypeHandler
      * - You have a master/detail flow and some subset of your views are to be placed in the detail area of the app (so you can manually handle this
      *
      * Otherwise you can roll your own via the {@link Displayer} interface.
+     *
+     * This will not work if rendering Views into a Fragment (see {@link Displayer}
      */
     public static class SimpleDisplayer implements Displayer
     {
@@ -172,20 +170,20 @@ public class UIViewTypeHandler implements UITypeHandler
         //============================//
 
         @Override
-        public boolean isViewVisibleForFrameInstance(PilotFrame frame)
+        public boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
-            final PilotFrameLayout currentView = (PilotFrameLayout) getCurrentView();
-            if(BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frame.getClass()))
-            {
-                //defensive - at worst a new view would be created on rotation - needs testing
-                if(currentView.getBackingPilotFrame() == null)
-                    throw new IllegalStateException("Frame should never be null - views have frames attached on creation, and are not recreation on config-change unless a child view of a fragment");
-
-                return currentView.getBackingPilotFrame().equals(frame);
-            }
-
-            return false;
+            final Class<? extends View> currentViewClass = getCurrentView().getClass();
+            boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
+            if(isAdded && !((PilotFrameBackedUI)getCurrentView()).hasBackingFrameSet())
+                throw new IllegalStateException(
+                        "Uh oh! This should not be possible. A View should never not have a Frame set " +
+                                "apart from when first created, as on config change the view instance will " +
+                                "NOT be persisted or automatically recreated by the system (default for " +
+                                "programmatically added Views, unless contained withing a host Fragment), " +
+                                "instead a new one will be created by Pilot and will still have UI-savedState " +
+                                "restored as normal. ");
+            return isAdded;
         }
 
         @Override
@@ -249,14 +247,14 @@ public class UIViewTypeHandler implements UITypeHandler
      * This class can be improved by reversing the in anim if still running when the view is removed.
      * Alternatively Views should be visible for at least the min time that equals the in anim IN duration.
      */
-    public static class AnimatingDisplayer implements UIViewTypeHandler.Displayer
+    public static class AnimatingDisplayer implements UITypeHandlerView.Displayer
     {
         //==================================================================//
         // Builder
         //==================================================================//
 
         /**
-         * Sets up a {@link UIViewTypeHandler.Displayer} with simple fade in/out Animators.
+         * Sets up a {@link UITypeHandlerView.Displayer} with simple fade in/out Animators.
          *
          * As mentioned in the class docs your Views should probably be around for at least
          * <code>duration</code>*2 otherwise quick transitions may cause unsightly animation combinations.
@@ -304,25 +302,21 @@ public class UIViewTypeHandler implements UITypeHandler
             this.animateOut = animateOut;
         }
 
-        //==================================================================//
-        // Super Interface
-        //==================================================================//
-
         @Override
-        public boolean isViewVisibleForFrameInstance(PilotFrame frame)
+        public boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
-            final PilotFrameLayout currentView = (PilotFrameLayout) getCurrentView();
-            if(BackedByFrameUtils.getPilotFrameClass(currentView.getClass()).equals(frame.getClass()))
-            {
-                //defensive - at worst a new view would be created on rotation - needs testing
-                if(currentView.getBackingPilotFrame() == null)
-                    throw new IllegalStateException("Frame should never be null - views have frames attached on creation, and are not recreation on config-change unless a child view of a fragment");
-
-                return currentView.getBackingPilotFrame().equals(frame);
-            }
-
-            return false;
+            final Class<? extends View> currentViewClass = getCurrentView().getClass();
+            boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
+            if(isAdded && !((PilotFrameBackedUI)getCurrentView()).hasBackingFrameSet())
+                throw new IllegalStateException(
+                        "Uh oh! This should not be possible. A View should never not have a Frame set " +
+                                "apart from when first created, as on config change the view instance will " +
+                                "NOT be persisted or automatically recreated by the system (default for " +
+                                "programmatically added Views, unless contained withing a host Fragment), " +
+                                "instead a new one will be created by Pilot and will still have UI-savedState " +
+                                "restored as normal. ");
+            return isAdded;
         }
 
         @Override

@@ -1,4 +1,4 @@
-package com.kodroid.pilot.lib.sync;
+package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 

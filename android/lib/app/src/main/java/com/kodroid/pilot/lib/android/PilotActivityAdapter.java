@@ -7,7 +7,6 @@ import android.util.Log;
 import com.kodroid.pilot.lib.stack.Args;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
-import com.kodroid.pilot.lib.sync.PilotUISyncer;
 
 /**
  * This classes SRP is to bridge between the hosting Activities lifecycle events (and death / recreation) and a longer-lived PilotStack instance.
