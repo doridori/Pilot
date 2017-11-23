@@ -2,7 +2,6 @@ package com.kodroid.pilot.lib.android.frameBacking;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
@@ -44,27 +43,14 @@ public abstract class PilotFrameLayout<P extends PilotFrame> extends FrameLayout
     // BackedByFrame IOC
     //==================================================================//
 
-    /**
-     * Subclasses can override this but will need to call super(). If any child views use child Presenters
-     * these can be grabbed from this (parent) PilotFrame on this method call.
-     *
-     * @param backingPilotFrame
-     * @return
-     */
-    public View setBackingPilotFrame(P backingPilotFrame)
+    public void setBackingPilotFrame(P backingPilotFrame)
     {
         mBackingPilotFrame = backingPilotFrame;
-        return this;
     }
 
     public P getBackingPilotFrame()
     {
         return mBackingPilotFrame;
-    }
-
-    @Override
-    public void backingFrameSet(P backingPilotFrame) {
-        //do nothing - subclasses can override
     }
 
     //==================================================================//
