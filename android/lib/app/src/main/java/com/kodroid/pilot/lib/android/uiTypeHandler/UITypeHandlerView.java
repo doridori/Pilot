@@ -2,7 +2,6 @@ package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -145,7 +144,6 @@ public class UITypeHandlerView implements UITypeHandler
          */
         boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator);
         void makeVisible(View newView);
-        Context getViewContext();
         void clearAllUI();
     }
 
@@ -196,12 +194,6 @@ public class UITypeHandlerView implements UITypeHandler
         public void makeVisible(View newView)
         {
             setCurrentView(newView);
-        }
-
-        @Override
-        public Context getViewContext()
-        {
-            return mRootViewGroup.getContext();
         }
 
         @Override
@@ -329,12 +321,6 @@ public class UITypeHandlerView implements UITypeHandler
         public void makeVisible(View newView)
         {
             setCurrentView(newView);
-        }
-
-        @Override
-        public Context getViewContext()
-        {
-            return rootViewGroup.getContext();
         }
 
         @Override
