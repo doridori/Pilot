@@ -9,7 +9,6 @@ import android.widget.FrameLayout;
 import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +20,6 @@ public class UITypeHandlerView implements UITypeHandler
     private final ViewCreator viewCreator;
     private final Displayer displayer;
     private final boolean enableLogging;
-    private Set<Class<? extends PilotFrame>> handledFrames = new HashSet<>();
 
     //==================================================================//
     // Constructor
@@ -33,7 +31,6 @@ public class UITypeHandlerView implements UITypeHandler
      *                  {@link UITypeHandlerView.SimpleDisplayer} here if needed.
      */
     public UITypeHandlerView(
-            Class<? extends PilotFrame>[] handledFrames,
             ViewCreator viewCreator,
             Displayer displayer,
             boolean enableLogging)
@@ -41,7 +38,6 @@ public class UITypeHandlerView implements UITypeHandler
         this.viewCreator = viewCreator;
         this.displayer = displayer;
         this.enableLogging = enableLogging;
-        this.handledFrames.addAll(Arrays.asList(handledFrames));
     }
 
     //==================================================================//
@@ -51,7 +47,7 @@ public class UITypeHandlerView implements UITypeHandler
 
     @Override
     public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
-        return handledFrames.contains(frameClass);
+        return viewCreator.isFrameHandled(frameClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,6 +110,8 @@ public class UITypeHandlerView implements UITypeHandler
      */
     public interface ViewCreator
     {
+        boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame);
+
         /**
          * @param pilotFrame the frame to get the View class for
          * @return Should always return a ViewClass or else throw an Exception
