@@ -7,23 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kodroid.pilot.lib.android.presenter.Presenter;
-import com.kodroid.pilot.lib.android.presenter.PresenterBackedUI;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilotexample.R;
-import com.kodroid.pilotexample.android.frames.presenter.WarningPresenter;
+import com.kodroid.pilotexample.android.frames.state.WarningState;
 
-@Presenter(WarningPresenter.class)
-public class WarningDialogFragment extends Fragment implements PresenterBackedUI<WarningPresenter>
+public class WarningDialogFragment extends Fragment implements PilotFrameBackedUI<WarningState>
 {
-    private WarningPresenter mWarningPresenter;
-
-    @Override
-    public View setPresenter(WarningPresenter warningPresenter)
-    {
-        Log.d("TAG..", "setting presenter");
-        mWarningPresenter = warningPresenter;
-        return null; //TODO change the interface return to remove view
-    }
+    private WarningState mWarningState;
+    private WarningState backingPilotFrame;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -36,6 +27,19 @@ public class WarningDialogFragment extends Fragment implements PresenterBackedUI
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.fragment_test_warning_dialog, container, false);
+    }
+
+    @Override
+    public View setBackingPilotFrame(WarningState backingPilotFrame)
+    {
+        this.backingPilotFrame = backingPilotFrame;
+        return null;//todo need to rework this interface as does not make sense to return view here. See #49
+    }
+
+    @Override
+    public boolean hasBackingFrameSet()
+    {
+        return backingPilotFrame != null;
     }
 
     //    @Override

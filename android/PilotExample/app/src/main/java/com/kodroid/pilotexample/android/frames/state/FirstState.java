@@ -1,4 +1,4 @@
-package com.kodroid.pilotexample.android.frames.presenter;
+package com.kodroid.pilotexample.android.frames.state;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
@@ -14,7 +14,7 @@ import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
  * my presenters have some sort of state machine (i.e. Dynamo) which I wouldn't want
  * to persist / serialize. I would store this here and mark as transient
  */
-public class FirstViewPresenter extends PilotFrame
+public class FirstState extends PilotFrame
 {
     //==================================================================//
     // Serializable init data
@@ -39,11 +39,11 @@ public class FirstViewPresenter extends PilotFrame
      * 1) push another UI frame on the stack
      * 2) push a scoped-data frame on the stack and then a UI frame.
      */
-    public void mainViewClicked()
+    public void moveToNextState()
     {
         //example of pushing data frame then presenter frame
-        getParentStack().pushFrame(new SessionScopedData("<RandomSessionKey>"));
-        getParentStack().pushFrame(new SecondInSessionViewPresenter());
+        getParentStack().pushFrame(SessionScopedData.class);
+        getParentStack().pushFrame(SecondInSessionState.class);
     }
 }
 

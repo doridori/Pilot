@@ -1,4 +1,4 @@
-package com.kodroid.pilotexample.android.frames.presenter;
+package com.kodroid.pilotexample.android.frames.state;
 
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
@@ -14,7 +14,7 @@ import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
  * my presenters have some sort of state machine (i.e. Dynamo) which I wouldn't want
  * to persist / serialize. I would store this here and mark as transient
  */
-public class SecondInSessionViewPresenter extends PilotFrame
+public class SecondInSessionState extends PilotFrame
 {
     /**
      * A real app may access scoped session data this way to perform some other operations i.e. make a network call
@@ -29,6 +29,6 @@ public class SecondInSessionViewPresenter extends PilotFrame
 
     public void warnUser()
     {
-        getParentStack().pushFrame(new WarningPresenter());
+        getParentStack().pushFrame(WarningState.class);
     }
 }

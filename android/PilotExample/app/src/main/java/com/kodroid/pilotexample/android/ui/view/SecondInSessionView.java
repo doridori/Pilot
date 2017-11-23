@@ -3,16 +3,17 @@ package com.kodroid.pilotexample.android.ui.view;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.kodroid.pilot.lib.android.presenter.Presenter;
-import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilotexample.R;
-import com.kodroid.pilotexample.android.frames.presenter.SecondInSessionViewPresenter;
+import com.kodroid.pilotexample.android.frames.state.SecondInSessionState;
 
-@Presenter(SecondInSessionViewPresenter.class)
-public class SecondInSessionView extends PresenterBackedFrameLayout<SecondInSessionViewPresenter>
+public class SecondInSessionView extends FrameLayout implements PilotFrameBackedUI<SecondInSessionState>
 {
+    private SecondInSessionState backingPilotFrame;
+
     public SecondInSessionView(Context context)
     {
         super(context);
@@ -31,7 +32,7 @@ public class SecondInSessionView extends PresenterBackedFrameLayout<SecondInSess
             @Override
             public void onClick(View v)
             {
-                tv.setText(getPresenter().getSessionDataToDisplay());
+                tv.setText(backingPilotFrame.getSessionDataToDisplay());
             }
         });
 
@@ -40,8 +41,21 @@ public class SecondInSessionView extends PresenterBackedFrameLayout<SecondInSess
             @Override
             public void onClick(View v)
             {
-                getPresenter().warnUser();
+                backingPilotFrame.warnUser();
             }
         });
+    }
+
+    @Override
+    public View setBackingPilotFrame(SecondInSessionState backingPilotFrame)
+    {
+        this.backingPilotFrame = backingPilotFrame;
+        return this;
+    }
+
+    @Override
+    public boolean hasBackingFrameSet()
+    {
+        return backingPilotFrame != null;
     }
 }

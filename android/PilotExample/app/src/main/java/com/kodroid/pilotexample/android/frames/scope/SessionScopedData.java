@@ -30,9 +30,9 @@ public class SessionScopedData extends PilotFrame
      */
     private String mSomeSessionData;
 
-    public SessionScopedData(String someSessionData)
+    public SessionScopedData()
     {
-        mSomeSessionData = someSessionData;
+        mSomeSessionData = "some fake data";
     }
 
     public String getSomeSessionData()

@@ -3,75 +3,42 @@ package com.kodroid.pilotexample.android;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 
-
-import com.kodroid.pilot.lib.android.PilotLifecycleManager;
-import com.kodroid.pilot.lib.android.PilotSyncer;
-
-import com.kodroid.pilot.lib.android.presenter.PresenterBackedFrameLayout;
-import com.kodroid.pilot.lib.android.uiTypeHandler.UIFragmentTypeHandler;
-import com.kodroid.pilot.lib.android.uiTypeHandler.UIGenericTypeHandler;
-import com.kodroid.pilot.lib.android.uiTypeHandler.UIViewTypeHandler;
+import com.kodroid.pilot.lib.android.PilotActivityAdapter;
+import com.kodroid.pilot.lib.android.PilotUISyncer;
+import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
+import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandlerGeneric;
+import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandlerView;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 import com.kodroid.pilot.lib.stack.PilotStack;
 import com.kodroid.pilotexample.R;
-import com.kodroid.pilotexample.android.frames.presenter.FirstViewPresenter;
-import com.kodroid.pilotexample.android.frames.presenter.WarningPresenter;
-import com.kodroid.pilotexample.android.ui.fragment.WarningDialogFragment;
+import com.kodroid.pilotexample.android.frames.state.FirstState;
+import com.kodroid.pilotexample.android.frames.state.SecondInSessionState;
+import com.kodroid.pilotexample.android.frames.state.WarningState;
 import com.kodroid.pilotexample.android.ui.view.FirstView;
 import com.kodroid.pilotexample.android.ui.view.SecondInSessionView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This represents an Activity which contains a whole application
  */
 public class ExampleRootActivity extends Activity implements PilotStack.StackEmptyListener
 {
-    //==================================================================//
-    // Pilot Config
-    //==================================================================//
-
-    /**
-     * The lifecycle manager is held statically so it easily persists across config changes so you
-     * dont need to worry about handling this yourself
-     */
-    private static PilotLifecycleManager sPilotLifecycleManager = new PilotLifecycleManager(FirstViewPresenter.class);
-
-    /**
-     * Define an array of top level views. These are views of states that are represented by a PilotFrame
-     */
-    @SuppressWarnings("unchecked")
-    static final Class<? extends PresenterBackedFrameLayout>[] topLevelViews = new Class[]
-            {
-                FirstView.class,
-                SecondInSessionView.class
-            };
+    static PilotStack pilotStack = new PilotStack();
 
     /**
      * keep a reference to this old school dialog handler as simple dialogs need to be dismissed in
      * onDestroy otherwise the Activity context will be leaked
      */
-    private ExampleUIDialogTypeHandler mExampleUIDialogTypeHandler;
-
-    /**
-     * Build the {@link PilotSyncer} that will sync the UI to the {@link PilotStack} state.
-     *
-     * @param rootView
-     * @return
-     */
-    private PilotSyncer buildPilotSyncer(FrameLayout rootView)
-    {
-        mExampleUIDialogTypeHandler = new ExampleUIDialogTypeHandler(this);
-
-        return new PilotSyncer(
-                new UIViewTypeHandler(topLevelViews, new UIViewTypeHandler.SimpleDisplayer(rootView)),
-                mExampleUIDialogTypeHandler);
-    }
+    private ExampleUIDialogTypeHandler exampleUIDialogTypeHandler;
+    private PilotActivityAdapter pilotActivityAdapter;
 
     //==================================================================//
     // Lifecycle
@@ -83,29 +50,105 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_root);
         FrameLayout rootView = (FrameLayout) findViewById(R.id.root_view);
-        sPilotLifecycleManager.onCreateDelegate(savedInstanceState, buildPilotSyncer(rootView), this);
+        pilotActivityAdapter = new PilotActivityAdapter(
+            pilotStack,
+            buildPilotSyncer(rootView),
+            FirstState.class,
+            null,
+            this);
+        pilotActivityAdapter.onCreateDelegate(savedInstanceState);
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        sPilotLifecycleManager.onDestroyDelegate(this);
-        mExampleUIDialogTypeHandler.removeAllDialogs(); //to avoid context leaking
+        pilotActivityAdapter.onDestroyDelegate(this);
+        exampleUIDialogTypeHandler.removeAllDialogs(); //to avoid context leaking
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        sPilotLifecycleManager.onSaveInstanceStateDelegate(outState);
+        pilotActivityAdapter.onSaveInstanceStateDelegate(outState);
     }
 
     @Override
     public void onBackPressed()
     {
-        sPilotLifecycleManager.onBackPressedDelegate();
+        pilotActivityAdapter.onBackPressedDelegate();
     }
+
+    //==========================================================//
+    // Pilot
+    //==========================================================//
+
+    /**
+     * Build the {@link PilotUISyncer} that will sync the UI to the {@link PilotStack} state.
+     *
+     * @param rootView
+     * @return
+     */
+    private PilotUISyncer buildPilotSyncer(FrameLayout rootView)
+    {
+        exampleUIDialogTypeHandler = new ExampleUIDialogTypeHandler(this);
+
+        return new PilotUISyncer(
+                pilotStack,
+                new UITypeHandlerView(new ExampleViewCreator(), new UITypeHandlerView.SimpleDisplayer(rootView), true),
+                exampleUIDialogTypeHandler);
+    }
+
+    private class ExampleViewCreator implements UITypeHandlerView.ViewCreator
+    {
+        Map<Class<? extends PilotFrame>, Class<? extends View>> mappings = new HashMap<>();
+
+        public ExampleViewCreator()
+        {
+            mappings.put(FirstState.class, FirstView.class);
+            mappings.put(SecondInSessionState.class, SecondInSessionView.class);
+        }
+
+        @Override
+        public boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame)
+        {
+            return mappings.containsKey(pilotFrame);
+        }
+
+        @Override
+        public Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame)
+        {
+            for(Class<? extends PilotFrame> forFrame: mappings.keySet())
+            {
+                if(forFrame.equals(pilotFrame.getClass())) return mappings.get(forFrame);
+            }
+
+            throw new IllegalArgumentException(pilotFrame.getClass()+" not supported");
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public View createViewForFrame(PilotFrame pilotFrame)
+        {
+            View view = createView(getViewClassForFrame(pilotFrame));
+            ((PilotFrameBackedUI)view).setBackingPilotFrame(pilotFrame);
+            return view;
+        }
+
+        private <T extends View> T createView(Class<T> viewClass)
+        {
+            try
+            {
+                return viewClass.getConstructor(Context.class).newInstance(ExampleRootActivity.this);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     //==================================================================//
     // PilotStack listener methods
@@ -126,9 +169,9 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
      * from Views - this typeHandler approach can be used if the use-case is to display a dialog as a direct result of
      * a frame being pushed onto the stack.
      */
-    private static class ExampleUIDialogTypeHandler extends UIGenericTypeHandler
+    private static class ExampleUIDialogTypeHandler extends UITypeHandlerGeneric
     {
-        private static final Class<? extends PilotFrame>[] HANDLED_FRAMES = new Class[] { WarningPresenter.class };
+        private static final Class<? extends PilotFrame>[] HANDLED_FRAMES = new Class[] { WarningState.class };
 
         private Context mContext;
         private Dialog mCurrentDialog;
@@ -142,8 +185,8 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
         @Override
         protected void showUiForFrame(PilotFrame pilotFrame)
         {
-            if(pilotFrame instanceof WarningPresenter)
-                showWarningDialog((WarningPresenter)pilotFrame);
+            if(pilotFrame instanceof WarningState)
+                showWarningDialog((WarningState)pilotFrame);
         }
 
         void removeAllDialogs()
@@ -152,21 +195,33 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
                 mCurrentDialog.dismiss();
         }
 
-        private void showWarningDialog(final WarningPresenter warningPresenter)
+        private void showWarningDialog(final WarningState warningState)
         {
             mCurrentDialog = new AlertDialog.Builder(mContext)
-                    .setMessage(warningPresenter.getWarningMsg())
+                    .setMessage(warningState.getWarningMsg())
                     .setCancelable(false)
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            warningPresenter.dismissed();
+                            warningState.dismissed();
                             mCurrentDialog = null;
                         }
                     }).create();
             mCurrentDialog.show();
+        }
+
+        @Override
+        public boolean isFrameOpaque(PilotFrame frame)
+        {
+            return true;
+        }
+
+        @Override
+        public void clearAllUI()
+        {
+            mCurrentDialog.cancel();
         }
     }
 }
