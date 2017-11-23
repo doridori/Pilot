@@ -120,6 +120,12 @@ public class UITypeHandlerView implements UITypeHandler
          * @return Should always return a ViewClass or else throw an Exception
          */
         Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame);
+
+        /**
+         * Return a new View instance, which has had the passed in {@link PilotFrame} set.
+         * @param pilotFrame
+         * @return
+         */
         View createViewForFrame(PilotFrame pilotFrame);
     }
 
