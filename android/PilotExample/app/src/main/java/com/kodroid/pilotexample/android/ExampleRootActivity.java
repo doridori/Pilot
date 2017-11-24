@@ -11,7 +11,6 @@ import android.widget.FrameLayout;
 
 import com.kodroid.pilot.lib.android.PilotActivityAdapter;
 import com.kodroid.pilot.lib.android.PilotUISyncer;
-import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandlerGeneric;
 import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandlerView;
 import com.kodroid.pilot.lib.stack.PilotFrame;
@@ -96,57 +95,16 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
 
         return new PilotUISyncer(
                 pilotStack,
-                new UITypeHandlerView(new ExampleViewCreator(), new UITypeHandlerView.SimpleDisplayer(rootView), true),
+                new UITypeHandlerView(buildViewCreator(), new UITypeHandlerView.SimpleDisplayer(rootView), true),
                 exampleUIDialogTypeHandler);
     }
 
-    private class ExampleViewCreator implements UITypeHandlerView.ViewCreator
+    private UITypeHandlerView.ViewCreator buildViewCreator()
     {
         Map<Class<? extends PilotFrame>, Class<? extends View>> mappings = new HashMap<>();
-
-        public ExampleViewCreator()
-        {
-            mappings.put(FirstState.class, FirstView.class);
-            mappings.put(SecondInSessionState.class, SecondInSessionView.class);
-        }
-
-        @Override
-        public boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame)
-        {
-            return mappings.containsKey(pilotFrame);
-        }
-
-        @Override
-        public Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame)
-        {
-            for(Class<? extends PilotFrame> forFrame: mappings.keySet())
-            {
-                if(forFrame.equals(pilotFrame.getClass())) return mappings.get(forFrame);
-            }
-
-            throw new IllegalArgumentException(pilotFrame.getClass()+" not supported");
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public View createViewForFrame(PilotFrame pilotFrame)
-        {
-            View view = createView(getViewClassForFrame(pilotFrame));
-            ((PilotFrameBackedUI)view).setBackingPilotFrame(pilotFrame);
-            return view;
-        }
-
-        private <T extends View> T createView(Class<T> viewClass)
-        {
-            try
-            {
-                return viewClass.getConstructor(Context.class).newInstance(ExampleRootActivity.this);
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
+        mappings.put(FirstState.class, FirstView.class);
+        mappings.put(SecondInSessionState.class, SecondInSessionView.class);
+        return new UITypeHandlerView.ViewCreator(mappings);
     }
 
     //==================================================================//

@@ -20,5 +20,5 @@ android {
 }
 
 dependencies {
-    compile 'com.kodroid:pilot:0.15.0-SNAPSHOT'
+    compile 'com.kodroid:pilot:0.16.0-SNAPSHOT'
 }
