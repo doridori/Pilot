@@ -2,6 +2,7 @@ package com.kodroid.pilot.lib.android.uiTypeHandler;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -9,7 +10,9 @@ import android.widget.FrameLayout;
 import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
 import com.kodroid.pilot.lib.stack.PilotFrame;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,7 +69,7 @@ public class UITypeHandlerView implements UITypeHandler
             else //view is not visible
             {
                 log("UITypeViewHandler:renderFrame(%s) not added, adding new view", frame.toString());
-                displayer.makeVisible(viewCreator.createViewForFrame(frame));
+                displayer.makeVisible(viewCreator.createViewForFrame(displayer.getDisplayConext(), frame));
             }
         }
         else
@@ -105,25 +108,58 @@ public class UITypeHandlerView implements UITypeHandler
     // Displayer Delegation
     //==================================================================//
 
-    /**
-     * An implementation of this interface should be able to create a View for a given PilotFrame
-     */
-    public interface ViewCreator
+    public static class ViewCreator
     {
-        boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame);
+        private Map<Class<? extends PilotFrame>, Class<? extends View>> mappings = new HashMap<>();
+
+        public ViewCreator(Map<Class<? extends PilotFrame>, Class<? extends View>> mappings)
+        {
+            this.mappings = mappings;
+        }
+
+        private boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame)
+        {
+            return mappings.containsKey(pilotFrame);
+        }
 
         /**
          * @param pilotFrame the frame to get the View class for
          * @return Should always return a ViewClass or else throw an Exception
          */
-        Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame);
+        private Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame)
+        {
+            for(Class<? extends PilotFrame> forFrame: mappings.keySet())
+            {
+                if(forFrame.equals(pilotFrame.getClass())) return mappings.get(forFrame);
+            }
+
+            throw new IllegalArgumentException(pilotFrame.getClass()+" not supported");
+        }
 
         /**
          * Return a new View instance, which has had the passed in {@link PilotFrame} set.
          * @param pilotFrame
          * @return
          */
-        View createViewForFrame(PilotFrame pilotFrame);
+        @SuppressWarnings("unchecked")
+        private View createViewForFrame(Context context, PilotFrame pilotFrame)
+        {
+            View view = createView(context, getViewClassForFrame(pilotFrame));
+            ((PilotFrameBackedUI)view).setBackingPilotFrame(pilotFrame);
+            return view;
+        }
+
+        private <T extends View> T createView(Context context, Class<T> viewClass)
+        {
+            try
+            {
+                return viewClass.getConstructor(Context.class).newInstance(context);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -143,6 +179,7 @@ public class UITypeHandlerView implements UITypeHandler
         boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator);
         void makeVisible(View newView);
         void clearAllUI();
+        Context getDisplayConext();
     }
 
     /**
@@ -160,11 +197,11 @@ public class UITypeHandlerView implements UITypeHandler
      */
     public static class SimpleDisplayer implements Displayer
     {
-        private FrameLayout mRootViewGroup;
+        private FrameLayout rootViewGroup;
 
         public SimpleDisplayer(FrameLayout rootViewGroup)
         {
-            mRootViewGroup = rootViewGroup;
+            this.rootViewGroup = rootViewGroup;
         }
 
         //============================//
@@ -196,7 +233,13 @@ public class UITypeHandlerView implements UITypeHandler
 
         @Override
         public void clearAllUI() {
-            mRootViewGroup.removeAllViews();
+            rootViewGroup.removeAllViews();
+        }
+
+        @Override
+        public Context getDisplayConext()
+        {
+            return rootViewGroup.getContext();
         }
 
         //============================//
@@ -214,8 +257,8 @@ public class UITypeHandlerView implements UITypeHandler
         protected void setCurrentView(View newView)
         {
             //for now we will do a crude add / remove but could animate etc
-            mRootViewGroup.removeAllViews();
-            mRootViewGroup.addView(newView);
+            rootViewGroup.removeAllViews();
+            rootViewGroup.addView(newView);
         }
 
         /**
@@ -226,7 +269,7 @@ public class UITypeHandlerView implements UITypeHandler
         protected View getCurrentView()
         {
             //simple as setCurrentView is simple and non-animating (i.e. only ever one view present at a time)
-            return mRootViewGroup.getChildAt(0);
+            return rootViewGroup.getChildAt(0);
         }
     }
 
@@ -324,6 +367,12 @@ public class UITypeHandlerView implements UITypeHandler
         @Override
         public void clearAllUI() {
             animateOutViews(0);
+        }
+
+        @Override
+        public Context getDisplayConext()
+        {
+            return rootViewGroup.getContext();
         }
 
         //==================================================================//

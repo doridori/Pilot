@@ -149,7 +149,6 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
         }
     }
 
-
     //==================================================================//
     // PilotStack listener methods
     //==================================================================//
