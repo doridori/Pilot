@@ -32,6 +32,7 @@ public class SessionScopedData extends PilotFrame
 
     public SessionScopedData()
     {
+        super(null);
         mSomeSessionData = "some fake data";
     }
 

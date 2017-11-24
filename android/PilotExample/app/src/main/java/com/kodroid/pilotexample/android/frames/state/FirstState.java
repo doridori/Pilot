@@ -17,16 +17,13 @@ import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
 public class FirstState extends PilotFrame
 {
     //==================================================================//
-    // Serializable init data
-    //==================================================================//
-
-    //could contain some serializable data
-
-    //==================================================================//
     // Constructor
     //==================================================================//
 
-    //as launch frame has default no arg constructor
+    public FirstState()
+    {
+        super(null);
+    }
 
     //==================================================================//
     // App transitions

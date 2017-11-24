@@ -7,6 +7,11 @@ import com.kodroid.pilot.lib.stack.PilotFrame;
  */
 public class WarningState extends PilotFrame
 {
+    public WarningState()
+    {
+        super(null);
+    }
+
     public String getWarningMsg()
     {
         return "ITS GONNA BLOW!";

@@ -16,6 +16,11 @@ import com.kodroid.pilotexample.android.frames.scope.SessionScopedData;
  */
 public class SecondInSessionState extends PilotFrame
 {
+    public SecondInSessionState()
+    {
+        super(null);
+    }
+
     /**
      * A real app may access scoped session data this way to perform some other operations i.e. make a network call
      *

@@ -221,7 +221,8 @@ public class ExampleRootActivity extends Activity implements PilotStack.StackEmp
         @Override
         public void clearAllUI()
         {
-            mCurrentDialog.cancel();
+            if(mCurrentDialog != null)
+                mCurrentDialog.cancel();
         }
     }
 }
