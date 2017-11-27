@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.frameBacking.StateFrameBackedUI;
+import com.kodroid.pilot.lib.android.stateFrameBacking.StateFrameBackedUI;
 import com.kodroid.pilot.lib.statestack.StateFrame;
 
 import java.util.HashMap;
