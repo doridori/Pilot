@@ -1,4 +1,4 @@
-package com.kodroid.pilot.lib.stack;
+package com.kodroid.pilot.lib.statestack;
 
 import java.io.Serializable;
 import java.util.HashMap;

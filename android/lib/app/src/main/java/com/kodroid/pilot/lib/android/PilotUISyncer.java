@@ -1,20 +1,20 @@
 package com.kodroid.pilot.lib.android;
 
 import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandler;
-import com.kodroid.pilot.lib.stack.PilotFrame;
-import com.kodroid.pilot.lib.stack.PilotStack;
+import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.statestack.StateStack;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class holds the {@link UITypeHandler} collection that is queried upon {@link PilotStack}
+ * This class holds the {@link UITypeHandler} collection that is queried upon {@link StateStack}
  * changes.
  */
-public class PilotUISyncer implements PilotStack.TopFrameChangedListener
+public class PilotUISyncer implements StateStack.TopFrameChangedListener
 {
     private UITypeHandler[] uiTypeHandlers;
-    private PilotStack pilotStack;
+    private StateStack stateStack;
     private boolean hostActivityStarted;
 
     //==================================================================//
@@ -23,11 +23,11 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
 
     /**
      * @param uiTypeHandlers UITypeHandlers passed in here have to have corresponding entries for
-     *                       *all* PilotFrame classes that exist in this project.
+     *                       *all* StateFrame classes that exist in this project.
      */
-    public PilotUISyncer(PilotStack pilotStack, UITypeHandler... uiTypeHandlers)
+    public PilotUISyncer(StateStack stateStack, UITypeHandler... uiTypeHandlers)
     {
-        this.pilotStack = pilotStack;
+        this.stateStack = stateStack;
         this.uiTypeHandlers = uiTypeHandlers;
     }
 
@@ -39,7 +39,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     {
         hostActivityStarted = true;
         //notify all frames represented by views being drawn to the screen
-        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
+        for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
             frame.frameViewVisible(true);
     }
 
@@ -47,7 +47,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     {
         hostActivityStarted= false;
         //notify all frames represented by views being drawn to the screen
-        for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
+        for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
             frame.frameViewVisible(false);
     }
 
@@ -62,19 +62,19 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
      *
      * Top frame index 0
      *
-     * @param pilotStack
+     * @param stateStack
      * @return
      */
-    private List<PilotFrame> getCurrentlyVisibleFrames(PilotStack pilotStack, boolean ignoreTop)
+    private List<StateFrame> getCurrentlyVisibleFrames(StateStack stateStack, boolean ignoreTop)
     {
-        List<PilotFrame> currentlyVisibleFrames = new LinkedList<>();
+        List<StateFrame> currentlyVisibleFrames = new LinkedList<>();
 
         int count = 1; //1 is top of stack for below method call
         if(ignoreTop)
             count++; //2 is second from top of stack for below method call
         while(true)
         {
-            PilotFrame frame = pilotStack.getVisibleFrameFromTopDown(count);
+            StateFrame frame = stateStack.getVisibleFrameFromTopDown(count);
             if(frame == null) //EOL
                 return currentlyVisibleFrames;
             currentlyVisibleFrames.add(frame);
@@ -84,18 +84,18 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
         }
     }
 
-    private boolean isFrameOpaque(PilotFrame pilotFrame)
+    private boolean isFrameOpaque(StateFrame stateFrame)
     {
         //find the typeHandler that handles this frame
         for(UITypeHandler uiTypeHandler : uiTypeHandlers)
         {
-            if (uiTypeHandler.isFrameSupported(pilotFrame.getClass()))
+            if (uiTypeHandler.isFrameSupported(stateFrame.getClass()))
             {
-                return uiTypeHandler.isFrameOpaque(pilotFrame);
+                return uiTypeHandler.isFrameOpaque(stateFrame);
             }
         }
 
-        throw new IllegalStateException("No UITypeHandler registered for PilotFrame of type "+pilotFrame.getClass().getName());
+        throw new IllegalStateException("No UITypeHandler registered for StateFrame of type "+ stateFrame.getClass().getName());
     }
 
     //==================================================================//
@@ -105,15 +105,15 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
     /**
      * Will render all passed frames, bottom up. Should be used after a config change.
      */
-    public void renderAllCurrentlyVisibleFrames(PilotStack pilotStack)
+    public void renderAllCurrentlyVisibleFrames(StateStack stateStack)
     {
-        List<PilotFrame> framesToRender = getCurrentlyVisibleFrames(pilotStack, false);
+        List<StateFrame> framesToRender = getCurrentlyVisibleFrames(stateStack, false);
         for(int i = framesToRender.size() - 1; i >= 0; i--)
             topVisibleFrameUpdated(framesToRender.get(i), Direction.FORWARD);
     }
 
     @Override
-    public void topVisibleFrameUpdated(PilotFrame topVisibleFrame, Direction direction)
+    public void topVisibleFrameUpdated(StateFrame topVisibleFrame, Direction direction)
     {
         UITypeHandler handlingTypeHandler = null;
 
@@ -129,7 +129,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
 
         //throw if nothing to handle this frame
         if(handlingTypeHandler == null)
-            throw new IllegalStateException("No UITypeHandler registered for PilotFrame of type "+topVisibleFrame.getClass().getName());
+            throw new IllegalStateException("No UITypeHandler registered for StateFrame of type "+topVisibleFrame.getClass().getName());
 
         //clear all other handlers IF the new frame is opaque
         if(handlingTypeHandler.isFrameOpaque(topVisibleFrame))
@@ -149,7 +149,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
                 return; //i.e. don't bother calling false when added
 
             //get all the vis frame stack ignoring the top frame and call false
-            for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, true))
+            for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, true))
                 frame.frameViewVisible(false);
 
             //call started state on top frame
@@ -157,7 +157,7 @@ public class PilotUISyncer implements PilotStack.TopFrameChangedListener
         }
         else if(direction == Direction.BACK)
         {
-            for(PilotFrame frame : getCurrentlyVisibleFrames(pilotStack, false))
+            for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
                 frame.frameViewVisible(true);
         }
     }

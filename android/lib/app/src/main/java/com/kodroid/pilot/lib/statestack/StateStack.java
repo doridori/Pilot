@@ -1,4 +1,4 @@
-package com.kodroid.pilot.lib.stack;
+package com.kodroid.pilot.lib.statestack;
 
 import android.util.Log;
 
@@ -11,38 +11,38 @@ import java.util.Stack;
  * A simple abstraction of a stack of objects which have:
  *
  * - stack-lifecycle event callbacks inside frames
- * - support for frames that are marked as VISIBLE (default) or {@link InvisibleFrame} (useful for scoped data)
+ * - support for frames that are marked as VISIBLE (default) or {@link HiddenFrame} (useful for scoped data)
  * - support for slightly more complex stack operations when adding or removing frames
  *
  * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link TopFrameChangedListener}.
  *
  * Not thread safe.
  */
-public class PilotStack
+public class StateStack
 {
-    private Stack<PilotFrame> stack = new Stack<>();
+    private Stack<StateFrame> stack = new Stack<>();
 
     private List<StackEmptyListener> stackEmptyListeners = new ArrayList<>();
     private List<TopFrameChangedListener> topFrameChangedListeners = new ArrayList<>();
-    private PilotFrameFactory pilotFrameFactory;
+    private StateFrameFactory stateFrameFactory;
 
     //==================================================================//
     // Constructor
     //==================================================================//
 
-    public PilotStack()
+    public StateStack()
     {
-        this(new InternalPilotFrameFactory());
+        this(new InternalStateFrameFactory());
     }
 
     /**
      * Can specify a custom frame factory
      *
-     * @param pilotFrameFactory
+     * @param stateFrameFactory
      */
-    public PilotStack(PilotFrameFactory pilotFrameFactory)
+    public StateStack(StateFrameFactory stateFrameFactory)
     {
-        this.pilotFrameFactory = pilotFrameFactory;
+        this.stateFrameFactory = stateFrameFactory;
     }
 
     //==================================================================//
@@ -51,13 +51,13 @@ public class PilotStack
 
     /**
      * Clears whole stack. If the caller wants to perform any more stack operations after this point
-     * then they will need to use the returned PilotStack as the calling
-     * {@link PilotFrame#getParentStack()} will be null after this call.
+     * then they will need to use the returned StateStack as the calling
+     * {@link StateFrame#getParentStack()} will be null after this call.
      *
      * @param notifyListeners
      * @return
      */
-    public PilotStack clearStack(boolean notifyListeners)
+    public StateStack clearStack(boolean notifyListeners)
     {
         popAllFramesAboveIndex(0);
 
@@ -70,9 +70,9 @@ public class PilotStack
     }
 
     /**
-     * @return top frame of the stack ignoring {@link InvisibleFrame} or null
+     * @return top frame of the stack ignoring {@link HiddenFrame} or null
      */
-    public PilotFrame getTopVisibleFrame()
+    public StateFrame getTopVisibleFrame()
     {
         return getVisibleFrameFromTopDown(1);
     }
@@ -83,22 +83,22 @@ public class PilotStack
      * @param frameClassToPush
      * @return
      */
-    public PilotStack pushFrame(Class<? extends PilotFrame> frameClassToPush)
+    public StateStack pushFrame(Class<? extends StateFrame> frameClassToPush)
     {
         return pushFrame(frameClassToPush, null);
     }
 
     /**
-     * If passing args then the PilotFrame class passed need to have a one-arg (Args) constructor.
-     * If null is passed then PilotFrame class needs to have one-arg constructor.
+     * If passing args then the StateFrame class passed need to have a one-arg (Args) constructor.
+     * If null is passed then StateFrame class needs to have one-arg constructor.
      *
      * @param frameClassToPush
      * @param args
      * @return
      */
-    public PilotStack pushFrame(Class<? extends PilotFrame> frameClassToPush, Args args)
+    public StateStack pushFrame(Class<? extends StateFrame> frameClassToPush, Args args)
     {
-        PilotFrame frameToPush = pilotFrameFactory.createFrame(frameClassToPush, args);
+        StateFrame frameToPush = stateFrameFactory.createFrame(frameClassToPush, args);
 
         //put on stack
         frameToPush.setParentStack(this);
@@ -114,13 +114,13 @@ public class PilotStack
     }
 
     /**
-     * Removes all frames (inc {@link InvisibleFrame} above the 2nd highest visible frame. If only
+     * Removes all frames (inc {@link HiddenFrame} above the 2nd highest visible frame. If only
      * one visible frame exists in the stack the whole stack will be cleared. This is useful to
      * simulate back behaviour.
      */
-    public PilotStack popToNextVisibleFrame()
+    public StateStack popToNextVisibleFrame()
     {
-        PilotFrame nextVisibleFrame = getVisibleFrameFromTopDown(2);
+        StateFrame nextVisibleFrame = getVisibleFrameFromTopDown(2);
         if(nextVisibleFrame == null)
             clearStack(true);
         else
@@ -135,9 +135,9 @@ public class PilotStack
      *
      * @param frameToPop not null
      */
-    public PilotStack popTopFrameInstance(PilotFrame frameToPop)
+    public StateStack popTopFrameInstance(StateFrame frameToPop)
     {
-        PilotFrame poppedFrame = stack.pop();
+        StateFrame poppedFrame = stack.pop();
         if(poppedFrame != frameToPop)
             throw new IllegalStateException(frameToPop.getClass().getName()+" instance was not the top of the stack");
 
@@ -155,7 +155,7 @@ public class PilotStack
      *
      * @param frameToRemove if this does not exist in the stack this will throw a {@link RuntimeException}
      */
-    public PilotStack removeFrame(PilotFrame frameToRemove)
+    public StateStack removeFrame(StateFrame frameToRemove)
     {
         if(!stack.remove(frameToRemove))
             throw new RuntimeException(frameToRemove.getClass().getName()+ " does not exist in the stack");
@@ -182,12 +182,12 @@ public class PilotStack
         EXCLUSIVE;
     }
 
-    public PilotStack popAtFrameInstance(PilotFrame pilotFrame, PopType popType, boolean notifyListeners)
+    public StateStack popAtFrameInstance(StateFrame stateFrame, PopType popType, boolean notifyListeners)
     {
         for(int i = stack.size()-1; i >= 0; i--)
         {
             //find the index in the stack that is the class type requested
-            if(stack.get(i) == pilotFrame)
+            if(stack.get(i) == stateFrame)
             {
                 //account for INCLUSIVE or EXCLUSIVE removal
                 int removeFrom = (popType == PopType.INCLUSIVE ? i : i+1);
@@ -200,7 +200,7 @@ public class PilotStack
                 if(!removedVisibleFrames) //no Visible frame change
                     return this;
 
-                PilotFrame topVisibleFrame = getTopVisibleFrame();
+                StateFrame topVisibleFrame = getTopVisibleFrame();
                 if(topVisibleFrame == null)
                 {
                     notifyListenersNoVisibleFramesLeft();
@@ -215,19 +215,19 @@ public class PilotStack
             }
         }
 
-        throw new IllegalStateException("Attempted to pop stack at "+pilotFrame.getClass().getCanonicalName()+" instance but was not found in stack");
+        throw new IllegalStateException("Attempted to pop stack at "+ stateFrame.getClass().getCanonicalName()+" instance but was not found in stack");
     }
 
     /**
      * Pops everything in the stack above (and including) the passed in class. Will look from the TOP
-     * of the stack and perform operation for the first matching {@link PilotFrame} found.
+     * of the stack and perform operation for the first matching {@link StateFrame} found.
      *
      * @param clazz
      * @param popType
      * @param  {@Link PopType#INCLUSIVE} if should pop the passed frame also, {@Link PopType#EXCLUSIVE} if this frame should become the new top
      * @param notifyListeners true if should notify registered listeners for frame changes
      */
-    public PilotStack popAtFrameType(Class<? extends PilotFrame> clazz, PopType popType, boolean notifyListeners)
+    public StateStack popAtFrameType(Class<? extends StateFrame> clazz, PopType popType, boolean notifyListeners)
     {
         for(int i = stack.size()-1; i >= 0; i--)
         {
@@ -245,7 +245,7 @@ public class PilotStack
                 if(!removedVisibleFrames) //no Visible frame change
                     return this;
 
-                PilotFrame topVisibleFrame = getTopVisibleFrame();
+                StateFrame topVisibleFrame = getTopVisibleFrame();
                 if(topVisibleFrame == null)
                     notifyListenersNoVisibleFramesLeft();
                 else
@@ -269,12 +269,12 @@ public class PilotStack
      * @param <T>
      * @return
      */
-    public <T extends PilotFrame> T getFrameOfType(Class<T> clazz)
+    public <T extends StateFrame> T getFrameOfType(Class<T> clazz)
     {
-        for(PilotFrame pilotFrame : stack)
+        for(StateFrame stateFrame : stack)
         {
-            if(pilotFrame.getClass() == clazz)
-                return (T) pilotFrame;
+            if(stateFrame.getClass() == clazz)
+                return (T) stateFrame;
         }
 
         return null;
@@ -287,9 +287,9 @@ public class PilotStack
      */
     public boolean doesContainVisibleFrame()
     {
-        for(PilotFrame pilotFrame : stack)
+        for(StateFrame stateFrame : stack)
         {
-            if(!isInvisibleFrame(pilotFrame))
+            if(!isInvisibleFrame(stateFrame))
                 return true;
         }
 
@@ -310,15 +310,15 @@ public class PilotStack
      * Returns the x vis frame from the top of the stack. I.e. 1 = top vis, 2 = 2nd top vis etc
      *
      * @param positionFromTop > 0
-     * @return PilotFrame or null is positionFromTop does not exist
+     * @return StateFrame or null is positionFromTop does not exist
      */
-    public PilotFrame getVisibleFrameFromTopDown(int positionFromTop)
+    public StateFrame getVisibleFrameFromTopDown(int positionFromTop)
     {
         final int stackSize = stack.size();
         int topDownVisCount = 0;
         for(int i = stackSize-1; i >= 0; i--)
         {
-            PilotFrame currentFrame = stack.elementAt(i);
+            StateFrame currentFrame = stack.elementAt(i);
             if(!isInvisibleFrame(currentFrame))
             {
                 topDownVisCount++;
@@ -333,7 +333,7 @@ public class PilotStack
     // Private methods
     //==================================================================//
 
-    private void notifyListenersTopVisibleFrameUpdated(PilotFrame topVisibleFrame, TopFrameChangedListener.Direction direction)
+    private void notifyListenersTopVisibleFrameUpdated(StateFrame topVisibleFrame, TopFrameChangedListener.Direction direction)
     {
         for(TopFrameChangedListener topFrameChangedListener : topFrameChangedListeners)
             topFrameChangedListener.topVisibleFrameUpdated(topVisibleFrame, direction);
@@ -347,7 +347,7 @@ public class PilotStack
 
     private void notifyListenersNewBackFrame()
     {
-        PilotFrame nextTopFrame = getTopVisibleFrame();
+        StateFrame nextTopFrame = getTopVisibleFrame();
         if(nextTopFrame != null)
             notifyListenersTopVisibleFrameUpdated(nextTopFrame, TopFrameChangedListener.Direction.BACK);
         else
@@ -356,7 +356,7 @@ public class PilotStack
 
     /**
      * @param index
-     * @return true if any of the frames removed were not marked with {@link InvisibleFrame}
+     * @return true if any of the frames removed were not marked with {@link HiddenFrame}
      * (therefore a visible frame change took place).
      */
     private boolean popAllFramesAboveIndex(int index)
@@ -365,7 +365,7 @@ public class PilotStack
 
         while(stack.size() > index)
         {
-            PilotFrame poppedFrame = stack.pop();
+            StateFrame poppedFrame = stack.pop();
             poppedFrame.popped();
             poppedFrame.setParentStack(null);
             visibleFrameRemoved |= !isInvisibleFrame(poppedFrame); //remove from end as less internal element movement
@@ -374,14 +374,14 @@ public class PilotStack
         return visibleFrameRemoved;
     }
 
-    private boolean isInvisibleFrame(PilotFrame pilotFrame)
+    private boolean isInvisibleFrame(StateFrame stateFrame)
     {
-        return isInvisibleFrame(pilotFrame.getClass());
+        return isInvisibleFrame(stateFrame.getClass());
     }
 
-    private boolean isInvisibleFrame(Class<? extends PilotFrame> clazz)
+    private boolean isInvisibleFrame(Class<? extends StateFrame> clazz)
     {
-        return clazz.isAnnotationPresent(InvisibleFrame.class);
+        return clazz.isAnnotationPresent(HiddenFrame.class);
     }
 
     //==================================================================//
@@ -392,7 +392,7 @@ public class PilotStack
     {
         Log.i("Pilot", "Printing Stack");
 
-        for(PilotFrame frame : stack)
+        for(StateFrame frame : stack)
         {
             Log.i("Pilot", "-- "+frame.toString());
         }
@@ -423,7 +423,7 @@ public class PilotStack
      */
     public interface TopFrameChangedListener
     {
-        void topVisibleFrameUpdated(PilotFrame topVisibleFrame, Direction direction);
+        void topVisibleFrameUpdated(StateFrame topVisibleFrame, Direction direction);
 
         enum Direction
         {
@@ -437,13 +437,13 @@ public class PilotStack
     }
 
     //==================================================================//
-    // PilotFrameFactory
+    // StateFrameFactory
     //==================================================================//
 
-    static class InternalPilotFrameFactory implements PilotFrameFactory
+    static class InternalStateFrameFactory implements StateFrameFactory
     {
         @Override
-        public PilotFrame createFrame(Class<? extends PilotFrame> frameClassToPush, Args args) {
+        public StateFrame createFrame(Class<? extends StateFrame> frameClassToPush, Args args) {
             try
             {
                 if(args == null)

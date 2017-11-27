@@ -1,6 +1,6 @@
 package com.kodroid.pilot.lib.android.uiTypeHandler;
 
-import com.kodroid.pilot.lib.stack.PilotFrame;
+import com.kodroid.pilot.lib.statestack.StateFrame;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,24 +9,24 @@ import java.util.Set;
 /**
  * This can be used for anything i.e. show old school Dialogs etc.
  *
- * Just a simple non UI type specific handler which allows you to declare the handled {@link com.kodroid.pilot.lib.stack.PilotFrame} classes
+ * Just a simple non UI type specific handler which allows you to declare the handled {@link StateFrame} classes
  */
 public abstract class UITypeHandlerGeneric implements UITypeHandler
 {
-    private Set<Class<? extends PilotFrame>> handledFrames = new HashSet<>();
+    private Set<Class<? extends StateFrame>> handledFrames = new HashSet<>();
 
-    public UITypeHandlerGeneric(Class<? extends PilotFrame>[] handledFrames)
+    public UITypeHandlerGeneric(Class<? extends StateFrame>[] handledFrames)
     {
         this.handledFrames.addAll(Arrays.asList(handledFrames));
     }
 
     @Override
-    public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+    public boolean isFrameSupported(Class<? extends StateFrame> frameClass) {
         return handledFrames.contains(frameClass);
     }
 
     @Override
-    public void renderFrame(PilotFrame frame)
+    public void renderFrame(StateFrame frame)
     {
         if(handledFrames.contains(frame.getClass()))
         {
@@ -54,7 +54,7 @@ public abstract class UITypeHandlerGeneric implements UITypeHandler
      *
      * @param frame
      */
-    protected abstract void showUiForFrame(PilotFrame frame);
+    protected abstract void showUiForFrame(StateFrame frame);
 
 
 }

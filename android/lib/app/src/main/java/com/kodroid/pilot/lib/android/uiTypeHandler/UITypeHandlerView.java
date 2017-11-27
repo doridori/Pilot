@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
-import com.kodroid.pilot.lib.stack.PilotFrame;
+import com.kodroid.pilot.lib.statestack.StateFrame;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Code to create and display an {@link View} for a {@link PilotFrame} that is declared to be handled by this {@link UITypeHandlerView}
+ * Code to create and display an {@link View} for a {@link StateFrame} that is declared to be handled by this {@link UITypeHandlerView}
  */
 public class UITypeHandlerView implements UITypeHandler
 {
@@ -49,17 +49,17 @@ public class UITypeHandlerView implements UITypeHandler
 
 
     @Override
-    public boolean isFrameSupported(Class<? extends PilotFrame> frameClass) {
+    public boolean isFrameSupported(Class<? extends StateFrame> frameClass) {
         return viewCreator.isFrameHandled(frameClass);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void renderFrame(PilotFrame frame)
+    public void renderFrame(StateFrame frame)
     {
         log("UITypeViewHandler:renderFrame(%s)", frame.toString());
 
-        Class<? extends PilotFrame> frameClass = frame.getClass();
+        Class<? extends StateFrame> frameClass = frame.getClass();
         if(isFrameSupported(frameClass))
         {
             if(displayer.isViewAddedForFrameInstance(frame, viewCreator))
@@ -83,7 +83,7 @@ public class UITypeHandlerView implements UITypeHandler
      * @return true if the passed Frame is opaque
      */
     @Override
-    public boolean isFrameOpaque(PilotFrame frame) {
+    public boolean isFrameOpaque(StateFrame frame) {
         return true;
     }
 
@@ -110,42 +110,42 @@ public class UITypeHandlerView implements UITypeHandler
 
     public static class ViewCreator
     {
-        private Map<Class<? extends PilotFrame>, Class<? extends View>> mappings = new HashMap<>();
+        private Map<Class<? extends StateFrame>, Class<? extends View>> mappings = new HashMap<>();
 
-        public ViewCreator(Map<Class<? extends PilotFrame>, Class<? extends View>> mappings)
+        public ViewCreator(Map<Class<? extends StateFrame>, Class<? extends View>> mappings)
         {
             this.mappings = mappings;
         }
 
-        private boolean isFrameHandled(Class<? extends PilotFrame> pilotFrame)
+        private boolean isFrameHandled(Class<? extends StateFrame> pilotFrame)
         {
             return mappings.containsKey(pilotFrame);
         }
 
         /**
-         * @param pilotFrame the frame to get the View class for
+         * @param stateFrame the frame to get the View class for
          * @return Should always return a ViewClass or else throw an Exception
          */
-        private Class<? extends View> getViewClassForFrame(PilotFrame pilotFrame)
+        private Class<? extends View> getViewClassForFrame(StateFrame stateFrame)
         {
-            for(Class<? extends PilotFrame> forFrame: mappings.keySet())
+            for(Class<? extends StateFrame> forFrame: mappings.keySet())
             {
-                if(forFrame.equals(pilotFrame.getClass())) return mappings.get(forFrame);
+                if(forFrame.equals(stateFrame.getClass())) return mappings.get(forFrame);
             }
 
-            throw new IllegalArgumentException(pilotFrame.getClass()+" not supported");
+            throw new IllegalArgumentException(stateFrame.getClass()+" not supported");
         }
 
         /**
-         * Return a new View instance, which has had the passed in {@link PilotFrame} set.
-         * @param pilotFrame
+         * Return a new View instance, which has had the passed in {@link StateFrame} set.
+         * @param stateFrame
          * @return
          */
         @SuppressWarnings("unchecked")
-        private View createViewForFrame(Context context, PilotFrame pilotFrame)
+        private View createViewForFrame(Context context, StateFrame stateFrame)
         {
-            View view = createView(context, getViewClassForFrame(pilotFrame));
-            ((PilotFrameBackedUI)view).setBackingPilotFrame(pilotFrame);
+            View view = createView(context, getViewClassForFrame(stateFrame));
+            ((PilotFrameBackedUI)view).setBackingPilotFrame(stateFrame);
             return view;
         }
 
@@ -176,7 +176,7 @@ public class UITypeHandlerView implements UITypeHandler
          * @param viewCreator
          * @return
          */
-        boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator);
+        boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator);
         void makeVisible(View newView);
         void clearAllUI();
         Context getDisplayConext();
@@ -209,7 +209,7 @@ public class UITypeHandlerView implements UITypeHandler
         //============================//
 
         @Override
-        public boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator)
+        public boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();
@@ -342,7 +342,7 @@ public class UITypeHandlerView implements UITypeHandler
         }
 
         @Override
-        public boolean isViewAddedForFrameInstance(PilotFrame frame, ViewCreator viewCreator)
+        public boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();

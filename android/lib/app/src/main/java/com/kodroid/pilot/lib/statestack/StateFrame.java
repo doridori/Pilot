@@ -1,20 +1,19 @@
-package com.kodroid.pilot.lib.stack;
+package com.kodroid.pilot.lib.statestack;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Frame that lives in a {@link PilotStack}. 
+ * Frame that lives in a {@link StateStack}.
  */
-public abstract class PilotFrame implements Serializable
+public abstract class StateFrame implements Serializable
 {
     //==================================================================//
     // Fields
     //==================================================================//
 
-    private PilotStack parentStack;
+    private StateStack parentStack;
     private Args args;
 
     //==================================================================//
@@ -24,7 +23,7 @@ public abstract class PilotFrame implements Serializable
     /**
      * No arg constructor used to catch when subclasses forget to call super
      */
-    protected PilotFrame()
+    protected StateFrame()
     {
         throw new RuntimeException("Subclass Frames need to call super(Args)");
     }
@@ -34,7 +33,7 @@ public abstract class PilotFrame implements Serializable
      *
      * @param args can be null.
      */
-    protected PilotFrame(Args args)
+    protected StateFrame(Args args)
     {
         this.args = args;
     }
@@ -44,11 +43,11 @@ public abstract class PilotFrame implements Serializable
     //==================================================================//
 
     /**
-     * This is called by the parent PilotStack so no need to call yourself. Useful for testing.
+     * This is called by the parent StateStack so no need to call yourself. Useful for testing.
      *
      * @param parentStack
      */
-    public void setParentStack(PilotStack parentStack)
+    public void setParentStack(StateStack parentStack)
     {
         this.parentStack = parentStack;
     }
@@ -57,7 +56,7 @@ public abstract class PilotFrame implements Serializable
     // Getters
     //==================================================================//
 
-    public PilotStack getParentStack()
+    public StateStack getParentStack()
     {
         return parentStack;
     }
