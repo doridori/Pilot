@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.frameBacking.PilotFrameBackedUI;
+import com.kodroid.pilot.lib.android.frameBacking.StateFrameBackedUI;
 import com.kodroid.pilot.lib.statestack.StateFrame;
 
 import java.util.HashMap;
@@ -145,7 +145,7 @@ public class UITypeHandlerView implements UITypeHandler
         private View createViewForFrame(Context context, StateFrame stateFrame)
         {
             View view = createView(context, getViewClassForFrame(stateFrame));
-            ((PilotFrameBackedUI)view).setBackingPilotFrame(stateFrame);
+            ((StateFrameBackedUI)view).setBackingStateFrame(stateFrame);
             return view;
         }
 
@@ -214,7 +214,7 @@ public class UITypeHandlerView implements UITypeHandler
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();
             boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
-            if(isAdded && !((PilotFrameBackedUI)getCurrentView()).hasBackingFrameSet())
+            if(isAdded && !((StateFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
                 throw new IllegalStateException(
                         "Uh oh! This should not be possible. A View should never not have a Frame set " +
                                 "apart from when first created, as on config change the view instance will " +
@@ -347,7 +347,7 @@ public class UITypeHandlerView implements UITypeHandler
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();
             boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
-            if(isAdded && !((PilotFrameBackedUI)getCurrentView()).hasBackingFrameSet())
+            if(isAdded && !((StateFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
                 throw new IllegalStateException(
                         "Uh oh! This should not be possible. A View should never not have a Frame set " +
                                 "apart from when first created, as on config change the view instance will " +
