@@ -12,7 +12,7 @@ import com.kodroid.pilot.lib.statestack.StateStack;
  *
  * onCreate will instantiate the passed launch frame class if the stack is empty.
  *
- * onStart and onStop will route visibility events to the {@link PilotUISyncer}
+ * onStart and onStop will route visibility events to the {@link StateStackUISyncer}
  *
  * onDestroy will remove listeners attached by this instance
  *
@@ -22,10 +22,10 @@ import com.kodroid.pilot.lib.statestack.StateStack;
  * All reactions to the contained {@link StateStack} events (between the delegated onCreate() and onDestroy() lifecycle methods) are
  * handled by a passed {@link StateStack.TopFrameChangedListener}.
  */
-public class PilotActivityAdapter
+public class StateStackActivityAdapter
 {
     private StateStack stateStack;
-    private PilotUISyncer pilotUISyncer;
+    private StateStackUISyncer stateStackUISyncer;
     private StateFrame launchState;
     private final StateStack.StackEmptyListener stackEmptyListener;
 
@@ -35,18 +35,18 @@ public class PilotActivityAdapter
 
     /**
      * @param stateStack the StateStack instance to be managed by this class.
-     * @param pilotUISyncer will be added to the backing StateStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
+     * @param stateStackUISyncer will be added to the backing StateStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
      * @param launchState
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      */
-    public PilotActivityAdapter(
+    public StateStackActivityAdapter(
             StateStack stateStack,
-            PilotUISyncer pilotUISyncer,
+            StateStackUISyncer stateStackUISyncer,
             StateFrame launchState,
             StateStack.StackEmptyListener stackEmptyListener)
     {
         this.stateStack = stateStack;
-        this.pilotUISyncer = pilotUISyncer;
+        this.stateStackUISyncer = stateStackUISyncer;
         this.launchState = launchState;
         this.stackEmptyListener = stackEmptyListener;
     }
@@ -69,11 +69,11 @@ public class PilotActivityAdapter
             throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
         //hookup all event listeners to stack
-        stateStack.addTopFrameChangedListener(pilotUISyncer);
+        stateStack.addTopFrameChangedListener(stateStackUISyncer);
         stateStack.setStackEmptyListener(stackEmptyListener);
 
         //render everything that should be currently seen on screen
-        pilotUISyncer.renderAllCurrentlyVisibleFrames(stateStack);
+        stateStackUISyncer.renderAllCurrentlyVisibleFrames(stateStack);
     }
 
     /**
@@ -81,7 +81,7 @@ public class PilotActivityAdapter
      */
     public void onStartDelegate()
     {
-        pilotUISyncer.hostActivityOnStarted();
+        stateStackUISyncer.hostActivityOnStarted();
     }
 
     /**
@@ -89,7 +89,7 @@ public class PilotActivityAdapter
      */
     public void onStopDelegate()
     {
-        pilotUISyncer.hostActivityOnStopped();
+        stateStackUISyncer.hostActivityOnStopped();
     }
 
     /**
@@ -100,7 +100,7 @@ public class PilotActivityAdapter
     public void onDestroyDelegate(Activity activity)
     {
         //remove listeners so callbacks are not triggered when Activity in destroy state
-        stateStack.deleteListeners(pilotUISyncer, stackEmptyListener);
+        stateStack.deleteListeners(stateStackUISyncer, stackEmptyListener);
     }
 
     /**

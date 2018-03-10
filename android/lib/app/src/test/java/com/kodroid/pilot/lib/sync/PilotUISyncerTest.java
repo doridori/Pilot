@@ -1,6 +1,6 @@
 package com.kodroid.pilot.lib.sync;
 
-import com.kodroid.pilot.lib.android.PilotUISyncer;
+import com.kodroid.pilot.lib.android.StateStackUISyncer;
 import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandler;
 import com.kodroid.pilot.lib.statestack.StateFrame;
 import com.kodroid.pilot.lib.statestack.StateStack;
@@ -11,9 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(JUnit4.class)
 public class PilotUISyncerTest
@@ -62,8 +59,8 @@ public class PilotUISyncerTest
         };
 
         UITypeHandler spyHandler = Mockito.spy(stubHandler);
-        PilotUISyncer pilotUISyncer = new PilotUISyncer(new StateStack(), spyHandler, opaqueUiTypeHandler);
-        pilotUISyncer.topVisibleFrameUpdated(new StateStackTest.TestUIFrame1(), StateStack.TopFrameChangedListener.Direction.FORWARD);
+        StateStackUISyncer stateStackUISyncer = new StateStackUISyncer(new StateStack(), spyHandler, opaqueUiTypeHandler);
+        stateStackUISyncer.topVisibleFrameUpdated(new StateStackTest.TestUIFrame1(), StateStack.TopFrameChangedListener.Direction.FORWARD);
 
         Mockito.verify(spyHandler).clearAllUI();
     }
@@ -111,7 +108,7 @@ public class PilotUISyncerTest
         UITypeHandler spy = Mockito.spy(uiTypeHandler);
 
         //syncer
-        PilotUISyncer syncer = new PilotUISyncer(stateStack, spy);
+        StateStackUISyncer syncer = new StateStackUISyncer(stateStack, spy);
         syncer.renderAllCurrentlyVisibleFrames(stateStack);
 
         //verify

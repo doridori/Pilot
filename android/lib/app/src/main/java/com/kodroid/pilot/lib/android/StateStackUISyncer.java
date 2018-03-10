@@ -11,7 +11,7 @@ import java.util.List;
  * This class holds the {@link UITypeHandler} collection that is queried upon {@link StateStack}
  * changes.
  */
-public class PilotUISyncer implements StateStack.TopFrameChangedListener
+public class StateStackUISyncer implements StateStack.TopFrameChangedListener
 {
     private UITypeHandler[] uiTypeHandlers;
     private StateStack stateStack;
@@ -25,7 +25,7 @@ public class PilotUISyncer implements StateStack.TopFrameChangedListener
      * @param uiTypeHandlers UITypeHandlers passed in here have to have corresponding entries for
      *                       *all* StateFrame classes that exist in this project.
      */
-    public PilotUISyncer(StateStack stateStack, UITypeHandler... uiTypeHandlers)
+    public StateStackUISyncer(StateStack stateStack, UITypeHandler... uiTypeHandlers)
     {
         this.stateStack = stateStack;
         this.uiTypeHandlers = uiTypeHandlers;
