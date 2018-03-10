@@ -24,26 +24,6 @@ public class StateStack
 
     private List<StackEmptyListener> stackEmptyListeners = new ArrayList<>();
     private List<TopFrameChangedListener> topFrameChangedListeners = new ArrayList<>();
-    private StateFrameFactory stateFrameFactory;
-
-    //==================================================================//
-    // Constructor
-    //==================================================================//
-
-    public StateStack()
-    {
-        this(new InternalStateFrameFactory());
-    }
-
-    /**
-     * Can specify a custom frame factory
-     *
-     * @param stateFrameFactory
-     */
-    public StateStack(StateFrameFactory stateFrameFactory)
-    {
-        this.stateFrameFactory = stateFrameFactory;
-    }
 
     //==================================================================//
     // Stack Operations (public)
@@ -77,29 +57,8 @@ public class StateStack
         return getVisibleFrameFromTopDown(1);
     }
 
-    /**
-     * Calls {@link #pushFrame(Class, Args)} with null args.
-     *
-     * @param frameClassToPush
-     * @return
-     */
-    public StateStack pushFrame(Class<? extends StateFrame> frameClassToPush)
+    public StateStack pushFrame(StateFrame frameToPush)
     {
-        return pushFrame(frameClassToPush, null);
-    }
-
-    /**
-     * If passing args then the StateFrame class passed need to have a one-arg (Args) constructor.
-     * If null is passed then StateFrame class needs to have one-arg constructor.
-     *
-     * @param frameClassToPush
-     * @param args
-     * @return
-     */
-    public StateStack pushFrame(Class<? extends StateFrame> frameClassToPush, Args args)
-    {
-        StateFrame frameToPush = stateFrameFactory.createFrame(frameClassToPush, args);
-
         //put on stack
         frameToPush.setParentStack(this);
         stack.push(frameToPush);
@@ -435,40 +394,4 @@ public class StateStack
     {
         void noVisibleFramesLeft();
     }
-
-    //==================================================================//
-    // StateFrameFactory
-    //==================================================================//
-
-    static class InternalStateFrameFactory implements StateFrameFactory
-    {
-        @Override
-        public StateFrame createFrame(Class<? extends StateFrame> frameClassToPush, Args args) {
-            try
-            {
-                if(args == null)
-                    return frameClassToPush.getConstructor().newInstance();
-                else
-                    return frameClassToPush.getConstructor(Args.class).newInstance(args);
-            }
-            catch (InstantiationException e)
-            {
-                throw new RuntimeException(e);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new RuntimeException(e);
-            }
-            catch (InvocationTargetException e)
-            {
-                throw new RuntimeException(e);
-            }
-            catch (NoSuchMethodException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-
 }
