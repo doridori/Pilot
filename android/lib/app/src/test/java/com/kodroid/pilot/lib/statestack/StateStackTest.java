@@ -35,26 +35,26 @@ public class StateStackTest extends TestCase
     public void getTopFrame_oneFrameSameClass_shouldReturn()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
         StateFrame testFrame = stateStack.getTopVisibleFrame();
         Assert.assertNotNull(testFrame);
     }
 
     @Test
-    public void getTopFrame_twoFrameOneUiOneData_shouldReturnUiFrame()
+    public void getTopFrame_twoFrameOneUiOneHiddenData_shouldReturnUiFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestHiddenDataFrame());
         StateFrame testFrame = stateStack.getTopVisibleFrame();
         Assert.assertNotNull(testFrame);
     }
 
     @Test
-    public void getTopVisibleFrame_oneFrameNotVisible_shouldReturnNull()
+    public void getTopVisibleFrame_oneFrameHidden_shouldReturnNull()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestHiddenDataFrame());
         StateFrame returnedFrame = stateStack.getTopVisibleFrame();
         Assert.assertNull(returnedFrame);
     }
@@ -67,7 +67,7 @@ public class StateStackTest extends TestCase
     public void popToNextVisibleFrame_oneFrameSameInstance_shouldReturn()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
         stateStack.popToNextVisibleFrame();
         Assert.assertEquals(0, stateStack.getSize());
     }
@@ -76,7 +76,7 @@ public class StateStackTest extends TestCase
     public void popTopFrameInstance_oneFrameDiffInstance_shouldThrow()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
         stateStack.popTopFrameInstance(new StateStackTest.TestUIFrame1());
     }
 
@@ -84,7 +84,7 @@ public class StateStackTest extends TestCase
     public void popStackAtFrameType_oneFrameDiffClass_shouldThrow()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
         stateStack.popAtFrameType(TestUIFrame2.class, StateStack.PopType.INCLUSIVE, false);
     }
 
@@ -96,8 +96,8 @@ public class StateStackTest extends TestCase
     public void popToNextVisibleFrame_aboveSingleInivisibleFrame_invisibleFrameShouldPopAlso()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame1());
         stateStack.popToNextVisibleFrame();
         Assert.assertTrue(stateStack.isEmpty());
     }
@@ -106,9 +106,9 @@ public class StateStackTest extends TestCase
     public void popToNextVisibleFrame_aboveDataAndInvisFrame_shouldPopToVisibleFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame2.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame2());
         stateStack.popToNextVisibleFrame();
         Assert.assertTrue(stateStack.getTopVisibleFrame().getClass() == TestUIFrame1.class);
         Assert.assertEquals(stateStack.getSize(), 1);
@@ -122,8 +122,8 @@ public class StateStackTest extends TestCase
     public void getScopedDateFrame_noDataFramesOnStack_shouldReturnNull()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        StateFrame returnedFrame = stateStack.getFrameOfType(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        StateFrame returnedFrame = stateStack.getFrameOfType(TestHiddenDataFrame.class);
         Assert.assertNull(returnedFrame);
     }
 
@@ -131,8 +131,8 @@ public class StateStackTest extends TestCase
     public void getScopedDateFrame_oneDataFrameOnStack_shouldReturn()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        StateFrame returnedFrame = stateStack.getFrameOfType(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        StateFrame returnedFrame = stateStack.getFrameOfType(TestHiddenDataFrame.class);
         Assert.assertNotNull(returnedFrame);
     }
 
@@ -144,9 +144,9 @@ public class StateStackTest extends TestCase
     public void popStackAtFrameType_threeFramesSameTypePopMiddleInclusive_listenerCalledWithFirstFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
-        stateStack.pushFrame(TestUIFrame3.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
+        stateStack.pushFrame(new TestUIFrame3());
 
         //add listener
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -168,9 +168,9 @@ public class StateStackTest extends TestCase
     public void popStackAtFrameType_threeFramesSameTypePopBottomInclusive_listenerCalledEmpty()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
-        stateStack.pushFrame(TestUIFrame3.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
+        stateStack.pushFrame(new TestUIFrame3());
 
         //add listener
         StateStack.StackEmptyListener mockedListener = Mockito.mock(StateStack.StackEmptyListener.class);
@@ -189,9 +189,9 @@ public class StateStackTest extends TestCase
     public void popStackAtFrameType_threeFramesSameTypePopMiddleExclusive_listenerCalledWithSecondFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
-        stateStack.pushFrame(TestUIFrame3.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
+        stateStack.pushFrame(new TestUIFrame3());
 
         //add listener
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -213,9 +213,9 @@ public class StateStackTest extends TestCase
     public void popStackAtFrameType_threeFramesSameTypePopTopExclusive_listenerNotCalledAsNoChanges()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
-        stateStack.pushFrame(TestUIFrame3.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
+        stateStack.pushFrame(new TestUIFrame3());
 
         //add listener
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -237,10 +237,10 @@ public class StateStackTest extends TestCase
     public void removeThisFrame_threeFramesRemoveMiddle_listenerShouldBeRecalledWithTopFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
         TestUIFrame2 testUIFrame2 = (TestUIFrame2) stateStack.getTopVisibleFrame();
-        stateStack.pushFrame(TestUIFrame3.class);
+        stateStack.pushFrame(new TestUIFrame3());
 
         //add listener
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -264,10 +264,10 @@ public class StateStackTest extends TestCase
     public void clearStack_shouldPop()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrameLifecycleStub.class);
-        stateStack.pushFrame(TestUIFrameLifecycleStub.class);
+        stateStack.pushFrame(new TestUIFrameLifecycleStub());
+        stateStack.pushFrame(new TestUIFrameLifecycleStub());
         TestUIFrameLifecycleStub middleFrame = (TestUIFrameLifecycleStub) stateStack.getTopVisibleFrame();
-        stateStack.pushFrame(TestUIFrameLifecycleStub.class);
+        stateStack.pushFrame(new TestUIFrameLifecycleStub());
         stateStack.clearStack(false);
 
         Assert.assertTrue(middleFrame.popped);
@@ -283,7 +283,7 @@ public class StateStackTest extends TestCase
         StateStack stateStack = new StateStack();
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
         stateStack.addTopFrameChangedListener(mockedListener);
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
 
         //verify listener method called
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
@@ -299,7 +299,7 @@ public class StateStackTest extends TestCase
         StateStack stateStack = new StateStack();
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
         stateStack.addTopFrameChangedListener(mockedListener);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestHiddenDataFrame());
         //verify listener method called
         Mockito.verifyNoMoreInteractions(mockedListener);
     }
@@ -308,7 +308,7 @@ public class StateStackTest extends TestCase
     public void popTopFrameObj_popFirstFrame_listenerShouldBeCalledWithNoUiFrames()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
         //add listener after push
         StateStack.StackEmptyListener mockedListener = Mockito.mock(StateStack.StackEmptyListener.class);
         stateStack.setStackEmptyListener(mockedListener);
@@ -322,8 +322,8 @@ public class StateStackTest extends TestCase
     public void popTopFrameObj_popUiFrameAboveDataFrame_listenerShouldBeCalledWithNoUiFrames()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame1());
         //add listener after push
         StateStack.StackEmptyListener mockedListener = Mockito.mock(StateStack.StackEmptyListener.class);
         stateStack.setStackEmptyListener(mockedListener);
@@ -338,9 +338,9 @@ public class StateStackTest extends TestCase
     {
         StateStack stateStack = new StateStack();
 
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame1.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame1());
 
         //add listener after push
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -359,8 +359,8 @@ public class StateStackTest extends TestCase
     public void popTopFrameObject_popSecondFrame_listenerShouldBeCalledWithUiFrame()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestUIFrame2.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestUIFrame2());
 
         //add listener after push
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
@@ -380,10 +380,10 @@ public class StateStackTest extends TestCase
     {
         StateStack stateStack = new StateStack();
 
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame2.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame2());
+        stateStack.pushFrame(new TestHiddenDataFrame());
         Assert.assertEquals(4, stateStack.getSize());
 
         //add listener after push
@@ -404,15 +404,15 @@ public class StateStackTest extends TestCase
     {
         StateStack stateStack = new StateStack();
 
-        stateStack.pushFrame(TestUIFrame1.class);
-        stateStack.pushFrame(TestInvisibleDataFrame.class);
-        stateStack.pushFrame(TestUIFrame2.class);
+        stateStack.pushFrame(new TestUIFrame1());
+        stateStack.pushFrame(new TestHiddenDataFrame());
+        stateStack.pushFrame(new TestUIFrame2());
         Assert.assertEquals(3, stateStack.getSize());
 
         //add listener after push
         StateStack.TopFrameChangedListener mockedListener = Mockito.mock(StateStack.TopFrameChangedListener.class);
         stateStack.addTopFrameChangedListener(mockedListener);
-        stateStack.popAtFrameType(TestInvisibleDataFrame.class, StateStack.PopType.INCLUSIVE, true);
+        stateStack.popAtFrameType(TestHiddenDataFrame.class, StateStack.PopType.INCLUSIVE, true);
         //verify
         Mockito.verify(mockedListener).topVisibleFrameUpdated(
                 Matchers.isA(TestUIFrame1.class),
@@ -420,41 +420,6 @@ public class StateStackTest extends TestCase
 
         Mockito.verifyNoMoreInteractions(mockedListener);
         Assert.assertEquals(1, stateStack.getSize());
-    }
-
-    //==================================================================//
-    // Push Stack Constructor Arsg Invocation Tests
-    //==================================================================//
-
-    @Test
-    public void pushFrame_notPassingArgs_shouldBeFineWithNoArgsConstructor()
-    {
-        StateStack stateStack = new StateStack();
-        stateStack.pushFrame(NoArgsStateFrame.class);
-    }
-
-    @Test
-    public void pushFrame_passingArgs_shouldBeFineWithArgsConstructor()
-    {
-        StateStack stateStack = new StateStack();
-        Args args = new Args();
-        stateStack.pushFrame(ArgsStateFrame.class, args);
-        Assert.assertEquals(args, ((ArgsStateFrame) stateStack.getTopVisibleFrame()).args);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void pushFrame_passingArgs_shouldFailAsOnlyNoArgsConstructor()
-    {
-        StateStack stateStack = new StateStack();
-        Args args = new Args();
-        stateStack.pushFrame(NoArgsStateFrame.class, args);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void pushFrame_notPassingArgs_shouldFailAsOnlyArgsConstructor()
-    {
-        StateStack stateStack = new StateStack();
-        stateStack.pushFrame(ArgsStateFrame.class);
     }
 
     //==================================================================//
@@ -473,74 +438,42 @@ public class StateStackTest extends TestCase
         InOrder inOrder = Mockito.inOrder(mockListener);
 
         //test
-        stateStack.pushFrame(PushingFrame.class);
-        inOrder.verify(mockListener).topVisibleFrameUpdated(Matchers.isA(PushingFrame.class), Matchers.eq(
+        stateStack.pushFrame(new ChainedPushFrame());
+        inOrder.verify(mockListener).topVisibleFrameUpdated(Matchers.isA(ChainedPushFrame.class), Matchers.eq(
                 StateStack.TopFrameChangedListener.Direction.FORWARD));
         inOrder.verify(mockListener).topVisibleFrameUpdated(Matchers.isA(TestUIFrame1.class), Matchers.eq(
                 StateStack.TopFrameChangedListener.Direction.FORWARD));
     }
 
-    static class PushingFrame extends StateFrame
+    static class ChainedPushFrame extends StateFrame
     {
-        public PushingFrame()
-        {
-            super(null);
-        }
-
         @Override
         public void pushed()
         {
-            getParentStack().pushFrame(TestUIFrame1.class);
+            getParentStack().pushFrame(new TestUIFrame1());
         }
     }
-
-    //==================================================================//
-    // Serializing Tests
-    //==================================================================//
-
-    //TODO
 
     //==================================================================//
     // Test Frames
     //==================================================================//
 
-    public static class ArgsStateFrame extends StateFrame
-    {
-        private Args args;
-
-        public ArgsStateFrame(Args args) {
-            super(args);
-            this.args = args;
-        }
-
-        public Args getArgsTest() {
-            return args;
-        }
-    }
-
-    public static class NoArgsStateFrame extends StateFrame
-    {
-        public NoArgsStateFrame()
-        {
-            super(null);
-        }
-    }
 
     //to test causing trouble
-    public static class TestFrameNoType extends NoArgsStateFrame
+    public static class TestFrameNoType extends StateFrame
     {}
 
-    public static class TestUIFrame1 extends NoArgsStateFrame
+    public static class TestUIFrame1 extends StateFrame
     {}
 
-    public static class TestUIFrame2 extends NoArgsStateFrame
+    public static class TestUIFrame2 extends StateFrame
     {}
 
-    public static class TestUIFrame3 extends NoArgsStateFrame
+    public static class TestUIFrame3 extends StateFrame
     {}
 
     //todo spy instead with frame factory
-    public static class TestUIFrameLifecycleStub extends NoArgsStateFrame
+    public static class TestUIFrameLifecycleStub extends StateFrame
     {
         private boolean popped;
 
@@ -551,6 +484,6 @@ public class StateStackTest extends TestCase
     }
 
     @HiddenFrame
-    public static class TestInvisibleDataFrame extends NoArgsStateFrame
+    public static class TestHiddenDataFrame extends StateFrame
     {}
 }

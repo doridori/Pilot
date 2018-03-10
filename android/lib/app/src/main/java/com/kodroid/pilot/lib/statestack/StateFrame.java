@@ -14,61 +14,18 @@ public abstract class StateFrame implements Serializable
     //==================================================================//
 
     private StateStack parentStack;
-    private Args args;
 
     //==================================================================//
-    // Constructor
+    // Parent StateStack
     //==================================================================//
 
-    /**
-     * No arg constructor used to catch when subclasses forget to call super
-     */
-    protected StateFrame()
-    {
-        throw new RuntimeException("Subclass Frames need to call super(Args)");
-    }
-
-    /**
-     * Subclasses must call super(args) while providing their own single `Args` constructor
-     *
-     * @param args can be null.
-     */
-    protected StateFrame(Args args)
-    {
-        this.args = args;
-    }
-
-    //==================================================================//
-    // Setters
-    //==================================================================//
-
-    /**
-     * This is called by the parent StateStack so no need to call yourself. Useful for testing.
-     *
-     * @param parentStack
-     */
-    public void setParentStack(StateStack parentStack)
+    void setParentStack(StateStack parentStack)
     {
         this.parentStack = parentStack;
     }
-
-    //==================================================================//
-    // Getters
-    //==================================================================//
-
-    public StateStack getParentStack()
+    StateStack getParentStack()
     {
         return parentStack;
-    }
-
-    /**
-     * Used when persisting stack state
-     *
-     * @return
-     */
-    protected final Args getArgs()
-    {
-        return args;
     }
 
     //==================================================================//
@@ -97,23 +54,23 @@ public abstract class StateFrame implements Serializable
     // Observable
     //==================================================================//
 
-    private Set<Observer> mObservers = new HashSet<>();
+    private Set<Observer> observers = new HashSet<>();
 
     public void addObserver(Observer observer, boolean notifyOnAdd)
     {
-        mObservers.add(observer);
+        observers.add(observer);
         if(notifyOnAdd)
             observer.updated();
     }
 
     public void removeObserver(Observer observer)
     {
-        mObservers.remove(observer);
+        observers.remove(observer);
     }
 
     protected void notifyObservers()
     {
-        for(Observer observer : mObservers)
+        for(Observer observer : observers)
             observer.updated();
     }
 

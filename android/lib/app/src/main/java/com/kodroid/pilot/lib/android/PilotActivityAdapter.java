@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.kodroid.pilot.lib.statestack.Args;
 import com.kodroid.pilot.lib.statestack.StateFrame;
 import com.kodroid.pilot.lib.statestack.StateStack;
 
@@ -27,8 +26,7 @@ public class PilotActivityAdapter
 {
     private StateStack stateStack;
     private PilotUISyncer pilotUISyncer;
-    private final Class<? extends StateFrame> launchFrameClass;
-    private final Args launchFrameArgs;
+    private StateFrame launchState;
     private final StateStack.StackEmptyListener stackEmptyListener;
 
     //==================================================================//
@@ -38,21 +36,18 @@ public class PilotActivityAdapter
     /**
      * @param stateStack the StateStack instance to be managed by this class.
      * @param pilotUISyncer will be added to the backing StateStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
-     * @param launchFrameClass The launch frame for the handled StateStack. Will only be created on first creation of the stack. Will be ignored if a stack exists in the savedInstanceState
-     * @param launchFrameArgs Args to be passed to the launch frame. Can be null.
+     * @param launchState
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      */
     public PilotActivityAdapter(
             StateStack stateStack,
             PilotUISyncer pilotUISyncer,
-            Class<? extends StateFrame> launchFrameClass,
-            Args launchFrameArgs,
+            StateFrame launchState,
             StateStack.StackEmptyListener stackEmptyListener)
     {
         this.stateStack = stateStack;
         this.pilotUISyncer = pilotUISyncer;
-        this.launchFrameClass = launchFrameClass;
-        this.launchFrameArgs = launchFrameArgs;
+        this.launchState = launchState;
         this.stackEmptyListener = stackEmptyListener;
     }
 
@@ -65,14 +60,11 @@ public class PilotActivityAdapter
      *
      * This has to be called *after* setContentView otherwise any Fragments which may be backed by
      * Pilot will not have had a chance to be recreated and therefore will be duplicated.
-     *
-     * @param savedInstanceState forward the activity's save state bundle here for auto pilot stack state restoration on process death (only)
-
      */
-    public void onCreateDelegate(Bundle savedInstanceState)
+    public void onCreateDelegate()
     {
         if(stateStack.isEmpty())
-            initializePilotStack(savedInstanceState, launchFrameClass, launchFrameArgs);
+            initializePilotStack(launchState);
         else if(!stateStack.doesContainVisibleFrame())
             throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
@@ -112,28 +104,11 @@ public class PilotActivityAdapter
     }
 
     /**
-     * This must be called from {@link Activity#onSaveInstanceState(Bundle)}
-     */
-    public void onSaveInstanceStateDelegate(Bundle outState)
-    {
-        //TODO #26
-    }
-
-    /**
      * This must be called from {@link Activity#onBackPressed()}
      */
     public void onBackPressedDelegate()
     {
         stateStack.popToNextVisibleFrame();
-    }
-
-    //==================================================================//
-    // State saving utils
-    //==================================================================//
-
-    private String getStateSaveBundleKey()
-    {
-        return getClass().getCanonicalName();
     }
 
     //==================================================================//
@@ -143,39 +118,13 @@ public class PilotActivityAdapter
     /**
      * Ensure a StateStack instance is up and running. This will either be a newly created one (initialised
      * with the passed in <code>launchFrameClass</code> or a restored one via the <code>savedInstanceState</code>
-     *
-     * @param savedInstanceState
-     * @param launchFrameClass
-     * @param launchFrameArgs can be null
      */
-    private void initializePilotStack(Bundle savedInstanceState, final Class<? extends StateFrame> launchFrameClass, Args launchFrameArgs)
+    private void initializePilotStack(StateFrame launchState)
     {
         if(!stateStack.isEmpty())
             throw new IllegalStateException("StateStack already initialized");
 
-        //check if we need to restore any saves state
-        if(savedInstanceState != null && savedInstanceState.containsKey(getStateSaveBundleKey()))
-        {
-            throw new IllegalStateException("Not impl!");
-            //Log.d(getClass().getCanonicalName(), "Restoring StateStack!");
-            //stateStack = (StateStack) savedInstanceState.getSerializable(getStateSaveBundleKey());
-        }
-        else
-        {
-            Log.d(getClass().getCanonicalName(), "StateStack is empty - push launch frame:"+launchFrameClass.getName());
-
-            //set launch frame
-            try
-            {
-                stateStack.pushFrame(launchFrameClass, launchFrameArgs);
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException("Launch frame cant be instantiated, check this frame has a no-arg constructor which calls super(null): "+launchFrameClass.getCanonicalName(), e);
-            }
-        }
+        Log.d(getClass().getCanonicalName(), "StateStack is empty - push launch frame:"+launchState.getClass().getName());
+        stateStack.pushFrame(launchState);
     }
-
-
-
 }

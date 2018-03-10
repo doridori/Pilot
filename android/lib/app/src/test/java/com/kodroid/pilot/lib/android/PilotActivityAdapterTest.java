@@ -11,8 +11,8 @@ public class PilotActivityAdapterTest
     public void onCreateDelegate_stackWithNoVisibleFrames_shouldThrow()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(StateStackTest.TestInvisibleDataFrame.class);
-        PilotActivityAdapter pilotActivityAdapter = new PilotActivityAdapter(stateStack, null, null, null, null);
-        pilotActivityAdapter.onCreateDelegate(null);
+        stateStack.pushFrame(new StateStackTest.TestHiddenDataFrame());
+        PilotActivityAdapter pilotActivityAdapter = new PilotActivityAdapter(stateStack, null, null, null);
+        pilotActivityAdapter.onCreateDelegate();
     }
 }
