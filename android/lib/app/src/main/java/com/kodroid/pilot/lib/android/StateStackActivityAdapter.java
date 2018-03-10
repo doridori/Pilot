@@ -79,6 +79,7 @@ public class StateStackActivityAdapter
     /**
      * Activity must call
      */
+    //TODO C-54: StateStack should support START/STOP meta-states instread of hostActivity* approach
     public void onStartDelegate()
     {
         stateStackUISyncer.hostActivityOnStarted();
@@ -87,6 +88,7 @@ public class StateStackActivityAdapter
     /**
      * Activity must call
      */
+    //TODO C-54: StateStack should support START/STOP meta-states instread of hostActivity* approach
     public void onStopDelegate()
     {
         stateStackUISyncer.hostActivityOnStopped();
