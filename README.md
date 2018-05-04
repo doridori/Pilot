@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central%20SNAPSHOT-v0.11.0-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/kodroid/pilot/0.10.0-SNAPSHOT/)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central%20SNAPSHOT-v0.19.0-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/kodroid/pilot/0.19.0-SNAPSHOT/)
 
 # Pilot
 
@@ -23,15 +23,15 @@ Pilot is a way to model the Application State in a familiar (`android.*` decoupl
 
 # Components
 
-Type                 | SRP 
----------------------|------------------------------
-PilotStack           |A `Stack` of `PilotFrame` objects
-PilotFrame           |Frame that lives in a `PilotStack`. May represent a Screen or scoped-data
-PilotUISyncer        |Holds the `UITypeHandler` collection that is queried upon `PilotStack` change events
-UITypeHandler        |Interface for an object that can compose a UI for a given set of `PilotFrame` classes
-PilotLifecycleManager|Bridge between the hosting Activities lifecycle events and a `PilotStack` instance
-PilotFrameLayout     |Convenience `FrameLayout` base for `BackedByFrame` backed views
-@BackedByFrame       |Annotation to link a `PilotFrameLayout` to a `PilotFrame` instance
+Type                      | SRP 
+--------------------------|------------------------------
+StateStack                |A `Stack` of `PilotFrame` objects
+StateFrame                |Frame that lives in a `PilotStack`. May represent a Screen or scoped-data
+StateStackUISyncer        |Holds the `UITypeHandler` collection that is queried upon `StateFrame` change events
+UITypeHandler             |Interface for an object that can compose a UI for a given set of `PilotFrame` classes
+StateStackActivityAdapter |Bridge between the hosting Activities lifecycle events and a `PilotStack` instance
+StateStackBackedFrameLayout |Convenience `FrameLayout` base for `BackedByFrame` backed views
+@HiddenFrame            |Annotation to link a `PilotFrameLayout` to a `PilotFrame` instance
 
 # Seperating Application State from UI Rendering
 
