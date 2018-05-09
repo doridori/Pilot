@@ -27,8 +27,8 @@ Type                      | SRP
 --------------------------|------------------------------
 StateStack                |A `Stack` of `StateFrame` objects
 StateFrame                |Frame that lives in a `StateStack`. May represent a Screen or scoped-data.
-StateStackUISyncer        |Holds the `UITypeHandler` collection that is queried upon `StateFrame` change events
-UITypeHandler             |Interface for an object that can compose a UI for a given set of `StateFrame` classes
+StateStackUISyncer (_StateStackRenderer_)       |Holds the `UITypeHandler` collection that is queried upon `StateFrame` change events
+UITypeHandler (_StateFrameSetRenderer_)             |Interface for an object that can compose a UI for a given set of `StateFrame` classes
 StateStackActivityAdapter |Bridge between the hosting Activities lifecycle events and a `StateStack` instance
 StateStackBackedFrameLayout |Convenience `FrameLayout` base for `BackedByFrame` backed views
 @HiddenFrame            |Annotation which removes a `StateFrame` from all `StackStack` change observer callbacks
