@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central-v1.0.1-blue.svg)](http://repo1.maven.org/maven2/com/kodroid/pilot/)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central-v1.0.2-blue.svg)](http://repo1.maven.org/maven2/com/kodroid/pilot/)
 
 # Pilot
 
