@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central%20SNAPSHOT-v0.19.0-blue.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/kodroid/pilot/0.19.0-SNAPSHOT/)
+[![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central-v1.0.1-blue.svg)](http://repo1.maven.org/maven2/com/kodroid/pilot/)
 
 # Pilot
 
@@ -25,13 +25,13 @@ Pilot is a way to model the Application State in a familiar (`android.*` decoupl
 
 Type                      | SRP 
 --------------------------|------------------------------
-StateStack                |A `Stack` of `StateFrame` objects
-StateFrame                |Frame that lives in a `StateStack`. May represent a Screen or scoped-data.
-StateStackUISyncer (_StateStackRenderer_)       |Holds the `UITypeHandler` collection that is queried upon `StateFrame` change events
-UITypeHandler (_StateFrameSetRenderer_)             |Interface for an object that can compose a UI for a given set of `StateFrame` classes
+StateStack                |A `Stack` of `StatStackeFrame` objects
+StateStackFrame           |Frame that lives in a `StateStack`. May represent a Screen or scoped-data.
+StateStackRenderer        |Holds the `StateFrameSetRenderer` collection that is queried upon `StateStackFrame` change events
+StateFrameSetRenderer     |Interface for an object that can compose a UI for a given set of `StateFrame` classes
 StateStackActivityAdapter |Bridge between the hosting Activities lifecycle events and a `StateStack` instance
-StateStackBackedFrameLayout |Convenience `FrameLayout` base for `BackedByFrame` backed views
-@HiddenFrame            |Annotation which removes a `StateFrame` from all `StackStack` change observer callbacks
+StateStackFrameBackedFrameLayout |Convenience `FrameLayout` base for `BackedByFrame` backed views
+@HiddenStateFrame              |Annotation which removes a `StateStackFrame` from all `StackStack` change observer callbacks
 
 # Seperating Application State from UI Rendering
 
@@ -53,7 +53,7 @@ It can be beneficial to separate the Applications State from the rendering of th
 
 The primary win when decoupling in this way is by seperating reponsilbilities testing and refactoring becomes much easier. A secondary advantage is that the Android rendering could be replaced with a terminal, or other type of client. 
 
-One design principle is that the Stack should not change regardless of the screen size or rotation. Any master/detail changes (or other size related rendering logic) should sit in the Rendering layer, which in Pilot is abstracted by the `UITypeHandler`.
+One design principle is that the Stack should not change regardless of the screen size or rotation. Any master/detail changes (or other size related rendering logic) should sit in the Rendering layer, which in Pilot is abstracted by the `StateFrameSetRenderer`.
 
 Another design priciple is that the Application State should be pure java, to facilitate JVM testing.
 
