@@ -23,15 +23,22 @@ Pilot is a way to model the Application State in a familiar (`android.*` decoupl
 
 # Components
 
+## Application State
+
 Type                      | SRP 
 --------------------------|------------------------------
 StateStack                |A `Stack` of `StatStackFrame` objects
 StateStackFrame           |Frame that lives in a `StateStack`. May represent a Screen or scoped-data.
+@HiddenStateFrame         |Annotation which removes a `StateStackFrame` from all `StackStack` change observer callbacks
+
+## Rendering (Android)
+
+Type                      | SRP 
+--------------------------|------------------------------
 StateStackRenderer        |Holds the `StateFrameSetRenderer` collection that is queried upon `StateStackFrame` change events
 StateFrameSetRenderer     |Interface for an object that can compose a UI for a given set of `StateFrame` classes
 StateStackActivityAdapter |Bridge between the hosting Activities lifecycle events and a `StateStack` instance
 StateStackFrameBackedFrameLayout |Convenience `FrameLayout` base for `BackedByFrame` backed views
-@HiddenStateFrame              |Annotation which removes a `StateStackFrame` from all `StackStack` change observer callbacks
 
 # Seperating Application State from UI Rendering
 
@@ -45,7 +52,7 @@ It can be beneficial to separate the Applications State from the rendering of th
 - What data is associated with what the user is currently doing?
 - What operations are associated with what the user is currently doing?
 
-**UI Rendering** is generally concerned with:
+**Rendering** is generally concerned with:
 
 - How can the user visualise what they are currently doing?
 - How does the user return to what they were previously doing?
