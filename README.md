@@ -25,7 +25,7 @@ Pilot is a way to model the Application State in a familiar (`android.*` decoupl
 
 Type                      | SRP 
 --------------------------|------------------------------
-StateStack                |A `Stack` of `StatStackeFrame` objects
+StateStack                |A `Stack` of `StatStackFrame` objects
 StateStackFrame           |Frame that lives in a `StateStack`. May represent a Screen or scoped-data.
 StateStackRenderer        |Holds the `StateFrameSetRenderer` collection that is queried upon `StateStackFrame` change events
 StateFrameSetRenderer     |Interface for an object that can compose a UI for a given set of `StateFrame` classes
