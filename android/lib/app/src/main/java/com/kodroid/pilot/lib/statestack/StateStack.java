@@ -10,7 +10,7 @@ import java.util.Stack;
  * A simple abstraction of a stack of objects which have:
  *
  * - stack-lifecycle event callbacks inside frames
- * - support for frames that are marked as VISIBLE (default) or {@link HiddenStackStackFrame} (useful for scoped data)
+ * - support for frames that are marked as VISIBLE (default) or {@link HiddenStateStackFrame} (useful for scoped data)
  * - support for slightly more complex stack operations when adding or removing frames
  *
  * plus the stack provides listeners which are notified of VISIBLE frame stack change events. See {@link TopFrameChangedListener}.
@@ -49,7 +49,7 @@ public class StateStack
     }
 
     /**
-     * @return top frame of the stack ignoring {@link HiddenStackStackFrame} or null
+     * @return top frame of the stack ignoring {@link HiddenStateStackFrame} or null
      */
     public StateStackFrame getTopVisibleFrame()
     {
@@ -72,7 +72,7 @@ public class StateStack
     }
 
     /**
-     * Removes all frames (inc {@link HiddenStackStackFrame} above the 2nd highest visible frame. If only
+     * Removes all frames (inc {@link HiddenStateStackFrame} above the 2nd highest visible frame. If only
      * one visible frame exists in the stack the whole stack will be cleared. This is useful to
      * simulate back behaviour.
      */
@@ -314,7 +314,7 @@ public class StateStack
 
     /**
      * @param index
-     * @return true if any of the frames removed were not marked with {@link HiddenStackStackFrame}
+     * @return true if any of the frames removed were not marked with {@link HiddenStateStackFrame}
      * (therefore a visible frame change took place).
      */
     private boolean popAllFramesAboveIndex(int index)
@@ -339,7 +339,7 @@ public class StateStack
 
     private boolean isInvisibleFrame(Class<? extends StateStackFrame> clazz)
     {
-        return clazz.isAnnotationPresent(HiddenStackStackFrame.class);
+        return clazz.isAnnotationPresent(HiddenStateStackFrame.class);
     }
 
     //==================================================================//

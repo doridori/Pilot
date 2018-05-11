@@ -483,7 +483,7 @@ public class StateStackTest extends TestCase
         }
     }
 
-    @HiddenStackStackFrame
+    @HiddenStateStackFrame
     public static class TestHiddenDataStackFrame extends StateStackFrame
     {}
 }
