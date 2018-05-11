@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Frame that lives in a {@link StateStack}.
  */
-public abstract class StateFrame implements Serializable
+public abstract class StateStackFrame implements Serializable
 {
     //==================================================================//
     // Fields

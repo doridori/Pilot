@@ -5,23 +5,23 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.statestack.StateStackFrame;
 
-public abstract class StateFrameBackedFrameLayout<P extends StateFrame> extends FrameLayout implements StateFrameBackedUI<P>, StateFrame.Observer
+public abstract class StateStackFrameBackedStackFrameLayout<P extends StateStackFrame> extends FrameLayout implements StateStackFrameBackedUI<P>, StateStackFrame.Observer
 {
     private P backingPilotFrame;
 
-    public StateFrameBackedFrameLayout(Context context)
+    public StateStackFrameBackedStackFrameLayout(Context context)
     {
         super(context);
     }
 
-    public StateFrameBackedFrameLayout(Context context, AttributeSet attrs)
+    public StateStackFrameBackedStackFrameLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
     }
 
-    public StateFrameBackedFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
+    public StateStackFrameBackedStackFrameLayout(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
     }

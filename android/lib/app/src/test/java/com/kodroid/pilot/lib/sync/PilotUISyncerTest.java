@@ -1,8 +1,8 @@
 package com.kodroid.pilot.lib.sync;
 
-import com.kodroid.pilot.lib.android.StateStackUISyncer;
-import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandler;
-import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.android.StateStackRenderer;
+import com.kodroid.pilot.lib.android.uiTypeHandler.StateStackFrameSetRenderer;
+import com.kodroid.pilot.lib.statestack.StateStackFrame;
 import com.kodroid.pilot.lib.statestack.StateStack;
 import com.kodroid.pilot.lib.statestack.StateStackTest;
 
@@ -22,17 +22,17 @@ public class PilotUISyncerTest
     @Test
     public void pilotSyncer_newOpaqueFrameHandledBy2ndTypeHandler_shouldClear1stTypeHandler()
     {
-        UITypeHandler stubHandler = new UITypeHandler() {
+        StateStackFrameSetRenderer stubHandler = new StateStackFrameSetRenderer() {
             @Override
-            public boolean isFrameSupported(Class<? extends StateFrame> frameClass) {
+            public boolean isFrameSupported(Class<? extends StateStackFrame> frameClass) {
                 return false;
             }
 
             @Override
-            public void renderFrame(StateFrame frame) {}
+            public void renderFrame(StateStackFrame frame) {}
 
             @Override
-            public boolean isFrameOpaque(StateFrame frame) {
+            public boolean isFrameOpaque(StateStackFrame frame) {
                 return true;
             }
 
@@ -40,17 +40,17 @@ public class PilotUISyncerTest
             public void clearAllUI() {}
         };
 
-        UITypeHandler opaqueUiTypeHandler = new UITypeHandler() {
+        StateStackFrameSetRenderer opaqueStateStackFrameSetRenderer = new StateStackFrameSetRenderer() {
             @Override
-            public boolean isFrameSupported(Class<? extends StateFrame> frameClass) {
-                return frameClass == StateStackTest.TestUIFrame1.class;
+            public boolean isFrameSupported(Class<? extends StateStackFrame> frameClass) {
+                return frameClass == StateStackTest.TestUIStackFrame1.class;
             }
 
             @Override
-            public void renderFrame(StateFrame frame) {}
+            public void renderFrame(StateStackFrame frame) {}
 
             @Override
-            public boolean isFrameOpaque(StateFrame frame) {
+            public boolean isFrameOpaque(StateStackFrame frame) {
                 return true;
             }
 
@@ -58,9 +58,10 @@ public class PilotUISyncerTest
             public void clearAllUI() {}
         };
 
-        UITypeHandler spyHandler = Mockito.spy(stubHandler);
-        StateStackUISyncer stateStackUISyncer = new StateStackUISyncer(new StateStack(), spyHandler, opaqueUiTypeHandler);
-        stateStackUISyncer.topVisibleFrameUpdated(new StateStackTest.TestUIFrame1(), StateStack.TopFrameChangedListener.Direction.FORWARD);
+        StateStackFrameSetRenderer spyHandler = Mockito.spy(stubHandler);
+        StateStackRenderer stateStackRenderer = new StateStackRenderer(new StateStack(), spyHandler,
+                                                                       opaqueStateStackFrameSetRenderer);
+        stateStackRenderer.topVisibleFrameUpdated(new StateStackTest.TestUIStackFrame1(), StateStack.TopFrameChangedListener.Direction.FORWARD);
 
         Mockito.verify(spyHandler).clearAllUI();
     }
@@ -74,29 +75,29 @@ public class PilotUISyncerTest
     {
         //create mixed stack
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(new StateStackTest.TestUIFrame1());
-        stateStack.pushFrame(new StateStackTest.TestUIFrame2()); //will be opaque in ui handler
-        stateStack.pushFrame(new StateStackTest.TestHiddenDataFrame());
-        stateStack.pushFrame(new StateStackTest.TestUIFrame3());
+        stateStack.pushFrame(new StateStackTest.TestUIStackFrame1());
+        stateStack.pushFrame(new StateStackTest.TestUIStackFrame2()); //will be opaque in ui handler
+        stateStack.pushFrame(new StateStackTest.TestHiddenDataStackFrame());
+        stateStack.pushFrame(new StateStackTest.TestUIStackFrame3());
 
         //handler
-        UITypeHandler uiTypeHandler = new UITypeHandler()
+        StateStackFrameSetRenderer stateStackFrameSetRenderer = new StateStackFrameSetRenderer()
         {
             @Override
-            public boolean isFrameSupported(Class<? extends StateFrame> frameClass)
+            public boolean isFrameSupported(Class<? extends StateStackFrame> frameClass)
             {
                 return true;
             }
 
             @Override
-            public void renderFrame(StateFrame frame)
+            public void renderFrame(StateStackFrame frame)
             {
             }
 
             @Override
-            public boolean isFrameOpaque(StateFrame frame)
+            public boolean isFrameOpaque(StateStackFrame frame)
             {
-                return frame.getClass() == StateStackTest.TestUIFrame2.class; //this one opaque
+                return frame.getClass() == StateStackTest.TestUIStackFrame2.class; //this one opaque
             }
 
             @Override
@@ -105,16 +106,16 @@ public class PilotUISyncerTest
             }
         };
 
-        UITypeHandler spy = Mockito.spy(uiTypeHandler);
+        StateStackFrameSetRenderer spy = Mockito.spy(stateStackFrameSetRenderer);
 
         //syncer
-        StateStackUISyncer syncer = new StateStackUISyncer(stateStack, spy);
+        StateStackRenderer syncer = new StateStackRenderer(stateStack, spy);
         syncer.renderAllCurrentlyVisibleFrames(stateStack);
 
         //verify
         InOrder inOrder = Mockito.inOrder(spy);
-        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(StateStackTest.TestUIFrame2.class));
-        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(StateStackTest.TestUIFrame3.class));
-        inOrder.verify(spy, Mockito.never()).renderFrame(Mockito.isA(StateStackTest.TestUIFrame1.class));
+        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(StateStackTest.TestUIStackFrame2.class));
+        inOrder.verify(spy, Mockito.times(1)).renderFrame(Mockito.isA(StateStackTest.TestUIStackFrame3.class));
+        inOrder.verify(spy, Mockito.never()).renderFrame(Mockito.isA(StateStackTest.TestUIStackFrame1.class));
     }
 }

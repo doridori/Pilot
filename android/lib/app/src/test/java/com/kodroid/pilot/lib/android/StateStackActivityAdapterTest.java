@@ -11,7 +11,7 @@ public class StateStackActivityAdapterTest
     public void onCreateDelegate_stackWithNoVisibleFrames_shouldThrow()
     {
         StateStack stateStack = new StateStack();
-        stateStack.pushFrame(new StateStackTest.TestHiddenDataFrame());
+        stateStack.pushFrame(new StateStackTest.TestHiddenDataStackFrame());
         StateStackActivityAdapter stateStackActivityAdapter = new StateStackActivityAdapter(stateStack, null, null, null);
         stateStackActivityAdapter.onCreateDelegate();
     }

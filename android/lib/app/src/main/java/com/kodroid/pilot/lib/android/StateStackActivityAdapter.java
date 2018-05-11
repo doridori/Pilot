@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.statestack.StateStackFrame;
 import com.kodroid.pilot.lib.statestack.StateStack;
 
 /**
@@ -12,7 +12,7 @@ import com.kodroid.pilot.lib.statestack.StateStack;
  *
  * onCreate will instantiate the passed launch frame class if the stack is empty.
  *
- * onStart and onStop will route visibility events to the {@link StateStackUISyncer}
+ * onStart and onStop will route visibility events to the {@link StateStackRenderer}
  *
  * onDestroy will remove listeners attached by this instance
  *
@@ -25,8 +25,8 @@ import com.kodroid.pilot.lib.statestack.StateStack;
 public class StateStackActivityAdapter
 {
     private StateStack stateStack;
-    private StateStackUISyncer stateStackUISyncer;
-    private StateFrame launchState;
+    private StateStackRenderer stateStackRenderer;
+    private StateStackFrame launchState;
     private final StateStack.StackEmptyListener stackEmptyListener;
 
     //==================================================================//
@@ -35,18 +35,18 @@ public class StateStackActivityAdapter
 
     /**
      * @param stateStack the StateStack instance to be managed by this class.
-     * @param stateStackUISyncer will be added to the backing StateStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
+     * @param stateStackRenderer will be added to the backing StateStack and removed in onDestory() (and reference nulled). This will be updated with the current stack state inside this method.
      * @param launchState
      * @param stackEmptyListener to be notified when the stack becomes empty. Integrators will typically want to exit the current Activity at this point.
      */
     public StateStackActivityAdapter(
             StateStack stateStack,
-            StateStackUISyncer stateStackUISyncer,
-            StateFrame launchState,
+            StateStackRenderer stateStackRenderer,
+            StateStackFrame launchState,
             StateStack.StackEmptyListener stackEmptyListener)
     {
         this.stateStack = stateStack;
-        this.stateStackUISyncer = stateStackUISyncer;
+        this.stateStackRenderer = stateStackRenderer;
         this.launchState = launchState;
         this.stackEmptyListener = stackEmptyListener;
     }
@@ -69,11 +69,11 @@ public class StateStackActivityAdapter
             throw new IllegalStateException("Trying to initiate UI with a stack that contains no visible frames!");
 
         //hookup all event listeners to stack
-        stateStack.addTopFrameChangedListener(stateStackUISyncer);
+        stateStack.addTopFrameChangedListener(stateStackRenderer);
         stateStack.setStackEmptyListener(stackEmptyListener);
 
         //render everything that should be currently seen on screen
-        stateStackUISyncer.renderAllCurrentlyVisibleFrames(stateStack);
+        stateStackRenderer.renderAllCurrentlyVisibleFrames(stateStack);
     }
 
     /**
@@ -82,7 +82,7 @@ public class StateStackActivityAdapter
     //TODO C-54: StateStack should support START/STOP meta-states instread of hostActivity* approach
     public void onStartDelegate()
     {
-        stateStackUISyncer.hostActivityOnStarted();
+        stateStackRenderer.hostActivityOnStarted();
     }
 
     /**
@@ -91,7 +91,7 @@ public class StateStackActivityAdapter
     //TODO C-54: StateStack should support START/STOP meta-states instread of hostActivity* approach
     public void onStopDelegate()
     {
-        stateStackUISyncer.hostActivityOnStopped();
+        stateStackRenderer.hostActivityOnStopped();
     }
 
     /**
@@ -102,7 +102,7 @@ public class StateStackActivityAdapter
     public void onDestroyDelegate(Activity activity)
     {
         //remove listeners so callbacks are not triggered when Activity in destroy state
-        stateStack.deleteListeners(stateStackUISyncer, stackEmptyListener);
+        stateStack.deleteListeners(stateStackRenderer, stackEmptyListener);
     }
 
     /**
@@ -121,7 +121,7 @@ public class StateStackActivityAdapter
      * Ensure a StateStack instance is up and running. This will either be a newly created one (initialised
      * with the passed in <code>launchFrameClass</code> or a restored one via the <code>savedInstanceState</code>
      */
-    private void initializePilotStack(StateFrame launchState)
+    private void initializePilotStack(StateStackFrame launchState)
     {
         if(!stateStack.isEmpty())
             throw new IllegalStateException("StateStack already initialized");

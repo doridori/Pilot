@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kodroid.pilot.lib.android.stateFrameBacking.StateFrameBackedUI;
-import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.android.stateFrameBacking.StateStackFrameBackedUI;
+import com.kodroid.pilot.lib.statestack.StateStackFrame;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Code to create and display an {@link View} for a {@link StateFrame} that is declared to be handled by this {@link UITypeHandlerView}
+ * Code to create and display an {@link View} for a {@link StateStackFrame} that is declared to be handled by this {@link StateStackFrameSetRendererView}
  */
-public class UITypeHandlerView implements UITypeHandler
+public class StateStackFrameSetRendererView implements StateStackFrameSetRenderer
 {
     private final ViewCreator viewCreator;
     private final Displayer displayer;
@@ -29,11 +29,11 @@ public class UITypeHandlerView implements UITypeHandler
     //==================================================================//
 
     /**
-     * @param displayer A {@link UITypeHandlerView.Displayer} that will
+     * @param displayer A {@link StateStackFrameSetRendererView.Displayer} that will
      *                  handle showing your views. You can use the provided
-     *                  {@link UITypeHandlerView.SimpleDisplayer} here if needed.
+     *                  {@link StateStackFrameSetRendererView.SimpleDisplayer} here if needed.
      */
-    public UITypeHandlerView(
+    public StateStackFrameSetRendererView(
             ViewCreator viewCreator,
             Displayer displayer,
             boolean enableLogging)
@@ -44,22 +44,22 @@ public class UITypeHandlerView implements UITypeHandler
     }
 
     //==================================================================//
-    // UITypeHandler Interface
+    // StateStackFrameSetRenderer Interface
     //==================================================================//
 
 
     @Override
-    public boolean isFrameSupported(Class<? extends StateFrame> frameClass) {
+    public boolean isFrameSupported(Class<? extends StateStackFrame> frameClass) {
         return viewCreator.isFrameHandled(frameClass);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void renderFrame(StateFrame frame)
+    public void renderFrame(StateStackFrame frame)
     {
         log("UITypeViewHandler:renderFrame(%s)", frame.toString());
 
-        Class<? extends StateFrame> frameClass = frame.getClass();
+        Class<? extends StateStackFrame> frameClass = frame.getClass();
         if(isFrameSupported(frameClass))
         {
             if(displayer.isViewAddedForFrameInstance(frame, viewCreator))
@@ -83,7 +83,7 @@ public class UITypeHandlerView implements UITypeHandler
      * @return true if the passed Frame is opaque
      */
     @Override
-    public boolean isFrameOpaque(StateFrame frame) {
+    public boolean isFrameOpaque(StateStackFrame frame) {
         return true;
     }
 
@@ -110,42 +110,42 @@ public class UITypeHandlerView implements UITypeHandler
 
     public static class ViewCreator
     {
-        private Map<Class<? extends StateFrame>, Class<? extends View>> mappings = new HashMap<>();
+        private Map<Class<? extends StateStackFrame>, Class<? extends View>> mappings = new HashMap<>();
 
-        public ViewCreator(Map<Class<? extends StateFrame>, Class<? extends View>> mappings)
+        public ViewCreator(Map<Class<? extends StateStackFrame>, Class<? extends View>> mappings)
         {
             this.mappings = mappings;
         }
 
-        private boolean isFrameHandled(Class<? extends StateFrame> pilotFrame)
+        private boolean isFrameHandled(Class<? extends StateStackFrame> pilotFrame)
         {
             return mappings.containsKey(pilotFrame);
         }
 
         /**
-         * @param stateFrame the frame to get the View class for
+         * @param stateStackFrame the frame to get the View class for
          * @return Should always return a ViewClass or else throw an Exception
          */
-        private Class<? extends View> getViewClassForFrame(StateFrame stateFrame)
+        private Class<? extends View> getViewClassForFrame(StateStackFrame stateStackFrame)
         {
-            for(Class<? extends StateFrame> forFrame: mappings.keySet())
+            for(Class<? extends StateStackFrame> forFrame: mappings.keySet())
             {
-                if(forFrame.equals(stateFrame.getClass())) return mappings.get(forFrame);
+                if(forFrame.equals(stateStackFrame.getClass())) return mappings.get(forFrame);
             }
 
-            throw new IllegalArgumentException(stateFrame.getClass()+" not supported");
+            throw new IllegalArgumentException(stateStackFrame.getClass()+" not supported");
         }
 
         /**
-         * Return a new View instance, which has had the passed in {@link StateFrame} set.
-         * @param stateFrame
+         * Return a new View instance, which has had the passed in {@link StateStackFrame} set.
+         * @param stateStackFrame
          * @return
          */
         @SuppressWarnings("unchecked")
-        private View createViewForFrame(Context context, StateFrame stateFrame)
+        private View createViewForFrame(Context context, StateStackFrame stateStackFrame)
         {
-            View view = createView(context, getViewClassForFrame(stateFrame));
-            ((StateFrameBackedUI)view).setBackingStateFrame(stateFrame);
+            View view = createView(context, getViewClassForFrame(stateStackFrame));
+            ((StateStackFrameBackedUI)view).setBackingStateFrame(stateStackFrame);
             return view;
         }
 
@@ -163,7 +163,7 @@ public class UITypeHandlerView implements UITypeHandler
     }
 
     /**
-     * Integrators can supply their own Displayer or use/extend the suppled {@link UITypeHandlerView.SimpleDisplayer}
+     * Integrators can supply their own Displayer or use/extend the suppled {@link StateStackFrameSetRendererView.SimpleDisplayer}
      */
     public interface Displayer
     {
@@ -176,7 +176,7 @@ public class UITypeHandlerView implements UITypeHandler
          * @param viewCreator
          * @return
          */
-        boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator);
+        boolean isViewAddedForFrameInstance(StateStackFrame frame, ViewCreator viewCreator);
         void makeVisible(View newView);
         void clearAllUI();
         Context getDisplayConext();
@@ -188,7 +188,7 @@ public class UITypeHandlerView implements UITypeHandler
      *
      * This can be overridden if animations and or display logic needs to be tweaked. You may want to do this if
      *
-     * - You have more that one {@link UITypeHandler} i.e. one for Views and one for FragmentDialogs and some UI syncronisation needs to take place between them.
+     * - You have more that one {@link StateStackFrameSetRenderer} i.e. one for Views and one for FragmentDialogs and some UI syncronisation needs to take place between them.
      * - You have a master/detail flow and some subset of your views are to be placed in the detail area of the app (so you can manually handle this
      *
      * Otherwise you can roll your own via the {@link Displayer} interface.
@@ -209,12 +209,12 @@ public class UITypeHandlerView implements UITypeHandler
         //============================//
 
         @Override
-        public boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator)
+        public boolean isViewAddedForFrameInstance(StateStackFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();
             boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
-            if(isAdded && !((StateFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
+            if(isAdded && !((StateStackFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
                 throw new IllegalStateException(
                         "Uh oh! This should not be possible. A View should never not have a Frame set " +
                                 "apart from when first created, as on config change the view instance will " +
@@ -286,14 +286,14 @@ public class UITypeHandlerView implements UITypeHandler
      * This class can be improved by reversing the in anim if still running when the view is removed.
      * Alternatively Views should be visible for at least the min time that equals the in anim IN duration.
      */
-    public static class AnimatingDisplayer implements UITypeHandlerView.Displayer
+    public static class AnimatingDisplayer implements StateStackFrameSetRendererView.Displayer
     {
         //==================================================================//
         // Builder
         //==================================================================//
 
         /**
-         * Sets up a {@link UITypeHandlerView.Displayer} with simple fade in/out Animators.
+         * Sets up a {@link StateStackFrameSetRendererView.Displayer} with simple fade in/out Animators.
          *
          * As mentioned in the class docs your Views should probably be around for at least
          * <code>duration</code>*2 otherwise quick transitions may cause unsightly animation combinations.
@@ -342,12 +342,12 @@ public class UITypeHandlerView implements UITypeHandler
         }
 
         @Override
-        public boolean isViewAddedForFrameInstance(StateFrame frame, ViewCreator viewCreator)
+        public boolean isViewAddedForFrameInstance(StateStackFrame frame, ViewCreator viewCreator)
         {
             if(getCurrentView() == null) return false;
             final Class<? extends View> currentViewClass = getCurrentView().getClass();
             boolean isAdded = viewCreator.getViewClassForFrame(frame).equals(currentViewClass);
-            if(isAdded && !((StateFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
+            if(isAdded && !((StateStackFrameBackedUI)getCurrentView()).hasBackingStateFrameSet())
                 throw new IllegalStateException(
                         "Uh oh! This should not be possible. A View should never not have a Frame set " +
                                 "apart from when first created, as on config change the view instance will " +

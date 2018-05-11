@@ -1,19 +1,19 @@
 package com.kodroid.pilot.lib.android;
 
-import com.kodroid.pilot.lib.android.uiTypeHandler.UITypeHandler;
-import com.kodroid.pilot.lib.statestack.StateFrame;
+import com.kodroid.pilot.lib.android.uiTypeHandler.StateStackFrameSetRenderer;
+import com.kodroid.pilot.lib.statestack.StateStackFrame;
 import com.kodroid.pilot.lib.statestack.StateStack;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class holds the {@link UITypeHandler} collection that is queried upon {@link StateStack}
+ * This class holds the {@link StateStackFrameSetRenderer} collection that is queried upon {@link StateStack}
  * changes.
  */
-public class StateStackUISyncer implements StateStack.TopFrameChangedListener
+public class StateStackRenderer implements StateStack.TopFrameChangedListener
 {
-    private UITypeHandler[] uiTypeHandlers;
+    private StateStackFrameSetRenderer[] stateStackFrameSetRenderers;
     private StateStack stateStack;
     private boolean hostActivityStarted;
 
@@ -22,13 +22,13 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
     //==================================================================//
 
     /**
-     * @param uiTypeHandlers UITypeHandlers passed in here have to have corresponding entries for
-     *                       *all* StateFrame classes that exist in this project.
+     * @param stateStackFrameSetRenderers UITypeHandlers passed in here have to have corresponding entries for
+     *                       *all* StateStackFrame classes that exist in this project.
      */
-    public StateStackUISyncer(StateStack stateStack, UITypeHandler... uiTypeHandlers)
+    public StateStackRenderer(StateStack stateStack, StateStackFrameSetRenderer... stateStackFrameSetRenderers)
     {
         this.stateStack = stateStack;
-        this.uiTypeHandlers = uiTypeHandlers;
+        this.stateStackFrameSetRenderers = stateStackFrameSetRenderers;
     }
 
     //==================================================================//
@@ -39,7 +39,7 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
     {
         hostActivityStarted = true;
         //notify all frames represented by views being drawn to the screen
-        for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
+        for(StateStackFrame frame : getCurrentlyVisibleFrames(stateStack, false))
             frame.frameViewVisible(true);
     }
 
@@ -47,7 +47,7 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
     {
         hostActivityStarted= false;
         //notify all frames represented by views being drawn to the screen
-        for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
+        for(StateStackFrame frame : getCurrentlyVisibleFrames(stateStack, false))
             frame.frameViewVisible(false);
     }
 
@@ -65,16 +65,16 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
      * @param stateStack
      * @return
      */
-    private List<StateFrame> getCurrentlyVisibleFrames(StateStack stateStack, boolean ignoreTop)
+    private List<StateStackFrame> getCurrentlyVisibleFrames(StateStack stateStack, boolean ignoreTop)
     {
-        List<StateFrame> currentlyVisibleFrames = new LinkedList<>();
+        List<StateStackFrame> currentlyVisibleFrames = new LinkedList<>();
 
         int count = 1; //1 is top of stack for below method call
         if(ignoreTop)
             count++; //2 is second from top of stack for below method call
         while(true)
         {
-            StateFrame frame = stateStack.getVisibleFrameFromTopDown(count);
+            StateStackFrame frame = stateStack.getVisibleFrameFromTopDown(count);
             if(frame == null) //EOL
                 return currentlyVisibleFrames;
             currentlyVisibleFrames.add(frame);
@@ -84,18 +84,18 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
         }
     }
 
-    private boolean isFrameOpaque(StateFrame stateFrame)
+    private boolean isFrameOpaque(StateStackFrame stateStackFrame)
     {
         //find the typeHandler that handles this frame
-        for(UITypeHandler uiTypeHandler : uiTypeHandlers)
+        for(StateStackFrameSetRenderer stateStackFrameSetRenderer : stateStackFrameSetRenderers)
         {
-            if (uiTypeHandler.isFrameSupported(stateFrame.getClass()))
+            if (stateStackFrameSetRenderer.isFrameSupported(stateStackFrame.getClass()))
             {
-                return uiTypeHandler.isFrameOpaque(stateFrame);
+                return stateStackFrameSetRenderer.isFrameOpaque(stateStackFrame);
             }
         }
 
-        throw new IllegalStateException("No UITypeHandler registered for StateFrame of type "+ stateFrame.getClass().getName());
+        throw new IllegalStateException("No StateStackFrameSetRenderer registered for StateStackFrame of type "+ stateStackFrame.getClass().getName());
     }
 
     //==================================================================//
@@ -107,36 +107,36 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
      */
     public void renderAllCurrentlyVisibleFrames(StateStack stateStack)
     {
-        List<StateFrame> framesToRender = getCurrentlyVisibleFrames(stateStack, false);
+        List<StateStackFrame> framesToRender = getCurrentlyVisibleFrames(stateStack, false);
         for(int i = framesToRender.size() - 1; i >= 0; i--)
             topVisibleFrameUpdated(framesToRender.get(i), Direction.FORWARD);
     }
 
     @Override
-    public void topVisibleFrameUpdated(StateFrame topVisibleFrame, Direction direction)
+    public void topVisibleFrameUpdated(StateStackFrame topVisibleFrame, Direction direction)
     {
-        UITypeHandler handlingTypeHandler = null;
+        StateStackFrameSetRenderer handlingTypeHandler = null;
 
         //find the typeHandler that handles this frame
-        for(UITypeHandler uiTypeHandler : uiTypeHandlers) {
-            if (uiTypeHandler.isFrameSupported(topVisibleFrame.getClass()))
+        for(StateStackFrameSetRenderer stateStackFrameSetRenderer : stateStackFrameSetRenderers) {
+            if (stateStackFrameSetRenderer.isFrameSupported(topVisibleFrame.getClass()))
             {
-                uiTypeHandler.renderFrame(topVisibleFrame);
-                handlingTypeHandler = uiTypeHandler;
+                stateStackFrameSetRenderer.renderFrame(topVisibleFrame);
+                handlingTypeHandler = stateStackFrameSetRenderer;
                 break;
             }
         }
 
         //throw if nothing to handle this frame
         if(handlingTypeHandler == null)
-            throw new IllegalStateException("No UITypeHandler registered for StateFrame of type "+topVisibleFrame.getClass().getName());
+            throw new IllegalStateException("No StateStackFrameSetRenderer registered for StateStackFrame of type "+topVisibleFrame.getClass().getName());
 
         //clear all other handlers IF the new frame is opaque
         if(handlingTypeHandler.isFrameOpaque(topVisibleFrame))
         {
-            for(UITypeHandler uiTypeHandler : uiTypeHandlers) {
-                if (uiTypeHandler != handlingTypeHandler) {
-                    uiTypeHandler.clearAllUI();
+            for(StateStackFrameSetRenderer stateStackFrameSetRenderer : stateStackFrameSetRenderers) {
+                if (stateStackFrameSetRenderer != handlingTypeHandler) {
+                    stateStackFrameSetRenderer.clearAllUI();
                 }
             }
         }
@@ -149,7 +149,7 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
                 return; //i.e. don't bother calling false when added
 
             //get all the vis frame stack ignoring the top frame and call false
-            for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, true))
+            for(StateStackFrame frame : getCurrentlyVisibleFrames(stateStack, true))
                 frame.frameViewVisible(false);
 
             //call started state on top frame
@@ -157,7 +157,7 @@ public class StateStackUISyncer implements StateStack.TopFrameChangedListener
         }
         else if(direction == Direction.BACK)
         {
-            for(StateFrame frame : getCurrentlyVisibleFrames(stateStack, false))
+            for(StateStackFrame frame : getCurrentlyVisibleFrames(stateStack, false))
                 frame.frameViewVisible(true);
         }
     }

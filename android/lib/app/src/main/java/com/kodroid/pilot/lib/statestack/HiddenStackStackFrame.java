@@ -7,11 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be applied to a {@link StateFrame} subclass which signifies that it should be
+ * Annotation that can be applied to a {@link StateStackFrame} subclass which signifies that it should be
  * ignored for all stack callback operations. Very useful for handling scoped data within the stack
  */
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HiddenFrame
+public @interface HiddenStackStackFrame
 {}

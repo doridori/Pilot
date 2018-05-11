@@ -2,7 +2,7 @@ package com.kodroid.pilot.lib.android.stateFrameBacking;
 
 import android.view.View;
 
-public interface StateFrameBackedUI<P>
+public interface StateStackFrameBackedUI<P>
 {
     View setBackingStateFrame(P backingStateFrame);
 
