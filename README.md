@@ -2,7 +2,7 @@
 
 [![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central-v1.0.2-blue.svg)](http://repo1.maven.org/maven2/com/kodroid/pilot/)
 
-# Pilot
+# ~Pilot~
 
 Pilot is a way to model the Application State in a familiar (`android.*` decoupled) `Stack` structure, and provides hooks for `View` based UI Rendering to take place. This facilitates:
 
