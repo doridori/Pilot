@@ -1,4 +1,6 @@
-**This project is now DEPRECATED as times have moved on and I have personally started using a Redux / FSM mix. See [Android Architecture: Runtime Centric Thinking](https://doridori.github.io/Android-Architecture-Runtime/)
+**This project is now DEPRECATED as times have moved on and I have personally started using a Redux / FSM mix.**
+
+**See [Android Architecture: Runtime Centric Thinking](https://doridori.github.io/Android-Architecture-Runtime/)**
 
 [![Circle CI](https://circleci.com/gh/doridori/Pilot.svg?style=svg)](https://circleci.com/gh/doridori/Pilot)  [![Maven Central](https://img.shields.io/badge/Maven%20Central-v1.0.2-blue.svg)](http://repo1.maven.org/maven2/com/kodroid/pilot/)
 
